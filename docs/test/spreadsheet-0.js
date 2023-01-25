@@ -36,7 +36,7 @@ export function initSpreadsheet ( spreadsheet ) {
 	spreadsheets[ spreadsheet.id ] = spreadsheet;
 	initLogicalCellAddresses( spreadsheet );
 	createLabels( spreadsheet ) ;
-	// 
+	evaluateCellExpressions( spreadsheet );
 	}
 
 export function initLogicalCellAddresses( spreadsheet ) {
