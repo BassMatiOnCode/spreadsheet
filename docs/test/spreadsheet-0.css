@@ -1,0 +1,7 @@
+table.spreadsheet tr.column-labels td,
+table.spreadsheet.rowlabels-left td:first-child,
+table.spreadsheet.rowlabels-right td:last-child {
+	background-color : #EEE ;
+	}
+
+

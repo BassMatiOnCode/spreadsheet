@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-20" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-01-20" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, require" />
+<meta name="description" content="Initial test." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="/inc/spreadsheet-0.css" />
+
+<style>
+table.flat-borders td { text-align : left ; vertical-align : top }
+</style>
+ 
+<title>Projects - SpreadSheet.JS - Test 1</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Test 1</h1>
+
+<script>
+let errors = 0;
+</script>
+	
+<p>Generation of logical row and column numbers in the module init functions. The cell text must match the logical row and column numbers in <tt>dataset.row</tt> and <tt>dataset.col</tt> values.</p>
+
+<h2>Test 1.1 Spreadsheet with Row and Column Labels</h2>
+
+<p>Both column label row and row label column affect <tt>cellIndex</tt> values, but should <em>not</em> change logical row and column values of cells.</p>
+<p>Additionally, there are cells with <tt>colspan</tt> and <tt>rowspan</tt> attributes greater than 1. These should also not disturb the row and column number generation.</p>
+	
+<table id="sheet-1" class="spreadsheet flat-borders" style="text-align:left"><thead><tr class="colheaders">
+	<th></th>
+	<th>0</th>
+	<th>1</th>
+	<th>2</th>
+</tr></thead><tbody class="rowheaders"><tr>
+	<th>0</th>
+	<td colspan="3">0,0</td>
+</tr><tr>
+	<th>1</th>
+	<td rowspan="3">1,0</td>
+	<td>1,1</td>
+	<td>1,2</td>
+</tr><tr>
+	<th>2</th>
+	<td>2,1</td>
+	<td>2,2</td>
+</tr><tr>
+	<th>3</th>
+	<td>3,1</td>
+	<td>3,2</td>
+</tr></tbody></table>
+
+<p id="result-1">pending...</p>
+
+<h2>Test 1.2 Logical Row and Column Numbers, No Row and Column Labels</h2>
+
+<p>Similar to the previous test, this time with different colspan and rowspan configuration.</p>
+	
+<table id="sheet-2" class="spreadsheet flat-borders"><tbody><tr>
+	<td>0,0</td>
+	<td>0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+</tr><tr>
+	<td>1,0</td>
+	<td rowspan="2" colspan="2">1,1</td>
+	<td>1,3</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,3</td>
+</tr><tr>
+	<td>3,0</td>
+	<td>3,1</td>
+	<td>3,2</td>
+	<td>3,3</td>
+</tr></tbody></table>
+
+<p id="result-2">pending...</p>
+	
+</main><footer id="page-footer"></footer>
+<script type="module" src="/inc/page.js" ></script>
+<script type="module" src="/inc/spreadsheet-0.js" ></script>
+<script type="module">
+function testA ( tableId, resultId ) {
+	let failed = false;
+	const table = document.getElementById( tableId );
+	const datacells = table.querySelectorAll( "td" );
+	for ( let i = 0 ; i < datacells.length ; i ++ ) {
+		const cell = datacells[ i ];
+		const row = cell.parentElement;
+		if ( cell.innerText !== `${row.dataset.row},${cell.dataset.col}`) {
+			errors += 1;
+			document.getElementById( resultId ).innerText = "FAILED!";
+			break;
+		}	}
+	if ( ! failed )	document.getElementById( resultId ).innerText = "Success!";
+	}
+
+testA( "sheet-1", "result-1" );
+testA( "sheet-2", "result-2" );
+</script>
+
+</body></html>

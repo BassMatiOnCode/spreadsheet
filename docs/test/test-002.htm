@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-20" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-01-20" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, require" />
+<meta name="description" content="Initial test." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="spreadsheet-0.css" />
+
+<style>
+table.flat-borders td { text-align : left ; vertical-align : top }
+p { tab-size : 4 ; white-space:pre-wrap }
+</style>
+ 
+<title>Projects - SpreadSheet.JS - Test 2</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Test 2 Cell Addressing</h1>
+
+<script>
+let errors = 0;
+</script>
+	
+<h2>Test 2 Cell Addressing Modes</h2>
+
+<table id="sheet-1" class="flat-borders"><tbody><tr data-row="0">
+	<td data-col="0" xpr="123">0,0</td>
+	<td data-col="1" name="n-0,1">0,1</td>
+	<td data-col="2">0,2</td>
+	<td data-col="3">0,3</td>
+</tr><tr data-row="1">
+	<td data-col="0">1,0</td>
+	<td data-col="1" rowspan="2" colspan="2" name="n-1,1">1,1</td>
+	<td data-col="3">1,3</td>
+</tr><tr data-row="2">
+	<td data-col="0">2,0</td>
+	<td data-col="3" name="n-2,3">2,3</td>
+</tr><tr data-row="3">
+	<td data-col="0">3,0</td>
+	<td data-col="1" name="n-3,1">3,1</td>
+	<td data-col="2">3,2</td>
+	<td data-col="3">3,3</td>
+</tr></tbody></table>
+
+<p id="result-1">pending...</p>
+	
+</main><footer id="page-footer"></footer>
+	
+<script type="module" src="/inc/page.js" ></script>
+
+<xscript type="module" src="spreadsheet-0.js" ></xscript>
+
+<script type="module">
+import * as spreadsheet from './spreadsheet-0.js';
+// Configuration
+spreadsheet.state.currentSpreadsheet = document.getElementById("sheet-1");
+
+// Test 2.1 - cell() function
+// cell(row,col).innerText must match row,col
+let error=false;
+document.getElementById( "result-1" ).innerHTML = "Test 2.1 cell() function ";
+error ||= spreadsheet.cell(0,0).innerText !== "0,0";
+error ||= spreadsheet.cell(0,1).innerText !== "0,1";
+error ||= spreadsheet.cell(0,2).innerText !== "0,2";
+error ||= spreadsheet.cell(0,3).innerText !== "0,3";
+error ||= spreadsheet.cell(1,0).innerText !== "1,0";
+error ||= spreadsheet.cell(1,1).innerText !== "1,1";
+error ||= spreadsheet.cell(1,2) !== null ;
+error ||= spreadsheet.cell(1,3).innerText !== "1,3";
+error ||= spreadsheet.cell(2,0).innerText !== "2,0";
+error ||= spreadsheet.cell(2,1) !== null ;
+error ||= spreadsheet.cell(2,2) !== null ;
+error ||= spreadsheet.cell(2,3).innerText !== "2,3";
+error ||= spreadsheet.cell(3,0).innerText !== "3,0";
+error ||= spreadsheet.cell(3,1).innerText !== "3,1";
+error ||= spreadsheet.cell(3,2).innerText !== "3,2";
+error ||= spreadsheet.cell(3,3).innerText !== "3,3";
+console.log( `Test 2.1 ${error?"failed":"succeeded"}` );
+document.getElementById( "result-1" ).innerHTML += `<br/>	${error?"failed":"succeeded"}`;
+if ( error ) errors ++ ;
+
+// Test 2.2 Relative addressing
+// Verifies the rr() function.
+document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.2 rr() relative row function ";
+error=false;
+spreadsheet.state.currentRow = 0 ;
+error ||= spreadsheet.rr(1) !== 1;
+error ||= spreadsheet.rr(0) !== 0;
+error ||= spreadsheet.rr(-1) !== -1;
+spreadsheet.state.currentRow = 2 ;
+error ||= spreadsheet.rr(-1) !== 1;
+error ||= spreadsheet.rr(0) !== 2;
+error ||= spreadsheet.rr(1) !== 3;
+console.log( `Test 2.2 ${error?"failed":"succeeded"}` );
+document.getElementById( "result-1" ).innerHTML += `<br/>    ${error?"failed":"succeeded"}`;
+if ( error ) errors ++ ;
+
+// Test 2.3 Relative addressing
+// Verifies the rc() function.
+
+error=false;
+document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.3 rc() relative column function ";
+spreadsheet.state.currentColumn = 0 ;
+error ||= spreadsheet.rc(1) !== 1;
+error ||= spreadsheet.rc(0) !== 0;
+error ||= spreadsheet.rc(-1) !== -1;
+spreadsheet.state.currentColumn = 2 ;
+error ||= spreadsheet.rc(-1) !== 1;
+error ||= spreadsheet.rc(0) !== 2;
+error ||= spreadsheet.rc(1) !== 3;
+console.log( `Test 2.3 ${error?"failed":"succeeded"}` );
+document.getElementById( "result-1" ).innerHTML += `<br/>    ${error?"failed":"succeeded"}`;
+if ( error ) errors ++ ;
+
+// Test 2.4 - cell() function with relative addressing
+// cell(row,col).innerText must match row,col
+error=false;
+document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.4 cell() function with relative addressing";
+spreadsheet.state.currentRow = 1 ;
+spreadsheet.state.currentColumn = 3 ;
+error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc(-3)).innerText !== "0,0";
+error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc(-2)).innerText !== "0,1";
+error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc(-1)).innerText !== "0,2";
+error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc( 0)).innerText !== "0,3";
+error ||= spreadsheet.cell(spreadsheet.rr(0),spreadsheet.rc(-3)).innerText !== "1,0";
+error ||= spreadsheet.cell(spreadsheet.rr(0),spreadsheet.rc(-2)).innerText !== "1,1";
+error ||= spreadsheet.cell(spreadsheet.rr(0),spreadsheet.rc(-1)) !== null ;
+error ||= spreadsheet.cell(spreadsheet.rr(0),spreadsheet.rc( 0)).innerText !== "1,3";
+error ||= spreadsheet.cell(spreadsheet.rr(1),spreadsheet.rc(-3)).innerText !== "2,0";
+error ||= spreadsheet.cell(spreadsheet.rr(1),spreadsheet.rc(-2)) !== null ;
+error ||= spreadsheet.cell(spreadsheet.rr(1),spreadsheet.rc(-1)) !== null ;
+error ||= spreadsheet.cell(spreadsheet.rr(1),spreadsheet.rc( 0)).innerText !== "2,3";
+error ||= spreadsheet.cell(spreadsheet.rr(2),spreadsheet.rc(-3)).innerText !== "3,0";
+error ||= spreadsheet.cell(spreadsheet.rr(2),spreadsheet.rc(-2)).innerText !== "3,1";
+error ||= spreadsheet.cell(spreadsheet.rr(2),spreadsheet.rc(-1)).innerText !== "3,2";
+error ||= spreadsheet.cell(spreadsheet.rr(2),spreadsheet.rc( 0)).innerText !== "3,3";
+console.log( `Test 2.4 ${error?"failed":"succeeded"}` );
+document.getElementById( "result-1" ).innerHTML += `<br/>    ${error?"failed":"succeeded"}`;
+if ( error ) errors ++ ;
+
+// Test 2.5 - Addressing named cells with the cell() function
+error=false;
+document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.5 cell() function with named cells";
+error ||= spreadsheet.cell("n-0,1").innerText !== "0,1";
+error ||= spreadsheet.cell("n-1,1").innerText !== "1,1";
+error ||= spreadsheet.cell("n-2,3").innerText !== "2,3";
+error ||= spreadsheet.cell("n-3,1").innerText !== "3,1";
+console.log( `Test 2.4 ${error?"failed":"succeeded"}` );
+document.getElementById( "result-1" ).innerHTML += `<br/>    ${error?"failed":"succeeded"}`;
+if ( error ) errors ++ ;
+
+// Summary
+document.getElementById( "result-1" ).innerHTML += `<br/>${errors} errors` ;
+</script>
+
+</body></html>
