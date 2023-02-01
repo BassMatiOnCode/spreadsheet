@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-25" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-01-25" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, done." />
+<meta name="description" content="Done list." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+ 
+<title>Projects - JS-SpreadSheet - Done</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Done</h1>
+
+<p id="page-abstract"></p>
+
+<dl class="collapsible airy" >
+
+<dt id="2023-01-28:1" creator="usp">2023-01-28:1 Harmonize row, column, cell and spreadsheet variables in functions where user-defined expressions can be evaluated.</dt>
+	<dd>These names can be used in formulas and therefore should be consistent.</dd>
+	<dd>Also add short alias names for them: cr = current row, cc = current column, cell() = cell retrieval function, cellv() = returns the value of the specified cell, ccell = current cell, ccv = current cell value, cs = current spreadsheet.</dd>
+	<dd>2023-01-29 usp - solved, fixed.</dd>
+	<dd>A number of variables have been created on the module level: currentSpreadsheet, currentCell, currentRow and currentColumn, with alias names. Support functions were added to set these variables and alias variables in a consistent manner.</dd>
+
+<dt id="2023-01-25:1" creator="usp">2023-01-55:1 Expression evaluation across spreadsheets</dt>
+	<dd>A cell reference should be able to reference a cell in a different spreadsheet.</dd>
+	<dd>2023-01-29 usp - The cell() function will get a third, optional parameter that carries a reference to the target spreadsheet. It defaults to the current spreadsheet. EvaluateExpressions() will retrieve all expressions in the document and process them in the loop as usual.</dd>
+	<dd>2023-01-29 usp - solved, fixed.</dd>
+	<dd>The <tt>sheet()</tt> function has been added to retrieve a reference to the specified spreadsheet.</dd>
+
+<dt id="2023-01-28:2" creator="usp">2023-01-28:2 Consider a current cell offset function.</dt>
+	<dd>ccell.offset(rows, cols) as an alternative to cell(rr(rows),rc(cols)).</dd>
+	<dd>2023-01-29 usp - solved, fixed</dd>
+	<dd>We will not add arbitrary members to HTML elements, as this might produce unforseeable conflicts. Instead, we implemented the ocell() (Offset Cell) function, which takes the number of offset rows and columns and an optional cell reference.</dd>
+
+<dt id="2023-01-29:1" creator="usp">2023-01-29:1 User-defined Functions</dt>
+	<dd>There should be a way to add user-defined functions to spreadsheet-core, so that they are available in spreadsheet expressions. This allows to keep spreadsheet-core small without sacrificing functionality.</dd>
+	<dd>2023-01-29 usp - closed, solved.</dd>
+	<dd>Spreadsheet-core statically imports the spreadsheet-functions.js module, then adds all objects therein to the module's global scope. The user can add arbitrary functions to the spreadsheet-functions module, as required.</dd>
+
+<dt id="2023-01-29:2" creator="usp">2023-01-29:2 Dynamic Injection of Modules</dt>
+	<dd>The module spreadsheet-functions.js is already imported into spreadsheet-core.js, but in a static manner. If more specific functions must be provided, a dynamic import must be used.</dd>
+	<dd>2023-01-29 usp - closed, solved.</dd>
+	<dd>Dynamic import works asynchronously, therefore initPage() cannot be run automatically, the functions being imported are not yet available at that time. Therefore, initPage now must be called explicitly from the parent document.</dd>
+	<dd>
+<pre>import * as spreadsheetCore from './spreadsheet-core-0.js';
+spreadsheetCore.importModule( "./spreadsheet-udf-0.js" )
+	.then ( spreadsheetCore.initPage );
+	</pre></dd>
+
+<dt id="2023-01-05:2" creator="usp">2023-01-05:2 Formatting and data types</dt>
+	<dd>Number of decimal places for numbers. Date and time formats. String representation of enum types.</dd>
+	<dd>2023-01-31 usp solved, closed.</dd>
+	<dd>Use the JavaScript number.toFixed(n) method in the data-format propertyer for this purpose.</dd>
+
+<dt id="2023-01-05:3" creator="usp">2023-01-05:3 Save spreadsheet to local disk</dt>
+	<dd>2023-01-31 usp solved, closed</dd>
+	<dd>Function implemented: spreadsheet-persistence-0.js:setupStoreLinkd()</dd>
+	<dd>The code creates a blob from the outerHTML of the content element and then creates a URL from that blob, which is then assigned to the href attribute of an HTML anchor element. If the user clicks on that link, the spreadsheet HTML is "downloaded" by the browser and can be stored to the local disk like any other file download from a remote server.</dd>
+
+</dl>
+
+</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

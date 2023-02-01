@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-25" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-01-31" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, require" />
+<meta name="description" content="To do list." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+ 
+<title>Projects - JS-SpreadSheet - To Do</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>To Do</h1>
+
+<p id="page-abstract"></p>
+
+<dl class="collapsible">
+
+<dt id="2023-01-05:4" creator="usp">2023-01-05:4 Load spreadsheet from local disk</dt>
+	<dd><a href="https://developer.mozilla.org/en-US/docs/Web/API/File_API">https://developer.mozilla.org/en-US/docs/Web/API/File_API</a></dd>
+	<dd>Implement function setupLoadInput()</dd>
+
+<dt id="2023-01-25:5" creator="usp">2023-01-25:5 Recognize data type of cells.</dt>
+	<dd>Every cell gets a data-value attribute and data-type attribute. During initialization, the cell content is set from the data-value. When read by the cell() function, the data-type is taken into account to convert the data-value string into the desired type.</dd>
+	<dd>Data types: Number, string, date, boolean, enum.</dd>
+
+<dt id="2023-01-26:1" creator="usp">2023-01-26:1 Allow alternative format for cell references in formulas.</dt>
+	<dd>Similar to commercial spreadsheets to improve acceptance:</dd>
+	<dd>CNCR (character number column row) address format: A0, B1, C3, &hellip; AA0, AB1, AC2, &hellip;</dd>
+	<dd>$A0 $B$1 C$2 (prevent references from being adjusted if the reference is affected by a spreadsheet structure change.</dd>
+	<dd><tt>@()</tt> function as alternative to the <tt>cell()</tt> function for relative addressing. </dd>
+	<dd>CNCR cell address format seems to be the optimum. The internal column numbering system may be kept, or not.</dd>
+
+<dt id="2023-01-26:2" creator="usp">2023-01-26:2 How to determine the cell data type</dt>
+	<dd>The inherent data type is string, because that is what <tt>cell.innerText</tt> returns. However, existing spreadsheet programs assume the default data type to be <tt>number</tt>, because most calculations will deal with numbers.</dd>
+	<dd>The developer may supply a <tt>data-type</tt> attribute to specify the cell's data type. If omitted, the spreadsheet init code will guess the type:</dd>
+	<dd><tt>number</tt> for empty cells.</dd>
+	<dd><tt>number</tt> if it can be converted to a number</dd>
+	<dd><tt>date</tt> if it can be converted to a date</dd>
+	<dd><tt>boolean</tt> if it can be contains either "true" or "false"</dd>
+	<dd><tt>string</tt> otherwise</dd>
+
+<dt id="2023-01-31:1" creator="usp">2023-01-31:1 Rename xpr attribute to data-xpr</dt>
+	<dd>2023-01-31 usp - solved.</dd>
+	<dd>HTML Pages have to be updated also.</dd>
+
+<dt id="2023-01-31:2" creator="usp">2023-01-31:2 Implement a <tt>gen-cells="rows,columns"</tt> attribute to generate the table structure.</dt>
+	<dd>All cells will have the <tt>contenteditable</tt> attribute.</dd>
+
+<dt id="2023-01-31:3" creator="usp">2023-01-31:3 Implement a command prefix to make a cell read-only.</dt>
+	<dd>Of course, this is somewhat like a one-way instruction, at least for the moment, because there are no means to add the "contenteditable" attribute again exept the browser developer tools.</dd>
+
+<dt id="2023-01-31:4" creator="usp">2023-01-31:4 Implement a command prefix to set the <tt>data-format</tt> and <tt>data-parse</tt> attributes</dt> 
+	<dd>These command input strings shall not change the cell value.</dd>
+
+<dt id="2023-01-31:5" creator="usp">2023-01-31:5 Cell context menu</dt>
+	<dd>Entries: read-only, parse expression, format expression.</dd>
+
+<dt id="2023-01-31:6" creator="usp">2023-01-31:6 Detect circular references</dt>
+	<dd>2023-01-31 usp</dd>
+	<dd>Determine whether this is a problem or not. Perhaps not, because all equations are solved exactly once when a cell value changes. Perhaps not, because all equations in a reference circle cannot be evaluated. The current algorithm should be stable.</dd>
+</dl>
+
+</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

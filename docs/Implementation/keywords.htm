@@ -25,14 +25,39 @@
 <p id="page-abstract"></p>
 
 <dl class="syntax-list">
-<dt>cell( rowNumber, colNumber )</dt>
-	<dd>Returns a reference to the HTML table cell element referenced by logical row and column numbers.</dd>
+<dt>bold( )</dt>
+	<dd>Embeds the argument in HTML &lt;b&gt; tags.</dd>
+
+<dt>cell( rowNumber, colNumber, spreadsheet )</dt>
+	<dd>Returns a reference to the HTML table cell element referenced by logical row and column numbers. If spreadsheet is omitted, the <tt>state.currentSpreadsheet</tt> is used. If rowNumber is a string, a named cell is retrieved and colNumber is ignored.</dd>
+
+<dt>col</dt>
+	<dd>Column number of the currently evaluated cell.</dd>
+
+<dt>color(fgc, bgc, expression)</dt>
+	<dd>Embeds the expression argument in HTML &lt;span&gt; tags and sets foreground and background color styles.</dd>
+
+<dt>currentCell</dt>
+	<dd>A reference to the currently evaluated cell.</dd>
+
+<dt>cv( rowNumber, colNumber, spreadsheet )</dt>
+	<dd>A shortcut for cell( row, col ).spreadsheetCore.value. Returns the cell value (<tt>cell.spreadsheetCore.value</tt>).</dd>
+
+<dt>italic( )</dt>
+	<dd>Embeds the argument in HTML &lt;i&gt; tags.</dd>
+
+<dt>row</dt>
+	<dd>Row number of the currently evaluated cell.</dd>
 
 <dt>rr( rowOffset )</dt>
 	<dd>Returns a reference to a row at the specified distance from the current row.</dd>
 
 <dt>rc( columnOffset )</dt>
 	<dd>Returns a reference to a column at the specified distance from the current column.</dd>
+
+<dt>underline( )</dt>
+	<dd>Embeds the argument in HTML &lt;u&gt; tags.</dd>
+
 </dl>
 
 </main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

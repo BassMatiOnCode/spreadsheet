@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-30" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-01-30" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library" />
+<meta name="description" content="This page gets you started with spreadsheet.js. From simple to complex." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<style>
+</style>
+ 
+<title>Projects - Spreadsheet.js - Getting Started</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Getting Started with Spreadsheet.js</h1>
+
+<p id="page-abstract"></p>
+
+<h2 cbc>Prerequisite: A Tiny Web Server</h2><div>
+
+<p>The browser only accepts JavaScript modules if they are served over the http:// or https:// protocols. The file:// protocol is not accepted because of security reasons. </p>
+
+<p>So we need a webserver. I recommend a tiny one, like <a href=""></a>Deno, the successor to Node.js. It is lightweight, secure, and supports Typescript out-of-the-box.</p>
+
+<p>I have written an article about Deno, but here is a shortform intallation instruction:</p>
+
+<p>Download and extract the precompiled package from <a href="https://github.com/denoland/deno/releases">https://github.com/denoland/deno/releases</a> to a suitable folder on your machine and add that folder to your path environment. For Windows, it is "deno-x86_64-pc-windows-msvc.zip" package.</p>
+
+<p>Then open a console window, navigate to the HTML folder and execute the following command:</p>
+
+<figcaption class="listing">Installing the File_Server script</figcaption>
+<pre>deno install --allow-net --allow-read https://deno.land/std@0.167.0/http/file_server.ts</pre>
+
+<p>This will download, compile and start the web server, with the current folder as www root.</p>
+
+<p>Hereafter, you will only have to invoke the script:</p>
+
+<figcaption class="listing">Invoking the compiled script</figcaption>
+<pre>deno file_server.ts</pre>
+
+<p>Note that the server listens on port 4507 by default, so the address in the browser must be something like "localhost:4507/my-page.htm".</p>
+
+<!--h2--></div>
+
+<h2 cbc>A Spreadsheet Calculator</h2><div>
+
+<p>To follow along, you can download the <a href="demo-empty.htm">empty spreadsheet template</a> and open it in a text editor. Windows Notepad for example.</p>
+
+<h3 cbc>Step 1: Create the HTML Table</h3><div>
+
+<p>Create a <tt>&lt;table&gt;&lt;/table&gt;</tt> element. The table must have "spreadsheet" in the class attribute in order to be recognized by spreadsheet-core. Other class names can be added to override default appearance in CSS.</p>
+
+<p>Then add more elements as shown below: The <tt>tbody</tt> element contains rows (<tt>tr</tt>), a row contains table header (<tt>th</tt>) and table data (<tt>td</tt>) elements. These are also called "table cells":</p>
+
+<figcaption class="listing">The HTML table code</figcaption>
+<pre>
+&lt;table class="spreadsheet flat-borders"&gt;
+&lt;tbody&gt;&lt;tr&gt;
+	&lt;th colspan="2"&gt;Circle&lt;/th&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Radius?&lt;/td&gt;
+	&lt;td&gt;1&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Diameter&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Area&lt;/td&gt;
+	&lt;td"&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+
+<p>And here is the result:</p>
+
+<table id="sheet-01" class="flat-borders">
+<tbody><tr>
+	<th colspan="2">Circle</th>
+</tr><tr>
+	<td>Radius?</td>
+	<td>1</td>
+</tr><tr>
+	<td>Diameter</td>
+	<td></td>
+</tr><tr>
+	<td>Area</td>
+	<td></td>
+</tr></tbody>
+</table>
+
+<p>An ordinary HTML table. Nothing to get excited about.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Step 2 - Integrating Spreadsheet-core.js</h3><div>
+
+<p>Now download <a href="/test/spreadsheet-core-0.js">spreadsheet-core.js</a> and save it in the same directory. The code in this module will do the heavy lifting. To use it, add the following code to the end of the HTML file:</p>
+
+<figcaption class="listing">Integrating spreadsheet-core.js</figcaption>
+<pre>
+&lt;script type="module"&gt;
+"use strict";
+import * as spreadsheet from "./spreadsheet-core-0.js";
+spreadsheet.initPage();
+&lt;/script&gt;
+</pre>
+
+<p>If you now reload the document, you won't see a difference. But if you open the browser developer tools and inspect the document, you will notice that row (tr) and cell (td, th) elements have been decorated with <tt>data-row</tt> and <tt>data-col</tt> attributes &ndash; the <em>logical row and column addresses</em>.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Step 3 - Adding Expressions</h3><div>
+
+<p>Now we will decorate two cells with an expression (aka formula) attribute:</p>
+
+<figcaption class="listing">Adding expressions:</figcaption>
+<pre>
+	&lt;td&gt;Diameter&lt;/td&gt;
+	&lt;td <hi>data-xpr="2 * Math.PI * cell(1,1)"</hi>&gt;&lt;/td&gt;
+
+	&lt;td&gt;Area&lt;/td&gt;
+	&lt;td <hi>data-xpr="Math.PI * cell(1,1)**2"</hi>&gt;&lt;/td&gt;
+</pre>.
+
+<p>If you reload the HTML file, the calculated cells should now carry values:</p>
+
+<table id="sheet-02" class="spreadsheet flat-borders">
+<tbody><tr>
+	<th colspan="2">Circle</th>
+</tr><tr>
+	<td>Radius?</td>
+	<td>1</td>
+</tr><tr>
+	<td>Diameter</td>
+	<td data-xpr="2 * Math.PI * cell(1,1)"></td>
+</tr><tr>
+	<td>Area</td>
+	<td data-xpr="Math.PI * cell(1,1) ** 2"></td>
+</tr></tbody>
+</table>
+
+<p>That's the magic of <tt>spreadsheet-core</tt>!</p>
+
+<p>Spreadsheet-core has many built-in functions that you can use in expressions. Here are some:</p>
+
+<dl class="airy">
+<dt>cell(row, column, sheet=currentSheet)</dt>
+	<dd>Returns the internal value of the specified cell (absolute address) in the specified spreadsheet. If no spreadsheet reference was given, the current spreadsheet will be used.</dd>
+
+<dt>currentRow, cr</dt>
+	<dd>Variable, contains the locigal row number of the current cell. Can be used for relative row addressing.</dd>
+
+<dt>offset(rows, columns, cell = currentCell)</dt>
+	<dd>Returns the cell at the specified distance from the specified cell (relative address). If no cell reference was given, the offset from the current cell will be used.</dd>
+
+<dt>currentColumn, cc</dt>
+	<dd>Variable, contains the locigal column number of the current cell. Can be used for relative column addressing.</dd>
+
+<dt>ncell(name, sheet=currentSheet)</dt>
+	<dd>Returns the internal value of the specified named cell (absolute address) in the specified spreadsheet.</dd>
+
+<dt>cellObject(row, column)</dt>
+	<dd>Returns the HTML table cell object.</dd>
+
+<dt>nco, ncellObject( name, sheet=currentSheet)</dt>
+	<dd>returns the specified named HTML table cell object.</dd>
+
+<dt>currentCell, ccell</dt>
+	<dd>Contains a reference to the current HTML table cell object.</dd>
+
+<dt>currentSheet, csh</dt>
+	<dd>Contains a reference to the current spreadsheet.</dd>
+
+<dt>sheet( spreadsheet-id )</dt>
+	<dd>Returns the spreadsheet table object with the specified ID.</dd>
+</dl>
+
+<!--h3--></div>
+
+<h3 cbc>Step 4 - Adding Row and Column Labels</h3><div>
+
+<p>Not strictly necessary for calculators, but row and column labels might be a good idea while you create expressions. Add the <tt>gen-labels</tt> attribute to the table:</p>
+
+<figcaption class="listing">Adding row and column labls</figcaption>
+<pre>
+&lt;table class="spreadsheet flat-borders" <hi>gen-labels="both"</hi>&gt;
+	...
+&lt;/table&gt;
+</pre>
+
+<p>The value "both" will cause labels to be added at the top and left sides of the table. There are other options: top, right, bottom, left, all, none.</p>
+
+<p>Here are the results:</p>
+
+<table id="sheet-03" class="spreadsheet flat-borders" gen-labels="both">
+<tbody><tr>
+	<th colspan="2">Circle</th>
+</tr><tr>
+	<td>Radius?</td>
+	<td>1</td>
+</tr><tr>
+	<td>Diameter</td>
+	<td data-xpr="2 * Math.PI * cell(1,1)"></td>
+</tr><tr>
+	<td>Area</td>
+	<td data-xpr="Math.PI * cell(1,1) ** 2"></td>
+</tr></tbody>
+</table>
+
+<p>At least during development of formulas, labels are a great help when it comes to cell references.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Step 5 - Data Input</h3><div>
+
+<p>Up to now, the spreadsheet is pretty much static. But we will change this now by decorating the radius value cell with a <tt>contenteditable</tt> attribute:</p>
+
+<figcaption class="listing">Making the radius editable</figcaption>
+<pre>
+&lt;tr&gt;
+	&lt;td&gt;Radius?&lt;/td&gt;
+	&lt;td <hi>contenteditable</hi>&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+</pre>
+
+<p>This makes it a data input cell.</p>
+
+<p>Now set the keyboard focus on the radius input cell and change the value. Then type <tt>tab</tt> or click outside the cell. When the cell looses focus, the expressions will be recomputed.</p>
+
+<table id="sheet-04" class="spreadsheet flat-borders" gen-labels="both">
+<tbody><tr>
+	<th colspan="2">Circle</th>
+</tr><tr>
+	<td>Radius?</td>
+	<td contenteditable>2</td>
+</tr><tr>
+	<td>Diameter</td>
+	<td data-xpr="2 * Math.PI * cell(1,1)"></td>
+</tr><tr>
+	<td>Area</td>
+	<td data-xpr="Math.PI * cell(1,1) ** 2"></td>
+</tr></tbody>
+</table>
+
+<p>That's the heart of <tt>spreadsheetCore</tt>.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Step 6 - Formatting Values</h3><div>
+
+<p>An excessive amount of fractional digits makes results hard to read. To change that, we will add a <tt>data-format</tt> attribute to the calculated cells:</p>
+
+
+<figcaption class="listing">Making the radius editable</figcaption>
+<pre>
+&lt;tr&gt;
+	&lt;td&gt;Radius?&lt;/td&gt;
+	&lt;td <hi>contenteditable</hi>&gt;2&lt;/td&gt;
+&lt;/tr&gt;</pre>
+
+<p>Now click on the radius value cell, enter a different value, and then click outside. Diameter and area values should be updated accordingly:</p>
+
+<table id="sheet-05" class="spreadsheet flat-borders" gen-labels="both">
+<tbody><tr>
+	<th colspan="2">Circle</th>
+</tr><tr>
+	<td>Radius?</td>
+	<td contenteditable>2</td>
+</tr><tr>
+	<td>Diameter</td>
+	<td data-xpr="2 * Math.PI * cell(1,1)" data-format="value.toFixed(2)"></td>
+</tr><tr>
+	<td>Area</td>
+	<td data-xpr="Math.PI * cell(1,1) ** 2" data-format="value.toFixed(2)"></td>
+</tr></tbody>
+</table>
+
+<p>We have a working spreadsheet calculator!</p>
+
+<!--h3--></div>
+
+<!--h2--></div>
+
+<h2 cbc>A User-Definable Spreadsheet</h2><div>
+
+<p>A calculator spreadsheet has mostly read-only cells, only the data input cells have the attribute <tt>contenteditable</tt>. <a href="demo-2-finished">Demo 2</a> has <em>all</em> cells editable. This is what a user expects from a usual spreadsheet.</p>
+
+<p>Now the user can create his own spreadsheet application.</p>
+
+<table class="spreadsheet flat-borders" gen-labels="both">
+<tbody><tr>
+	<th colspan="2" contenteditable></th>
+</tr><tr>
+	<td contenteditable></td>
+	<td contenteditable></td>
+</tr><tr>
+	<td contenteditable></td>
+	<td contenteditable></td>
+</tr><tr>
+	<td contenteditable></td>
+	<td contenteditable></td>
+</tr></tbody>
+</table>
+
+<p>Click on the cell(0,0). The string "s$" appears, a type specifier (s) and the prefix flag ($). This indicates that the cell type is a string. Press the right-arrow key and type "Circle". You have now entered a string value into the cell. Press the tab key. The focus moves to the next cell, the input is parsed and stored in the cell, then a properly formatted "clean" version of the value is shown in the cell.</p>
+
+<p>Same for the next cell. This time, just type "Radius?" without pressing the right-arrow key first. This overwrites the type prefix. Press tab. Again, the input is parsed, stored and and formatted. Strings that cannot be converted into a number or a boolean are stored internally as strings automatically.</p>
+
+<p>In the cell(1,1) enter "n$1". "n$" is the type prefix for number, "1" is the value. Press tab. This time, the text is parsed, converted into a JavaScript Number object and stored internally. A formatted version "1" is then shown in the cell.</p>
+
+<p>Then enter "Circumference" into cell (2,0) and press tab.</p>
+
+<p>In cell(2,1) we will enter an expression. Type "=$2*Math.PI*cell(1,1)", then press tab. The type declaration prefix "=$" indicates that the input is a formula. In contrast to values, an expression is stored in the <tt>data-xpr</tt> attribute of the cell and then evaluated. Evaluation references the radius value in cell(1,1) and preduces a numeric result, which is stored in the cell. Then a formatted value is shown in the cell.</p>
+
+<p>This quite exactly how a usual spreadsheet works. But here it is pure HTML with a few lines of JavaScript.</p>
+
+<p>Experiment further, add another formula for the area for instance.</p>
+
+<!--h2--></div>
+
+</main><footer id="page-footer"></footer>
+<script type="module" src="/inc/page.js" ></script>
+<script type="module">
+"use strict";
+import * as spreadsheet from "./test/spreadsheet-core-0.js";
+spreadsheet.initPage();
+</script>
+</body></html>

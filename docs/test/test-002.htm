@@ -59,12 +59,11 @@ let errors = 0;
 	
 <script type="module" src="/inc/page.js" ></script>
 
-<xscript type="module" src="spreadsheet-0.js" ></xscript>
-
 <script type="module">
-import * as spreadsheet from './spreadsheet-0.js';
+import * as spreadsheet from './spreadsheet-core-0.js';
+// intentionally left out initPage()
 // Configuration
-spreadsheet.state.currentSpreadsheet = document.getElementById("sheet-1");
+spreadsheet.setCurrentSpreadsheet(  document.getElementById("sheet-1"));
 
 // Test 2.1 - cell() function
 // cell(row,col).innerText must match row,col
@@ -94,11 +93,11 @@ if ( error ) errors ++ ;
 // Verifies the rr() function.
 document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.2 rr() relative row function ";
 error=false;
-spreadsheet.state.currentRow = 0 ;
+spreadsheet.setCurrentCell(spreadsheet.cell(0,0));
 error ||= spreadsheet.rr(1) !== 1;
 error ||= spreadsheet.rr(0) !== 0;
 error ||= spreadsheet.rr(-1) !== -1;
-spreadsheet.state.currentRow = 2 ;
+spreadsheet.setCurrentCell(spreadsheet.cell(2,0)) ;
 error ||= spreadsheet.rr(-1) !== 1;
 error ||= spreadsheet.rr(0) !== 2;
 error ||= spreadsheet.rr(1) !== 3;
@@ -111,11 +110,11 @@ if ( error ) errors ++ ;
 
 error=false;
 document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.3 rc() relative column function ";
-spreadsheet.state.currentColumn = 0 ;
+spreadsheet.setCurrentCell(spreadsheet.cell(0,0)) ;
 error ||= spreadsheet.rc(1) !== 1;
 error ||= spreadsheet.rc(0) !== 0;
 error ||= spreadsheet.rc(-1) !== -1;
-spreadsheet.state.currentColumn = 2 ;
+spreadsheet.setCurrentCell(spreadsheet.cell(0,2)) ;
 error ||= spreadsheet.rc(-1) !== 1;
 error ||= spreadsheet.rc(0) !== 2;
 error ||= spreadsheet.rc(1) !== 3;
@@ -127,8 +126,7 @@ if ( error ) errors ++ ;
 // cell(row,col).innerText must match row,col
 error=false;
 document.getElementById( "result-1" ).innerHTML += "<br/>Test 2.4 cell() function with relative addressing";
-spreadsheet.state.currentRow = 1 ;
-spreadsheet.state.currentColumn = 3 ;
+spreadsheet.setCurrentCell(spreadsheet.cell(1,3)) ;
 error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc(-3)).innerText !== "0,0";
 error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc(-2)).innerText !== "0,1";
 error ||= spreadsheet.cell(spreadsheet.rr(-1),spreadsheet.rc(-1)).innerText !== "0,2";

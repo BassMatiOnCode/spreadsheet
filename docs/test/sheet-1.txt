@@ -1,0 +1,15 @@
+<table id="sheet-1" class="spreadsheet flat-borders">
+<tbody><tr data-row="0">
+	<td data-col="0">A</td>
+	<td contenteditable="" data-col="1">123</td>
+</tr><tr data-row="1">
+	<td data-col="0">B</td>
+	<td contenteditable="" data-col="1">1</td>
+</tr><tr data-row="2">
+	<td data-col="0">C</td>
+	<td contenteditable="" data-col="1"></td>
+</tr><tr data-row="3">
+	<td data-col="0">D</td>
+	<td data-xpr="cell(1,1)*3" data-col="1">3</td>
+</tr>
+</tbody></table>

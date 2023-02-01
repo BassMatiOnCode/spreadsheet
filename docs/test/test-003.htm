@@ -42,7 +42,7 @@ p { tab-size : 4 ; white-space:pre-wrap }
 
 <p>TODO: With this order in place, the existing code could be simplified, certain special cases will not occur.</p>
 
-<p>TODO: Test more cominations,</p>
+<p>TODO: Test more combinations,</p>
 
 <table id="sheet-1" class="flat-borders"><tbody><tr>
 	<td xpr="123">0,0</td>
@@ -72,22 +72,24 @@ p { tab-size : 4 ; white-space:pre-wrap }
 
 <script type="module">
 let errors = 0;
-import * as spreadsheet from './spreadsheet-0.js';
-spreadsheet.state.currentSpreadsheet = document.getElementById("sheet-1");
+import * as spreadsheet from './spreadsheet-core-0.js';
+// Intentionally left out initPage()!
+spreadsheet.setCurrentSpreadsheet( document.getElementById("sheet-1"));
 // Engage spreadsheet stylesheet
-spreadsheet.state.currentSpreadsheet.classList.add("spreadsheet");
+// TODO : Is that necessary?
+spreadsheet.currentSpreadsheet.classList.add("spreadsheet");
 	
-spreadsheet.initLogicalCellAddresses( spreadsheet.state.currentSpreadsheet );
+spreadsheet.initLogicalCellAddresses( spreadsheet.currentSpreadsheet );
 /*
-spreadsheet.insertColumnLabels( spreadsheet.state.currentSpreadsheet );
-spreadsheet.appendColumnLabels( spreadsheet.state.currentSpreadsheet );
-spreadsheet.insertRowLabels( spreadsheet.state.currentSpreadsheet );
-spreadsheet.appendRowLabels( spreadsheet.state.currentSpreadsheet );
+spreadsheet.insertColumnLabels( spreadsheet.currentSpreadsheet );
+spreadsheet.appendColumnLabels( spreadsheet.currentSpreadsheet );
+spreadsheet.insertRowLabels( spreadsheet.currentSpreadsheet );
+spreadsheet.appendRowLabels( spreadsheet.currentSpreadsheet );
 */
 
-// spreadsheet.state.currentSpreadsheet.setAttribute("gen-labels", "all");
-spreadsheet.state.currentSpreadsheet.setAttribute("gen-labels", "both");
-spreadsheet.createLabels( spreadsheet.state.currentSpreadsheet );
+// spreadsheet.currentSpreadsheet.setAttribute("gen-labels", "all");
+spreadsheet.currentSpreadsheet.setAttribute("gen-labels", "both");
+spreadsheet.createLabels( spreadsheet.currentSpreadsheet );
 
 // Summary
 document.getElementById( "result-1" ).innerHTML += `<br/>${errors} errors` ;

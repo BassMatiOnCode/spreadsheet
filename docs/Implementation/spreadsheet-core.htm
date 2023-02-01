@@ -1,0 +1,385 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-29" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-01-29" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, core, spreadsheet-core, library" />
+<meta name="description" content="<tt>Spreadsheet.js</tt> is lightweight, fast and easy-to-learn modular JavaScritpt library for HTML spreadsheet applications." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<style>
+#table-01 td, #table-01 th { text-align : left ; vertical-align : top }
+#table-01 th { padding-left : 20px }
+</style>
+ 
+<title>Projects - Spreadsheet.js</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Spreadsheet.js</h1>
+
+<p id="page-abstract"></p>
+
+<h2 cbc>Row and Column Numbering</h2><div>
+
+<p>Worksheet rows and columns are logically numbered, starting from 0. Cell(0,0) is the first cell in the upper left corner.</p>
+
+<table class="flat-borders"><tbody><tr>
+	<td>0,0</td>
+	<td>0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+</tr><tr>
+	<td>1,0</td>
+	<td>1,1</td>
+	<td>1,2</td>
+	<td>1,3</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,1</td>
+	<td>2,2</td>
+	<td>2,3</td>
+</tr></tbody></table>
+
+<p>Usually logial cell coordinates correspond to the physical row and cell indices in the <tt>table.rows</tt> and <tt>row.cells</tt> arrays. For example, cell(1,2)  is addressed in code with <tt>table.rows[ 1 ].cells[ 2 ].</tt>. But cells can span multiple rows and/or columns. This has the effect that some <tt>row.cells</tt> arrays can have <em>fewer</em> cells than table columns:</p>
+
+<table class="flat-borders"><tbody><tr>
+	<td>0,0</td>
+	<td>0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+</tr><tr>
+	<td>1,0</td>
+	<td rowspan="2" colspan="2">1,1</td>
+	<td>1,3</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,3</td>
+</tr><tr>
+	<td>3,0</td>
+	<td>3,1</td>
+	<td>3,2</td>
+	<td>3,3</td>
+</tr></tbody></table>
+
+<p>As a result, locial cell column numbers will <em>differ</em> from physical cell index values. In the example above, <tt>rows[ 1 ].cells</tt> has only three elements, <tt>rows[ 2 ].cells</tt> has only two elements. The logical cell(1,3) is accessed with <tt>table.rows[ 1 ].cells[ 2 ]</tt>, and cell(2,3) is accessed in code with <tt>table.rows[ 2 ].cells[ 1 ]</tt>.</p>
+
+<p>Also note that row indices are not affected. Rows are always present, cells may not.</p>
+
+<p>A spreadsheet may have row and column labels. They are implemented with regular HTML table cells, but they don't affect the logical numbering of workarea cells. As a result, programmatic row and cell index values will differ by 1 from locigal row and column numbers.</p>
+
+<table class="flat-borders"><thead><tr style="background-color:#EEE">
+	<th></th>
+	<th>0</th>
+	<th>1</th>
+	<th>2</th>
+	<th>3</th>
+</tr></thead><tbody><tr>
+	<th style="background-color:#EEE">0</th>
+	<td>0,0</td>
+	<td>0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+</tr><tr>
+	<th style="background-color:#EEE">1</th>
+	<td>1,0</td>
+	<td>1,1</td>
+	<td>1,2</td>
+	<td>1,3</td>
+</tr><tr>
+	<th style="background-color:#EEE">2</th>
+	<td>2,0</td>
+	<td>2,1</td>
+	<td>2,2</td>
+	<td>2,3</td>
+</tr></tbody></table>
+
+<p>Formulas in the spreadsheet always use logial row and column numbers to address cells, because they don't change when a label row or column is added or removed. Additionally, this logical numbering is what we are used to from existing popular spreadsheet applications.</p>
+
+<p>To make logical addressing possible, the <tt>initSpreadsheet</tt> method calculates logical row and column numbers and stores them in <tt>row.dataset.row</tt> and <tt>cell.dataset.col</tt> fields. Note that these <tt>dataset</tt> members reflect the <tt>data-row</tt> and <tt>data-col</tt> HTML element attributes, they are visible in the DOM inspector in the browser developer tools.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Anatomy of a Cell</h2><div>
+
+<p>The following list contains a concise description of cell elements that participate in cell value presentation, storing and editing.</p>
+
+<dl class="airy-titles">
+<dt><tt>Cell.spreadheetCore.value</tt></dt>
+	<dd>Holds the cell value as native JavaScript object.</dd>
+	<dd>To obtain a textual representation, the <tt>value.toString()</tt> method is used.</dd>
+	<dd>I have favoured this method over a data attribute to prevent a loss of precision, minimize processing overhead for expression evaluation, and keep native type information.</dd>
+
+<dt><tt>Cell.innerHTML</tt></dt>
+	<dd>determines the visual representation of the value, possibly decorated with formatting tags such as &lt;i&gt; and &lt;b&gt;.</dd>
+
+<dt><tt>Cell.innerText</tt></dt>
+	<dd>A plain text representation of the value (Cell.spreadsheetCore.value.toString()) while editing. The value is set in the <tt>focusin</tt> event handler of the spreadheet table, and parsed in the <tt>focusout</tt> event handler. The parsing result determines the data type.</dd>
+
+<dt><tt>data-parse</tt> Attribute</dt>
+	<dd>The page author can demand a JavaScript data type for the cell value. The attribute usually contains a JavaScript constructor call like <tt>Date(value)</tt>, <tt>Number(value)</tt> or <tt>Boolean(value)</tt>, but actually can hold arbitrary script code.</dd>
+	<dd>The script is executed with <tt>cell.innerText</tt> in the first argument when cell editing is finished, i. e. in the <tt>focusout</tt> event handler.</dd>
+	
+<dt id="cell-data-format"><tt>data-format</tt> Attribute</dt>
+	<dd>This attribute is used to create the string for <tt>cell.innerHTML</tt>. The attribute contains JavaScript code that is evaluated to a string. The variable name "<tt>value</tt>" is used to access the <tt>cell.spreadsheetCore.value</tt>. </dd>
+	<dd>Some examples: <tt>toFixed( value, 2 )</tt>, <tt>value.toLocaleDateString()</tt>, <tt>value.toISOString()</tt>, <tt>value.toISOString().substr(0,10)</tt>, <tt>"&lt;b&gt;&lt;i&gt;"+value+&lt;/b&gt;&lt;/i&gt;</tt>.</dd>
+	<dd>More details in the <a href="#formatting-cell-values">Formatting Cell Values</a> chapter.</dd>
+
+<dt id="cell-data-xpr"><tt>data-xpr</tt> Attribute</dt>
+	<dd>This attribute contains an expression, the cell value is calculated from other cell values or literal values. When a cell value has been modified, all expressions on the page must be re-evaluated.</dd>
+</dl>
+
+<!--h2--></div>
+
+<h2 cbc id="formatting-cell-values">Formatting Cell Values</h2><div>
+
+<p>As <a href="#cell-data-format">already mentioned</a>, the <tt>data-format</tt> attribute contains JavaScript instructions to convert the binary <tt>cell.spreadsheetCore.value</tt> into a text representation for <tt>cell.innerHTML</tt>. Whenever <tt>cell.spreadsheetCore.value</tt> is changed, the formatting result is written to <tt>cell.innerHTML</tt>.</p>
+
+<p>This format/parse architecture was borrowed from the databinding of the .NET Framework where it works very well. The formatting code can leverage the full potential of JavaScript to get the value formatted. A few useful formatting support functions were implemented in <tt>spreadsheet-core.js</tt>. Others can be added by the page developer.</p>
+
+<h3>Spreadsheet Core Formatting Functions</h3><div>
+
+<p>At the time of writing, these formatting support functions are available.</p>
+
+<dl>
+<dt>toFixed( numberValue, decimalPlaces )</dt>
+	<dd>Convertes a number value into a floating point representation with the specified number of decimal places.</dd>
+
+<dt>italic( value )</dt>
+	<dd>Surrounds value with <tt>&lt;i&gt;</tt> tags.</dd>
+
+<dt>bold( value )</dt>
+	<dd>Surrounds value with <tt>&lt;b&gt;</tt> tags.</dd>
+
+<dt>underline( value )</dt>
+	<dd>Surrounds value with <tt>&lt;u&gt;</tt> tags.</dd>
+</dl>
+
+<!--h3--></div>
+
+<h3>Author-Supplied Formatting Modules</h3><div>
+
+<p>The page author may supply his own JavaScript module(s) with custom formatting functions.</p>
+
+<!--h3--></div>
+
+<h3>Formatting Examples</h3><div>
+
+<table id="table-01" class="flat-borders" style="border-top: 1px solid silver"><thead></thead><tbody><tr>
+	<th colspan="3">Numbers</th>
+</tr><tr>
+	<td>123.456789</td>
+	<td><tt>toFixed( value, 2 )</tt></td>
+	<td>123.46</td>
+</tr><tr>
+	<td>12.3</td>
+	<td><tt>toFixed( value, 2 )</tt></td>
+	<td>12.30</td>
+</tr><tr>
+	<td>12345678</td>
+	<td><tt>value.toString( 16 )</tt></td>
+	<td>bc614e</td>
+</tr><tr>
+	<td>12345678</td>
+	<td><tt>value.toExponential(4)</tt></td>
+	<td>1.2346e+7</td>
+</tr><tr>
+	<th colspan="3">Date</th>
+</tr><tr>
+	<td rowspan="5">2023-01-27T10:22:19Z</td>
+	<td><tt>value.toString()</tt></td>
+	<td>Fri Jan 27 2023 11:22:19 GMT+0100 (Central European Standard Time)</td>
+</tr><tr>
+	<td><tt>value.toISOString()</tt></td>
+	<td>2023-01-27T10:20:19.000Z</td>
+</tr><tr>
+	<td><tt>value.toISOString().substr(0, 10)</tt></td>
+	<td>2023-01-27</td>
+</tr><tr>
+	<td><tt>value.toLocaleString( "en-US" )</tt></td>
+	<td>1/27/2023, 11:22:19 AM</td>
+</tr><tr>
+	<td><tt>value.toLocaleString( "de-DE" )</tt></td>
+	<td>27.1.2023, 11:22:19</td>
+</tr><tr>
+	<th colspan="3">Decoration</th>
+</tr><tr>
+	<td rowspan="3">123</td>
+	<td>italic(value)</td>
+	<td>&lt;i&gt;123&lt;/i&gt;</td>
+</tr><tr>
+	<td>bold(value)</td>
+	<td>&lt;b&gt;123&lt;/b&gt;</td>
+</tr><tr>
+	<td>bold(italic(value))</td>
+	<td>&lt;b&gt;&lt;i&gt;123&lt;/i&gt;&lt;/b&gt;</td>
+</tr></tbody></table>
+
+<!--h3--></div>
+
+<!--h2--></div>
+
+<h2 cbc>User Input Parsing</h2><div>
+
+<p>The type of a cell value is defined by the user by entering some text or the evaluation of a formula, but the document author can provide the <tt>data-parse</tt> attribute to enforce that the cell value to be stored in <tt>cell.spreadsheetCore.value</tt> is an object of a specific kind, such as Number, BigInt, String, Boolean, or Date.</p>
+
+<p>The result of a formula evaluation usually provides a specific data type, but user input is just plain text. If no <tt>data-parse</tt>attribute was provided, the cell data type will have to be guessed. In order to support the type guessing algorithm, the user can provide control characters in the first two characters of the input text:</p>
+
+<dl>
+<dt>n$</dt><dd>Number</dd>
+<dt>i$</dt><dd>Big Integer</dd>
+<dt>s$</dt><dd>String</dd>
+<dt>b$</dt><dd>Boolean</dd>
+<dt>d$</dt><dd>Date</dd>
+<dt>=$</dt><dd>Formula</dd>
+</dl>
+
+<p>If no prefix was given, some attempts are mate to convert the input text into typed objects, in the following order:</p>
+
+<ol>
+<li>Number (because spreadsheets are about crunching numbers in the first place)</li>
+<li>Boolean (because that can easily be determined, only true and false are allowed)</li>
+<li>String (everything else)</li>
+</ol>
+
+<p>Everything else cannot be guessed, because the type constructors for e. g. Date accept nearly everything that can remotely be converted to a Date.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Cell Editing</h2><div>
+
+<p>The cell, when not being edited, shows the <em>formatted value</em> in <tt>cell.innerHTML</tt>. Therefore the displayed value may have reduced precsion, e. g. due to rounding, and even may be decorated with HTML tags.</p>
+
+<p>When a cell is edited, the unformatted, the conditionally prefixed raw value appears in the cell. The prefix indicates the data type:</p>
+
+<dl>
+<dt>Single quote (')</dt>
+	<dd>Indicates a string value</dd>
+<dt>Equal sign (=)</dt>
+	<dd>Indicates an expression</dd>
+<dt>Otherwise</dt>
+	<dd>The cell contains a number</dd>
+</dl>
+
+<p>When editing is finished, the raw value in the cell is parsed. The prefix character will determine the data type. If there is a no prefix, the data type is guessed. The <tt>cell.innerText</tt> is then passed to related type constructor (Number, BigInt, Boolean, Date or String), the result is then stored in <tt>cell.spreadsheetCore.value</tt>.</p>
+
+<p>If there is an equal sign, the <tt>cell.innerText</tt> is stored in the <tt>cell.dataset.xpr</tt> member, the expression is evaluated and the result is stored in <tt>cell.spreadsheetCore.value</tt> as JavaScript object. Finally, this value is formatted according to <tt>cell.dataset.format</tt> and written to <tt>cell.innerHTML</tt>.</p>
+
+<p>the <tt>cell.innerText</tt> is stored as <tt>innerHTML</tt> to allow custom text formatting. 
+The cell value will then parsed and stored as </p>
+
+<!--h2--></div>
+
+<h2 cbc>Cell Value Change and Re-Evaluation</h2><div>
+
+<p>The following HTML code shows user input fields and a computed cell with an <tt>xpr</tt> attribute:</p>
+
+<figcaption class="listing">Spreadsheet table with a comuted cell</figcaption>
+<pre>
+&lt;table class="flat-borders"&gt;&lt;thead&gt;&lt;tr&gt;
+    &lt;th colspan="2"&gt;Equation Demo&lt;/th&gt;
+&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;
+    &lt;th&gt;A&lt;/th&gt;
+    &lt;td <hi>contenteditable</hi>&gt;12&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+    &lt;th&gt;B&lt;/th&gt;
+    &lt;td <hi>contenteditable</hi>&gt;34&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+    &lt;th&gt;Sum&lt;/th&gt;
+    &lt;td <hi>xpr</hi>="cell(-2,0)+cell(-1,0)"&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+</pre>
+
+<p>Whenever the input cell value is changed, the result cell is updated. Effectively, it should work as in the following example:</p>
+
+<figcaption class="table">Spreadsheet input study</figcaption>
+<table id="table-01" class="spreadsheet flat-borders"><thead><tr>
+	<th colspan="2">Equation Demo</th>
+</tr></thead><tbody><tr>
+	<th>A</th>
+	<td contenteditable>12</td>
+</tr><tr>
+	<th>B</th>
+	<td contenteditable>34</td>
+</tr><tr>
+	<th>Sum</th>
+	<td equation="cell(-2,0)+cell(-1,0)">46</td>
+</tr></tbody></table>
+
+<script>
+( function ( ) {
+	// const spreadsheets = document.getElementsByClassName( "spreadsheet" );
+	const spreadsheets = [ document.getElementById( "table-01" ) ];
+	for ( let i = 0 ; i < spreadsheets.length ; i ++ ) {
+		spreadsheets[ i ].addEventListener( "focusout", function ( evt ) {
+			console.log( "Input!" );
+			this.rows[ 3 ].cells[ 1 ].innerText = parseInt( this.rows[ 1 ].cells[ 1 ].innerText ) + parseInt( this.rows[ 2 ].cells[ 1 ].innerText );
+		}	)	;	}
+	} ) ( ) ;
+</script>
+
+<p>Although, the computation has been faked here with a hard-coded instruction rather than the evaluation of an equation. Here is the code:</p>
+
+<figcaption class="listing">Processing input events</figcaption>
+<pre>
+<cc>// Find the spreadsheet tables</cc>
+const spreadsheets = document.getElementsByClassName( "spreadsheet" );
+for ( let i = 0 ; i &lt; spreadsheets.length ; i ++ ) {
+    <cc>// Add input event handlers</cc>
+    spreadsheets[ i ].addEventListener( "input", function ( evt ) {
+        <cc>// Input event: Calculate the new sum and update the result cell</cc>
+        this.rows[ 3 ].cells[ 1 ].innerText = parseInt( this.rows[ 1 ].cells[ 1 ].innerText ) + parseInt( this.rows[ 2 ].cells[ 1 ].innerText );
+    }   ) ; }
+</pre>
+
+<p>The <tt>input</tt> event fires with every keystroke. The eventhandler performs the computation and updates the result cell. In reality, all equations of a spreadsheet must be evaluated. Or at least all equations that directly or indirectly reference the modified input cell. In a complex worksheet, this might take a considerable amount of time. </p>
+
+<p>The <tt>change</tt> event occurs when the cell value is commited by pressing enter or when the input element looses focus. Unfortunately, this event is not fired by the <tt>td</tt> elements, so we will have to resort to a different stragety: A timeout event can be registered that updates the spreadsheet table after a short while of input inactivity.</p>
+
+<!-- h2 --></div>
+
+<h2 cbc>Expression Syntax</h2><div>
+
+
+
+<!-- h2 --></div>
+
+<h2 cbc>Preparing Equations for Evaluation</h2><div>
+
+<p>A computed cell has a formula associated, like this:</p>
+
+<figcaption class="listing">A calculated field</figcaption>
+<pre>
+&lt;td equation="2 * (cell(-2,0) + cell(-1,0))"
+</pre>
+
+<p>This formula addresses cells in the two rows above the current cell, same column. This is relative addressing, the parameters of the cell function are considered <em>offset values</em>. This </p>
+
+<figcaption class="listing">A calculated field</figcaption>
+<pre>
+&lt;td equation="2 * (cell($0$1) + cell($1$1))"
+</pre>
+
+<p>The equation accesses cells in row 0, column 1 and row 1, column 0. Thi</p>
+
+<!-- h2 --></div>
+
+<h2 cbc>Maintaining Cell References</h2><div>
+
+<p>Whenever rows or columns are inserted or deleted, cell references in equations will be broken. Without countermeasures, a spreadsheet will be rather useless. In this section we will develop a strategy how cell references can be maintained and kept valid.</p>
+
+<p>Observations:</p>
+
+<p>1.  If we insert a row (column), references that go across this new row (column), are broken.</p>
+
+<!-- h2 --></div>
+
+</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

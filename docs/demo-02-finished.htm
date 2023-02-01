@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-01-31" />
+<meta name="version" content="1" />
+<meta name="tags" content="JavaScript, HTML, spreadsheet, empty, template" />
+<meta name="description" content="Empty spreadsheet document template" />
+
+<link rel="stylesheet" href="./test/spreadsheet-0.css" />
+ 
+<title>Projects - Spreadsheet - Empty Spreadsheet Template</title>
+
+</head><body>
+
+<h1>Demo 2</h1>
+
+<p>Note: You may have to adjust the path to files in this document!</p>
+<p>All cells in this spreadsheet are editable.</p>
+
+<table id="sheet-05" class="spreadsheet flat-borders" gen-labels="both">
+<tbody><tr>
+	<th colspan="2" contenteditable></th>
+</tr><tr>
+	<td contenteditable></td>
+	<td contenteditable></td>
+</tr><tr>
+	<td contenteditable></td>
+	<td contenteditable></td>
+</tr><tr>
+	<td contenteditable></td>
+	<td contenteditable></td>
+</tr></tbody>
+</table>
+<script type="module">
+"use strict";
+import * as spreadsheet from "./test/spreadsheet-core-0.js";
+spreadsheet.initPage();
+</script>
+
+</body></html>
