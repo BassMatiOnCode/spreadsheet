@@ -71,12 +71,21 @@ export function initSpreadsheet ( spreadsheet ) {
 	////	References : currentWorksheet.	
 	
 	console.info( `spreadsheet-core.js:initSpreadsheet(): ${spreadsheet.id}` );
+
+		// Add spreadsheetCore member
+	spreadsheet.spreadsheetCore = { 
+			// Helpers for structure changes
+		firstColumn : 0, 
+		lastColumn : countColumns( spreadsheet.rows ) - 1, 
+		firstRow : 0, 
+		lastRow : spreadsheet.rows.length - 1
+		} ;
 	
-	// Checks
+		// Checks
 	if ( ! spreadsheet.id ) console.warn( "initSpreadsheet(): Spreadsheet table has no id, so it cannot be referenced." );
 	else if ( document.querySelectorAll( `#spreadsheet.id` ).length > 1 ) console.warn( "initSpreadsheet(): Duplicate spreadsheet id (${spreadsheet.id) cannot be addressed reliably." );
 	
-	// Initialize 
+		// Initialize 
 	initAddresses( spreadsheet );
 	initCellValues( spreadsheet );
 	createLabels( spreadsheet ) ;
@@ -194,9 +203,16 @@ export function createLabels( ) {
 export function insertColumnLabels( ) {
 	// Create a table header row at the top.
 	const row = currentSheet.createTHead( ).insertRow( 0 );
+	currentSheet.spreadsheetCore.firstRow += 1;
+	currentSheet.spreadsheetCore.lastRow += 1;
 	createColumnLabels( row );
 	}
-export function countColumns( rows ) {
+export function appendColumnLabels( ) {
+	// Create a table header row at the top.
+	const row = currentSheet.createTHead( ).insertRow( );
+	createColumnLabels( row );
+	}
+export function countColumns( rows = currentSheet.rows ) {
 	////	Counts the number of logical columns in a HTML Table.
 	let count = 0 , cells = rows[ rows[ 0 ].classList.contains( "column-labels" ) ? 1 : 0 ].cells ; 
 	for ( let i = 0 ; i < cells.length ; i ++ ) count += cells[ i ].colSpan ;
@@ -206,35 +222,29 @@ export function createColumnLabels( row ) {
 	// Add class name for CSS
 	row.classList.add( "column-labels" );
 	// Generate cells
-	const numColumns = countColumns( currentSheet.rows );
+	const numColumns = countColumns( );
 	const offset = currentSheet.hasAttribute( "rowlabels-left" ) ? -1 : 0 ;
 	for ( let i = 0 ; i < numColumns ; i ++ ) row.insertCell( ).innerText = i + offset ;
 	if ( offset ) row.cells[ 0 ].innerText = "" ;
 	if ( currentSheet.hasAttribute( "rowlabels-right" )) rows.cells[ rows.cells.count - 1 ].innerText = "" ;
 	}
-export function insertRowLabels ( ) {
-	currentSheet.classList.add( "rowlabels-left" );
-	const offset = currentSheet.rows[ 0 ].classList.contains( "column-labels" ) ? -1 : 0 ;
-	for ( let i = 0 ; i < currentSheet.rows.length ; i ++ ) {
-		const cell = currentSheet.rows[ i ].insertCell( 0 );
-		cell.innerText = i + offset ;
-		cell.classList.add( "row-label" );
+export function insertRowLabels ( where ) {
+		// where : left | right
+	currentSheet.classList.add( `rowlabels-${where}` );
+		// Adjust data cell range
+	if ( where === "left" ) {
+		currentSheet.spreadsheetCore.firstColumn += 1;
+		currentSheet.spreadsheetCore.laststColumn += 1;
 		}
-	if ( offset ) currentSheet.rows[ 0 ].cells[ 0 ].innerText = "" ;
-	const lastRow = currentSheet.rows[ currentSheet.rows.length - 1 ] ;
-	if ( lastRow.classList.contains( "column-labels" )) lastRow.cells[ 0 ].innerText = "" ; 
-	}
-export function appendRowLabels ( ) {
-	currentSheet.classList.add( "rowlabels-right" );
-	const offset = currentSheet.rows[ 0 ].classList.contains( "column-labels" ) ? -1 : 0 ;
-	for ( let i = 0 ; i < currentSheet.rows.length ; i ++ ) {
-		const cell = currentSheet.rows[ i ].insertCell( );
+		// covert to insert index
+	where = where === "left" ? 0 : null ;
+	const offset = -currentSheet.spreadsheetCore.firstColumn ;
+	const rows = currentSheet.rows;
+	for ( let i = 0 ; i < rows.length ; i ++ {
+		const cell = currentSheet.rows[ i ].insertCell( where );
 		cell.innerText = i + offset ;
-		cell.classList.add( "row-label" );
+		if ( i >= currentSheet.spreadsheetCore.firstColumn && i <= currentSheet.spreadsheetCore.lastColumn )cell.classList.add( "row-label" );
 		}
-	if ( offset ) currentSheet.rows[ 0 ].cells[ currentSheet.rows[ 0 ].cells.length - 1 ].innerText = "" ;
-	const lastRow = currentSheet.rows[ currentSheet.rows.length - 1 ] ;
-	if ( lastRow.classList.contains( "column-labels" )) lastRow.cells[ lastRow.cells.length - 1 ].innerText = "" ; 
 	}
 
 	//	Cell Value Handling 

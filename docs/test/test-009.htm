@@ -10,44 +10,40 @@
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, require" />
-<meta name="description" content="Initial test." />
+<meta name="description" content="Insert rows test document." />
 
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
-<link rel="stylesheet" href="/inc/spreadsheet-0.css" />
+<link rel="stylesheet" href="./spreadsheet-0.css" />
 
 <style>
 table.flat-borders td { text-align : left ; vertical-align : top }
 </style>
  
-<title>Projects - SpreadSheet.JS - Test 7</title>
+<title>Projects - SpreadSheet.JS - Test 9</title>
 
 </head><body><header id="page-header"><object data="/title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
 
-<h1>Test 7 &emsp; Save to Disk</h1>
+<h1>Test 9 &emsp; Insert Rows</h1>
 
-<p>Status: Passed.</p>
-
-<p>Instructions: Enter some random values into the second column, then click the download link. When asked by the browser, open the download. Depending on your system and configuration, the system text editor will open and show the file. It should be the spreadsheet table HTML. Verify that that the cells contain the numbers you have entered above.</p>
+<p>Status: pending.</p>
 
 <table id="sheet-1" class="spreadsheet flat-borders">
 <tr>
 	<td>A</td>
-	<td contenteditable>0</td>
+	<td>0</td>
 </tr><tr>
 	<td>B</td>
-	<td contenteditable>1</td>
+	<td>1</td>
 </tr><tr>
 	<td>C</td>
-	<td contenteditable></td>
+	<td></td>
 </tr><tr>
 	<td>D</td>
 	<td data-xpr="cell(1,1)*3"></td>
 </tr>
 </table>
-
-<p><a id="a-01" href="">Download</a></p>
 
 </main><footer id="page-footer"></footer>
 <script type="module" src="/inc/page.js" ></script>
@@ -55,9 +51,9 @@ table.flat-borders td { text-align : left ; vertical-align : top }
 <script type="module">
 import * as spreadsheetCore from "./spreadsheet-core-0.js" ;
 spreadsheetCore.initPage( );
-import * as spreadsheetPersistence from "./spreadsheet-persistence-0.js" ;
-spreadsheetPersistence.setupSaveLink( "a-01", "sheet-1", "sheet-1.txt", "text/plain" );
-//URL.revokeObjectURL(a.href);
+import { insertRows } from "./spreadsheet-interactive-0.js" ;
+spreadsheetCore.setCurrentSpreadsheet( document.getElementById( "sheet-1" ));
+insertRows( 3 );
 </script>
 
 </body></html>

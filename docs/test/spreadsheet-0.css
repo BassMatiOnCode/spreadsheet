@@ -7,8 +7,9 @@ table.spreadsheet th {
 
 table.spreadsheet th,
 table.spreadsheet td {
-	padding : 2px 5px ;
-	min-width : 20px ;
+	padding : 2px 5px;
+	min-width : 20px;
+	height : 20px;
 	}
 
 table.spreadsheet tr.column-labels td,
