@@ -2,8 +2,6 @@
  *		spreadsheet-1.js    2023-01-21   usp
  */
 
-"use strict" ;
-
 import { findParent } from "./spreadsheet-utility-0.js" ;
 
 // Import static functions and add them to the module global namespace
@@ -94,40 +92,35 @@ export function initPage ( ) {
 
 	} ;
 export function initSpreadsheet ( spreadsheet ) {
-	////	References : currentWorksheet.	
-	
+		// Initializes the spreadsheet.
 	console.info( `spreadsheet-core.js:initSpreadsheet(): ${spreadsheet.id}` );
-
-		// Add spreadsheetCore member
-	spreadsheet.spreadsheetCore = { 
-		} ;
-	
 		// Checks
 	if ( ! spreadsheet.id ) console.warn( "initSpreadsheet(): Spreadsheet table has no id, so it cannot be referenced." );
 	else if ( document.querySelectorAll( `#spreadsheet.id` ).length > 1 ) console.warn( "initSpreadsheet(): Duplicate spreadsheet id (${spreadsheet.id) cannot be addressed reliably." );
-	
-		// Initialize 
+		// Initialize
 	generateLabels( spreadsheet ) ;
 	initAddresses( spreadsheet );
 	initCellValues( spreadsheet );
-
-	// Add event listeners
-	spreadsheet.addEventListener( "focusin", evt => {
-		console.info( "focusin event handler" );
-		// Show a prefixed plain text in the cell
-		setCurrentCell( evt.target );
-		setPrefixedText( );
-		// Select the entire text in the cell
-		if ( evt.target.innerText.length > 0) window.getSelection().setBaseAndExtent( evt.target, 0, evt.target,1 );
-		} ) ;  // FocusIn
-	currentSheet.addEventListener( "focusout", evt => {
-		console.info( "focusout event handler" );
-		setCurrentCell( evt.target );
-		parseInput( );
-		formatValue( );
-		evaluateCellExpressions( evt.currentTarget );
-		} ) ;  // FocusOut
+		// Add event listeners
+	spreadsheet.addEventListener( "focusin", focusinHandler ) ;
+	currentSheet.addEventListener( "focusout", focusoutHandler ) ;
 	}
+export const focusinHandler = ( evt ) => {
+	console.info( "focusin event handler" );
+		// Show a prefixed plain text in the cell
+	setCurrentCell( evt.target );
+	setPrefixedText( );
+		// Select the entire text in the cell
+	if ( evt.target.innerText.length > 0) window.getSelection().setBaseAndExtent( evt.target, 0, evt.target,1 );
+	} ;
+export const focusoutHandler = ( evt ) => {
+		// Update the cell value
+	console.info( "focusout event handler" );
+	setCurrentCell( evt.target );
+	parseInput( );
+	formatValue( );
+	evaluateCellExpressions( evt.currentTarget );
+	} ;
 export function initAddresses( spreadsheet ) {
 		/// Decorates row and cell elements with locgical row and column numbers.
 	console.info( "spreadsheet-core.js: initAddresses()" );

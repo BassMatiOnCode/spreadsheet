@@ -3,6 +3,7 @@
  */
 
 import { norm, normElements } from "./spreadsheet-utility-0.js" ;
+import { initSpreadsheet } from "./spreadsheet-core-0.js" ;
 
 export function setupSaveLink( link, spreadsheet, fileName, contentType,  )
 	// Provides a download link for a spreadsheet html.
@@ -28,16 +29,19 @@ export function setupLoadCommand ( button, selector, target, dialog )
 	dialog = norm( dialog );
 	// Register click event handler with the button
 	button.addEventListener( "click", ( ) => {
-		// Create a file reader.
+			// Create a file reader.
 		const reader = new FileReader( );
-		// Setup a load event handler.
+			// Setup a load event handler.
 		reader.addEventListener( "load" , evt => {
-			// Create a template element that receives the file contentent.
+				// Create a template element that receives the file contentent.
 			const template = document.createElement( "TEMPLATE" );
 			template.innerHTML = evt.target.result.trim( );
-			// Verify the content.
+				// Verify the content.
 			checkImportData( template );
-			// Replace target element with the template content.
+				// Initialize all spreadsheet tables
+			const spreadsheets = template.content.querySelectorAll( "table.spreadsheet" );
+			spreadsheets.forEach( initSpreadsheet );
+				// Replace target element with the template content.			
 			target.replaceWith( template.content ) ;
 			} ) ;
 		// Read the file.
