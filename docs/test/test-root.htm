@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-03" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-03" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript > Spreadsheet" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, test, root." />
+<meta name="description" content="This document integrates the partial tests and produces a complete summary." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/inc/spreadsheet.css" />
+<link rel="stylesheet" href="/site.css" />
+<style>
+iframe { border-style : none }
+</style>
+
+<script>
+let testsFinished = 0, fails = 0, passes = 0;
+function report( test, status, result, summary="" ) {
+	window.requestAnimationFrame( () => {
+	console.log( test, status, result, summary );
+	testsFinished += 1;
+	if ( result === "passed" ) document.getElementById("passes").innerText = ++passes;
+	else document.getElementById("fails").innerText = ++fails;
+	document.getElementById("tests-finished").innerText = testsFinished;
+	} ) ;
+	}
+</script>
+ 
+<title>Projects - Spreadsheet &ndash; Test Root</title>
+
+</head><body><header id="page-header"><object data="../title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Test Root</h1>
+
+<p id="page-abstract"></p>
+
+<p>Tests finsished: <span id="tests-finished">0</span> of <span id="num-tests">0</span>
+<br/>Results: <span id="passes">0</span> passes, <span id="fails">0</span> fails</p>
+
+<iframe src="test-010.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
+<iframe src="test-011.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
+
+</main><footer id="page-footer"></footer>
+<script type="module" src="/inc/page.js" ></script>
+<script type="module">
+document.getElementById("num-tests").innerText = document.querySelectorAll( "iframe" ).length;
+let test = document.querySelector( "[src='test-010.htm']" );
+let status = test.contentDocument.getElementById( "status" ).innerText ;
+
+</script>
+</body></html>

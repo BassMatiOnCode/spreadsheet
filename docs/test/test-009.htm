@@ -21,7 +21,7 @@
 table.flat-borders td { text-align : left ; vertical-align : top }
 </style>
  
-<title>Projects - SpreadSheet.JS - Test 9</title>
+<title>Projects - SpreadSheet.JS - Test 9 - Insert Rows</title>
 
 </head><body><header id="page-header"><object data="/title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
 
@@ -29,16 +29,16 @@ table.flat-borders td { text-align : left ; vertical-align : top }
 
 <p>Status: pending.</p>
 
-<table id="sheet-1" class="spreadsheet flat-borders">
+<table id="sheet-1" class="spreadsheet flat-borders" gen-labels="both">
 <tr>
 	<td>A</td>
-	<td>0</td>
+	<td data-xpr="cell(2,0)"></td>
 </tr><tr>
 	<td>B</td>
 	<td>1</td>
 </tr><tr>
 	<td>C</td>
-	<td></td>
+	<td>2</td>
 </tr><tr>
 	<td>D</td>
 	<td data-xpr="cell(1,1)*3"></td>
@@ -51,9 +51,8 @@ table.flat-borders td { text-align : left ; vertical-align : top }
 <script type="module">
 import * as spreadsheetCore from "./spreadsheet-core-0.js" ;
 spreadsheetCore.initPage( );
-import { insertRows } from "./spreadsheet-interactive-0.js" ;
-spreadsheetCore.setCurrentSpreadsheet( document.getElementById( "sheet-1" ));
-insertRows( 3 );
+import { insertRows } from "./spreadsheet-structure-0.js" ;
+insertRows( 3, 3, "TD" );
 </script>
 
 </body></html>

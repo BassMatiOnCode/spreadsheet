@@ -9,7 +9,7 @@
 <meta name="change-date" content="2023-01-29" />
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript" />
-<meta name="tags" content="project, JavaScript, HTML, spreadsheet, core, spreadsheet-core, library" />
+<meta name="tags" content="project, JavaScript, HTML, library, spreadsheet, spreadsheet-core, implmentation" />
 <meta name="description" content="<tt>Spreadsheet.js</tt> is lightweight, fast and easy-to-learn modular JavaScritpt library for HTML spreadsheet applications." />
 
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
@@ -20,13 +20,50 @@
 #table-01 th { padding-left : 20px }
 </style>
  
-<title>Projects - Spreadsheet.js</title>
+<title>Projects - Spreadsheet - Spreadsheet-Core</title>
 
 </head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
 
-<h1>Spreadsheet.js</h1>
+<h1>Spreadsheet-Core</h1>
 
 <p id="page-abstract"></p>
+
+<h2 cbc>Statements</h2><div>
+
+<dl class="airy">
+
+<dt>Spreadsheet-core supports user-defined spreadsheets</dt>
+	<dd>Category: Tips & Tricks</dd>
+	<dd>Without additional modules, <tt>spreadsheet-core</tt> supports user-defined interactive spreadsheets out of the box, although with limited functionality.</dd>
+	<dd>Open the <a href="../test/empty-spreadsheet.htm">empty-spreadsheet.htm</a> in a text editor. Locate the <tt>gen-cells="3,3"</tt> attribute on the opening <tt>TABLE</tt> tag. Replace the numbers with the number of rows and columns you need. Then navigate the browser to the changed file..</dd>
+	<dd>The spreadsheet should now have the desired size. By default, all cells are editable.</dd>
+
+</dl>
+
+<!--h2--></div>
+
+<h2 cbc>Page Initialization</h2><div>
+
+<ol>
+<li>Collect spreadsheet table elements on the page</li>
+<li>For all spreadsheets
+	<ul>
+	<li>initSpreadsheet
+		<ol>
+		<li>Generate rows and cells</li>
+		<li>Decorate elements with logical row and column addresses</li>
+		<li>Generate column address labels</li>
+		<li>Generate row address labels</li>
+		<li>Initialize cells with literal values, evaluate parse expressions.</li>
+		</ol></li>
+	</ul></li>
+<li>Evaluate cell value expressions</li>
+<li>Evaluate cell format expressions</li>
+</ol>
+
+
+
+<!--h2--></div>
 
 <h2 cbc>Row and Column Numbering</h2><div>
 
@@ -346,32 +383,6 @@ for ( let i = 0 ; i &lt; spreadsheets.length ; i ++ ) {
 
 <!-- h2 --></div>
 
-<h2 cbc>Expression Syntax</h2><div>
-
-
-
-<!-- h2 --></div>
-
-<h2 cbc>Preparing Equations for Evaluation</h2><div>
-
-<p>A computed cell has a formula associated, like this:</p>
-
-<figcaption class="listing">A calculated field</figcaption>
-<pre>
-&lt;td equation="2 * (cell(-2,0) + cell(-1,0))"
-</pre>
-
-<p>This formula addresses cells in the two rows above the current cell, same column. This is relative addressing, the parameters of the cell function are considered <em>offset values</em>. This </p>
-
-<figcaption class="listing">A calculated field</figcaption>
-<pre>
-&lt;td equation="2 * (cell($0$1) + cell($1$1))"
-</pre>
-
-<p>The equation accesses cells in row 0, column 1 and row 1, column 0. Thi</p>
-
-<!-- h2 --></div>
-
 <h2 cbc>Maintaining Cell References</h2><div>
 
 <p>Whenever rows or columns are inserted or deleted, cell references in equations will be broken. Without countermeasures, a spreadsheet will be rather useless. In this section we will develop a strategy how cell references can be maintained and kept valid.</p>
@@ -381,5 +392,22 @@ for ( let i = 0 ; i &lt; spreadsheets.length ; i ++ ) {
 <p>1.  If we insert a row (column), references that go across this new row (column), are broken.</p>
 
 <!-- h2 --></div>
+
+<h2 cbc>Spreadsheet Structure Information</h2><div>
+
+<figcaption class="listing">Spreadsheet Structure Information</figcaption>
+<pre>
+sheet.spreadsheetCore = {
+	firstRow : 1 ,
+	firstColumn : 1 ,
+	rows : 123,
+	columns : 123,
+	columnsTotal : 125,
+	trailing
+	} ;
+</pre>
+
+<!--h2--></div>
+
 
 </main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

@@ -1,3 +1,10 @@
+table.spreadsheet,
+table.spreadsheet td,
+table.spreadsheet th {
+	border : 1px solid silver ;
+	border-collapse : collapse ;
+	}
+
 table.spreadsheet, 
 table.spreadsheet td, 
 table.spreadsheet th {
@@ -12,8 +19,38 @@ table.spreadsheet td {
 	height : 20px;
 	}
 
-table.spreadsheet tr.column-labels td,
-table.spreadsheet td.row-label {
+	/* Row and column labels */
+
+table.spreadsheet tr:first-child,
+table.spreadsheet tr:last-child,
+table.spreadsheet tr td:first-child,
+table.spreadsheet tr td:last-child {
 	background-color : #EEE ;
+	display : none ;
+	}
+	
+	/* Top column labels */
+table.spreadsheet[labels="top"] tr:first-child,
+table.spreadsheet[labels="both"] tr:first-child,
+table.spreadsheet[labels="all"] tr:first-child {
+	display : table-row ;
 	}
 
+	/* Bottom column labels */
+table.spreadsheet[labels="bottom"] tr:last-child,
+table.spreadsheet[labels="all"] tr:last-child {
+	display : table-row ;
+	}
+
+	/* Left row labels */
+table.spreadsheet[labels="left"] tr td:first-child,
+table.spreadsheet[labels="both"] tr td:first-child,
+table.spreadsheet[labels="all"] tr td:first-child {
+	display : table-cell ;
+	}
+
+	/* Right row labels */
+table.spreadsheet[labels="right"] tr td:last-child,
+table.spreadsheet[labels="all"] tr td:last-child {
+	display : table-cell ;
+	}

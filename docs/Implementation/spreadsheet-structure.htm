@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-01" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-04" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library" />
+<meta name="description" content="The <tt>spreadsheet-structure</tt> implements the functionality to modify the spreadsheet table structure, such as insert, delete, move, cut, copy and paste cells, rows and columns." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/inc/spreadsheet.css" />
+<link rel="stylesheet" href="/site.css" />
+<style>
+table.spreadsheet tr.insert-below td { border-bottom-color : red }
+table.spreadsheet tr.insert-above td { border-top-color : red }
+table.spreadsheet tr.affected > *, span.inserted { background-color:antiquewhite }
+table.spreadsheet tr > td.dirty, span.dirty { background-color: #ffb499 ; color : white }
+table.spreadsheet tr > td.clean, span.clean { background-color: #8cd9af ; color : white }
+</style>
+ 
+<title>Projects - Spreadsheet&ndash;Structure</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Spreadsheet&ndash;Structure</h1>
+
+<p id="page-abstract"></p>
+
+<h2 cbc>Overview</h2><div>
+
+<p>Structual changes often move cells, rows or columns around. Their logical address changes. This breaks expressions that references them, if no countermeasures were taken.</p>
+
+<p>Let's analyze the situation with some diagrams.</p>
+
+<p>Legend: A=absolute reference, R=relative reference, T=referenced target cell, <span class="inserted">affected</span> row(s) or column(s), <span class="dirty">broken</span> reference, <span class="clean">still valid</span> reference pair. The reference source cells show the target coordinates in parentheses, the target cell shows the reference source coordinates.</p>
+
+<p>In the following diagram, some rows will be inserted at the red horizontal line. The rows below will be moved down and therefore get a new row addess. They are considered to be in the <em>affected range</em>.</p>
+
+<table class="spreadsheet flat-borders" gen-labels="both">
+<tr class="insert-below">
+	<td></td>
+	<td class="dirty">A(1,1)</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td class="clean">T(1,5)</td>
+	<td></td>
+</tr><tr class="affected insert-above">
+	<td></td>
+	<td class="dirty">T(0,1)</td>
+	<td></td>
+	<td class="dirty">A(2,3)</td>
+	<td></td>
+	<td class="clean">A(0,5)</td>
+	<td></td>
+</tr><tr class="affected">
+	<td></td>
+	<td></td>
+	<td></td>
+	<td class="dirty">T(1,3)</td>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+</table>
+
+<p>Let's begin with absolute cell references.</p>
+
+<p>The expression in row 0, column 1 contains an absolute reference A(1,1) to the target cell T(0,1) in row 1, column 1. The target cell lies in the range affected by the insertion, its coordinates change. Therefore the reference A(1,1) in cell(0,1) has to be updated.</p>
+
+<p>A similar situation in column 3. Again, the target cell address changes, so the reference A(2,3) in cell(1,3) must be updated.</p>
+
+<p>In column 5 we have an absolute reference to the taget cell in row 0. The target cell address is not affected by the insertion, so the reference A(0,5) will not have to be updated.</p>
+
+<p>At this point we can conclude:</p>
+
+<p class="box">Rule 1: If the target cell of an absolute cell reference lies in the affected range, the reference must be updated.</p>
+
+<p>This also applies to cell references that go across spreadsheet borders.</p>
+
+<p>Now let's have a look at relative cell references:</p>
+
+<table class="spreadsheet flat-borders" gen-labels="both">
+<tr class="insert-below">
+	<td></td>
+	<td class="dirty">R(1,1)</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td class="dirty">T(1,5)</td>
+	<td></td>
+</tr><tr class="affected insert-above">
+	<td></td>
+	<td class="dirty">T(0,1)</td>
+	<td></td>
+	<td class="clean">R(2,3)</td>
+	<td></td>
+	<td class="dirty">R(0,5)</td>
+	<td></td>
+</tr><tr class="affected">
+	<td></td>
+	<td></td>
+	<td></td>
+	<td class="clean">T(1,3)</td>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+</table>
+
+<p>In columns 1 and 5, the distance between source and target cells changes by the insertion. This is not the case in column 3: Both cells will get a new row address, but their distance will not change. So we can conclude:</p>
+
+<p class="box">Rule 2: &ensp; If source and target cells of a relative reference lie in different ranges (affected and non-affected ranges), the cell reference must be updated.</p>
+
+<p>The same is true for deleted rows. Their space can be considered "collapsed to the red line". But there is a significant difference: </p>
+
+<p class="box">Rule 3: &ensp; If a reference target lies in the deleted region, the reference will become invalid!</p>
+
+<p>Invalid references must be recorded somehow in the source cell. Idea: Replace the reference function name with "invalidReference". This function will always return <tt>null</tt> and thus should be recognized. By keeping the old parameters, the user has some information to straighten out the problem.</p>
+
+<p class="box">Rule 4: &ensp; References to named cells are never affected by moved ranges.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Moved Range Information</h2><div>
+
+<p>The moved cell range information structure describes the range of cells that was moved, and the distance (offset) the range was moved. The structure can describe moved rows, columns or discrete cell ranges, and the distance they have been moved.</p>
+
+<p>Rows and columns are logical cell coordinate values. The might not be identical with row or cell collection index values.</p>
+
+<figcaption class="listing">Moved Range Information Structure</figcaption>
+<pre>
+const movedRange = {
+	sheet : object ,
+	firstRow : 0 ,
+	lastRow : 0 ,
+	rowOffset : 0 ,
+	firstColumn : 0 ,
+	lastColumn : 0 ,
+	columnOffset : 0
+	} ;
+</pre>
+
+<!--h2--></div>
+
+<h2 cbc>Moving Cell Ranges</h2><div>
+
+<p>If a limited cell range is moved with the shift cells, no overwrite option, new rows or columns will have to be added to the spreadsheet. This will create multiple moved cell ranges.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Analyzing Cell References</h2><div>
+
+<p>A cell reference in an expression has the typical form <tt>cell(n,m)</tt>, where "cell" is one of the reference functions, and  "n" and "m" are numerical expressions of arbitrary complexity, including function calls. If done correctly, the expression has balanced parentheses.</p>
+
+<p>Matching balanced expressions can be done with some flavors of regular expression enginges, but not with JavaScript, as far as I know at the time of writing. So we will have to take a different road: <em>Dynamic argument list evaluation</em>. A term that I just invented for this purpose.</p>
+
+<p>The idea is to find cell referencing functions such as <tt>cell</tt>, <tt>cellObject</tt>, <tt>offset</tt>, <tt>offsetObject</tt> and their alias names, grab their argument list and pass it to a different function, <tt>cellObject</tt> or <tt>offsetObject</tt>in this case.</p>
+
+<p>The <tt>cellObject</tt> and <tt>offsetObject</tt> functions return a reference to the <tt>HTMLTableCellElement</tt>. Once we have this target cell object, we have the logical target coordinates. Comparing source and target coordinates with the affected range lets us decide whether we have to apply an offset to the source coordinates, or not.</p>
+
+<!--h2--></div>
+
+<h2 cbc>extractFunctionsArgs()</h2><div>
+
+<p>The functions expects an input string (the expression), and the index of the left parenthesis of the function argument list.</p>
+
+<p>The algorithm goes over the input string in a linear fashion and maintains a "parenthesis nesting level" variable. When the level is decremented to zero, the matching right parenthesis was found.</p>
+
+<p>The algorithm also records the index of commas at level 1. These are the positions where the argument list hast to be split into pieces.</p>
+
+<p>Splitting is done at the end of the function, the individual arguments are returned in an array of strings to the caller.</p>
+
+<!--h2--></div>
+
+<h2 cbc>isAffected( )</h2><div>
+
+<p>This function examines affected range, source and target coordinates and decides whether the source coordinates have to be modified, or not.</p>
+
+
+<!--h2--></div>
+
+<h2 cbc>Updating Cell References</h2><div>
+
+<p>The outdated cell references of a cell expression must be replaced with updated cell referencs. This is effectively a series of <em>splice</em> operations.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Insert Rows</h2><div>
+
+<ol>
+<li>Compile row descriptor</li>
+<li>Create the affected cells range info</li>
+<li>Update sheet range despription</li>
+<li>Insert rows and cells</li>
+<li>Update affected cell references in all expressions</li>
+<li>Renumber rows</li>
+<li>Update spreadsheet structure information</li>
+</ol>
+
+<!--h2--></div>
+
+</main><footer id="page-footer"></footer>
+<script type="module" src="/inc/page.js" ></script>
+<script type="module">
+import * as spreadsheet from "/test/spreadsheet-core-0.js" ;
+spreadsheet.initPage();
+</script>
+</body></html>

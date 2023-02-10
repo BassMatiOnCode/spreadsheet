@@ -6,7 +6,7 @@
 <meta name="author" content="USP" />
 <meta name="creation-date" content="2023-01-31" />
 <meta name="editor" content="USP" />
-<meta name="change-date" content="2023-01-31" />
+<meta name="change-date" content="2023-02-03" />
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript > Spreadsheet" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, notes" />
@@ -26,8 +26,11 @@
 
 <dl class="airy">
 
-<dt>2023-01-31&emsp;SetCellValue() during init can break on calculated cells with <tt>format</tt> expressions.</dt>
+<dt>2023-01-31 &ensp; SetCellValue() during init can break on calculated cells with <tt>format</tt> expressions.</dt>
 	<dd>When <tt>InitCellValues()</tt> runs, calculated cells usually have not yet a value, they are empty. If a parse for format expression uses a value method like value.toFixed(), the method call fails and throws an exception.</dd>
+
+<dt>2023-02-03 &ensp; Relative cell references cannot go across spreadsheet borders.</dt>
+	<dd>In other words: A relative cell reference can only reference cells in the same spreadsheet.</dd>
 
 </dl>
 

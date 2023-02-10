@@ -6,7 +6,7 @@
 <meta name="author" content="USP" />
 <meta name="creation-date" content="2023-01-30" />
 <meta name="editor" content="USP" />
-<meta name="change-date" content="2023-01-30" />
+<meta name="change-date" content="2023-02-09" />
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library" />
@@ -15,6 +15,7 @@
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="./test/spreadsheet.css" />
 <style>
 </style>
  
@@ -41,7 +42,7 @@
 <figcaption class="listing">Installing the File_Server script</figcaption>
 <pre>deno install --allow-net --allow-read https://deno.land/std@0.167.0/http/file_server.ts</pre>
 
-<p>This will download, compile and start the web server, with the current folder as www root.</p>
+<p>This will download, compile and start a tiny file server, with the current folder as www root.</p>
 
 <p>Hereafter, you will only have to invoke the script:</p>
 
@@ -52,9 +53,11 @@
 
 <!--h2--></div>
 
-<h2 cbc>A Spreadsheet Calculator</h2><div>
+<h2 cbc>A Calculator Spreadsheet</h2><div>
 
-<p>To follow along, you can download the <a href="demo-empty.htm">empty spreadsheet template</a> and open it in a text editor. Windows Notepad for example.</p>
+<p>This first example builds a simple calculator spreadsheet with a predefined structure, some input cells and some calculated cells.</p>
+
+<p>To follow along, you can download <a href="./test/demo-empty.htm">demo-empty.htm</a> and <a href="./test/spreadsheet-0.css">spreadsheet.css</a>, an empty spreadsheet template and the spreadsheet stylesheet. Open the HTML file in a text editor. Windows Notepad for example.</p>
 
 <h3 cbc>Step 1: Create the HTML Table</h3><div>
 
@@ -64,7 +67,7 @@
 
 <figcaption class="listing">The HTML table code</figcaption>
 <pre>
-&lt;table class="spreadsheet flat-borders"&gt;
+&lt;table class="spreadsheet"&gt;
 &lt;tbody&gt;&lt;tr&gt;
 	&lt;th colspan="2"&gt;Circle&lt;/th&gt;
 &lt;/tr&gt;&lt;tr&gt;
@@ -75,14 +78,14 @@
 	&lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;&lt;tr&gt;
 	&lt;td&gt;Area&lt;/td&gt;
-	&lt;td"&gt;&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;&lt;/tbody&gt;
 &lt;/table&gt;
 </pre>
 
 <p>And here is the result:</p>
 
-<table id="sheet-01" class="flat-borders">
+<table id="sheet-01">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -101,14 +104,110 @@
 
 <!--h3--></div>
 
-<h3 cbc>Step 2 - Integrating Spreadsheet-core.js</h3><div>
+<h3 cbc>Step 2 - Integrate spreadsheet.css</h3><div>
 
-<p>Now download <a href="/test/spreadsheet-core-0.js">spreadsheet-core.js</a> and <a href="/test/spreadsheet-utility-0.js">spreadsheet-utility.js</a> and save them in the HTML directory. The code in the spreadsheet-core module will do the heavy lifting. To use it, add the following code to the end of the HTML file:</p>
+<p>Now download <a href="./test/spreadsheet.css">spreadsheet.css</a> and store it in the HTML folder. The CSS file defines the default appearance of a spreadsheet table. Many aspects and be modified or overwritten in you own stylesheets. To integrate it, add the following element to the document <tt>head</tt>:</p>
+
+<figcaption class="listing">Adding the Stylesheet</figcaption>
+<pre>
+&lt;head&gt;
+	...
+&lt;<hi>link</hi> rel="stylesheet" href="<hi>spreadsheet.css</hi>" /&gt;
+&lt;/head&gt;
+</pre>
+
+<p>If you then reload the document, the table <em>disappears</em>. Strange at first sight, but there is a reason for that:</p>
+
+<p class="box">Every spreadsheet table must have row and column label cells at top, bottom, left and right sides.</p>
+
+<p>We have only two cells in each row, they are both considered to be row labels. And by default, label cells are invisible. So let's add the labels:</p>
+
+<figcaption class="listing">Manually added labels</figcaption>
+<pre>
+&lt;table class="spreadsheet" <hi>labels="all"</hi> &gt;
+<hi>&lt;tr&gt; <cc>&lt;!-- Upper column labels row --&gt;</cc>
+	&lt;td&gt;&lt;/td&gt;
+	&lt;td&gt;0&lt;/td&gt;
+	&lt;td&gt;1&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;</hi>&lt;tr&gt;
+	<hi>&lt;td&gt;0&lt;/td&gt;</hi> <cc>&lt;!-- Left row label cell --&gt;</cc>
+	&lt;th colspan="2"&gt;Circle&lt;/th&gt;
+	<hi>&lt;td&gt;0&lt;/td&gt;</hi> <cc>&lt;!-- Right row label cell --&gt;</cc>
+&lt;/tr&gt;&lt;tr&gt;
+	<hi>&lt;td&gt;1&lt;/td&gt;</hi> <cc>&lt;!-- Left row label cell --&gt;</cc>
+	&lt;td&gt;Radius?&lt;/td&gt;
+	&lt;td&gt;1&lt;/td&gt;
+	<hi>&lt;td&gt;1&lt;/td&gt;</hi> <cc>&lt;!-- Right row label cell --&gt;</cc>
+&lt;/tr&gt;&lt;tr&gt;
+	<hi>&lt;td&gt;2&lt;/td&gt;</hi> <cc>&lt;!-- Left row label cell --&gt;</cc>
+	&lt;td&gt;Diameter&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
+	<hi>&lt;td&gt;2&lt;/td&gt;</hi> <cc>&lt;!-- Right row label cell --&gt;</cc>
+&lt;/tr&gt;&lt;tr&gt;
+	<hi>&lt;td&gt;3&lt;/td&gt;</hi> <cc>&lt;!-- Left row label cell --&gt;</cc>
+	&lt;td&gt;Area&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
+	<hi>&lt;td&gt;3&lt;/td&gt;</hi> <cc>&lt;!-- Right row label cell --&gt;</cc>
+&lt;/tr&gt;&lt;tr&gt; <cc>&lt;!-- Lower column labels row --&gt;</cc>
+	<hi>&lt;td&gt;&lt;/td&gt;</hi>
+	&lt;td&gt;0&lt;/td&gt;
+	&lt;td&gt;1&lt;/td&gt;
+	<hi>&lt;td&gt;&lt;/td&gt;</hi>
+&lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+
+<p>Don't forget to add the <tt>labels</tt> attribute as shown above, which controls the visibility of labels.</p>
+
+<p>Label cells carry the logical row and column addresses, starting from zero. They are highlighted in the code above. Tedious work with much potential for mistakes. Fortunately, <tt>spreadsheet-core.js</tt> provides code to <em>generate label cells</em>, as we will see soon.</p>
+
+<p>Now we should have a spreadsheet table again:</p>
+<figcaption class="table">The spreadsheet table with label cells</figcaption>
+<table class="spreadsheet" labels="all">
+<tr>
+	<td></td>
+	<td>0</td>
+	<td>1</td>
+	<td></td>
+</tr><tr>
+	<td>0</td>
+	<th colspan="2">Circle</th>
+	<td>0</td>
+</tr><tr>
+	<td>1</td>
+	<td>Radius?</td>
+	<td>1</td>
+	<td>1</td>
+</tr><tr>
+	<td>2</td>
+	<td>Diameter</td>
+	<td></td>
+	<td>2</td>
+</tr><tr>
+	<td>3</td>
+	<td>Area</td>
+	<td></td>
+	<td>3</td>
+</tr><tr>
+	<td></td>
+	<td>0</td>
+	<td>1</td>
+	<td></td>
+</tr>
+</table>
+
+<p>Label cells at the right and the bottom are quite uncommon, but might be useful for writing expressions with cell references. More details on how to control visibility in step 4.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Step 3 - Integrate spreadsheet-core.js</h3><div>
+
+<p>Now download <a href="/test/spreadsheet-core-0.js">spreadsheet-core.js</a> and <a href="/test/spreadsheet-utility-0.js">spreadsheet-utility.js</a> and save them in the HTML directory. The code in the spreadsheet-core module will do the heavy lifting for us. To use it, add the following code to the end of the HTML file:</p>
 
 <figcaption class="listing">Integrating spreadsheet-core.js</figcaption>
 <pre>
 &lt;script type="module"&gt;
-"use strict";
 import * as spreadsheet from "./spreadsheet-core-0.js";
 spreadsheet.initPage();
 &lt;/script&gt;
@@ -116,11 +215,100 @@ spreadsheet.initPage();
 
 <p>If you now reload the document, you won't see a difference. But if you open the browser developer tools and inspect the document, you will notice that row (tr) and cell (td, th) elements have been decorated with <tt>data-row</tt> and <tt>data-col</tt> attributes &ndash; the <em>logical row and column addresses</em>.</p>
 
+<p>These attributes are used in the cell refference functions, available to spreadsheet expressions.</p>
+
 <!--h3--></div>
 
-<h3 cbc>Step 3 - Adding Expressions</h3><div>
+<h3 cbc>Step 4 - Row and Column Labels</h3><div>
 
-<p>Now we will decorate two cells with an expression (aka formula) attribute:</p>
+<p>Every spreadsheet <em>must</em> have row and column labels at all four sides (but they may be hidden). This make the code simpler that deals with spreadsheet size. Row and column labels are hidden by default. To make them visible, add the <tt>labels</tt> attribute to the <tt>table</tt> element, and supply one of the following values: <tt>top</tt>, <tt>right</tt>, <tt>bottom</tt>, <tt>left</tt>, <tt>both</tt>, <tt>all</tt>.</p>
+
+<figcaption class="listing">Showing labels</figcaption>
+<pre>
+&lt;table class="spreadsheet flat-borders" <hi>labels="both"</hi>&gt;
+</pre>
+
+<p>This gets us the familiar spreadsheet appearance:</p>
+
+<table class="spreadsheet" labels="both">
+<tr>
+	<td></td>
+	<td>0</td>
+	<td>1</td>
+	<td></td>
+</tr><tr>
+	<td>0</td>
+	<th colspan="2">Circle</th>
+	<td>0</td>
+</tr><tr>
+	<td>1</td>
+	<td>Radius?</td>
+	<td>1</td>
+	<td>1</td>
+</tr><tr>
+	<td>2</td>
+	<td>Diameter</td>
+	<td></td>
+	<td>2</td>
+</tr><tr>
+	<td>3</td>
+	<td>Area</td>
+	<td></td>
+	<td>3</td>
+</tr><tr>
+	<td></td>
+	<td>0</td>
+	<td>1</td>
+	<td></td>
+</tr>
+</table>
+
+<p>Not strictly necessary for calculator applications, but row and column labels might be a good idea while you write expressions with cell references. </p>
+
+<p>As already mentioned, manually adding and maintaining row and column labels is a tedious task and bears many opportunities for mistakes. But <tt>spreadsheet core</tt> can <em>generate</em> them automatically. Just precede the <tt>labels</tt> attribute value with the string "generate,":</p>
+
+<figcaption class="listing">Generated row and column labels</figcaption>
+<pre>
+&lt;table class="spreadsheet" labels="<hi>generate,</hi>both"&gt;
+&lt;tr&gt;
+	&lt;th colspan="2"&gt;Circle&lt;/th&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Radius?&lt;/td&gt;
+	&lt;td&gt;1&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Diameter&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Area&lt;/td&gt;
+	&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+
+<p>Less effort, same result:</p>
+
+<table class="spreadsheet" labels="generate,both">
+<tr>
+	<th colspan="2">Circle</th>
+</tr><tr>
+	<td>Radius?</td>
+	<td>1</td>
+</tr><tr>
+	<td>Diameter</td>
+	<td></td>
+</tr><tr>
+	<td>Area</td>
+	<td></td>
+</tr>
+</table>
+
+<!--h3--></div>
+
+<h3 cbc>Step 5 - Adding Expressions</h3><div>
+
+<p>To get automatically calculated cell values, we need to decorate cells with expressions (aka formulas). They are placed as strings in the <tt>data-xpr</tt> attributes and are regular JavaScript.</p>
+
+<p>Our simple calculator will calculate diameter and radius of a circle, so we will implement the appropriate expressions:</p>
 
 <figcaption class="listing">Adding expressions:</figcaption>
 <pre>
@@ -129,11 +317,11 @@ spreadsheet.initPage();
 
 	&lt;td&gt;Area&lt;/td&gt;
 	&lt;td <hi>data-xpr="Math.PI * cell(1,1)**2"</hi>&gt;&lt;/td&gt;
-</pre>.
+</pre>
 
 <p>If you reload the HTML file, the calculated cells should now carry values:</p>
 
-<table id="sheet-02" class="spreadsheet flat-borders">
+<table id="sheet-02" class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -150,79 +338,13 @@ spreadsheet.initPage();
 
 <p>That's the magic of <tt>spreadsheet-core</tt>!</p>
 
-<p>Spreadsheet-core has many built-in functions that you can use in expressions. Here are some:</p>
-
-<dl class="airy">
-<dt>cell(row, column, sheet=currentSheet)</dt>
-	<dd>Returns the internal value of the specified cell (absolute address) in the specified spreadsheet. If no spreadsheet reference was given, the current spreadsheet will be used.</dd>
-
-<dt>currentRow, cr</dt>
-	<dd>Variable, contains the locigal row number of the current cell. Can be used for relative row addressing.</dd>
-
-<dt>offset(rows, columns, cell = currentCell)</dt>
-	<dd>Returns the cell at the specified distance from the specified cell (relative address). If no cell reference was given, the offset from the current cell will be used.</dd>
-
-<dt>currentColumn, cc</dt>
-	<dd>Variable, contains the locigal column number of the current cell. Can be used for relative column addressing.</dd>
-
-<dt>ncell(name, sheet=currentSheet)</dt>
-	<dd>Returns the internal value of the specified named cell (absolute address) in the specified spreadsheet.</dd>
-
-<dt>cellObject(row, column)</dt>
-	<dd>Returns the HTML table cell object.</dd>
-
-<dt>nco, ncellObject( name, sheet=currentSheet)</dt>
-	<dd>returns the specified named HTML table cell object.</dd>
-
-<dt>currentCell, ccell</dt>
-	<dd>Contains a reference to the current HTML table cell object.</dd>
-
-<dt>currentSheet, csh</dt>
-	<dd>Contains a reference to the current spreadsheet.</dd>
-
-<dt>sheet( spreadsheet-id )</dt>
-	<dd>Returns the spreadsheet table object with the specified ID.</dd>
-</dl>
+<p>Besides JavaScript functions, <tt>spreadsheet-core.js</tt> has many built-in functions that you can use in expressions. See the reference section for details.</p>
 
 <!--h3--></div>
 
-<h3 cbc>Step 4 - Adding Row and Column Labels</h3><div>
+<h3 cbc>Step 6 - Data Input</h3><div>
 
-<p>Not strictly necessary for calculators, but row and column labels might be a good idea while you create expressions. Add the <tt>gen-labels</tt> attribute to the table:</p>
-
-<figcaption class="listing">Adding row and column labls</figcaption>
-<pre>
-&lt;table class="spreadsheet flat-borders" <hi>gen-labels="both"</hi>&gt;
-	...
-&lt;/table&gt;
-</pre>
-
-<p>The value "both" will cause labels to be added at the top and left sides of the table. There are other options: top, right, bottom, left, all, none.</p>
-
-<p>Here are the results:</p>
-
-<table id="sheet-03" class="spreadsheet flat-borders" gen-labels="both">
-<tbody><tr>
-	<th colspan="2">Circle</th>
-</tr><tr>
-	<td>Radius?</td>
-	<td>1</td>
-</tr><tr>
-	<td>Diameter</td>
-	<td data-xpr="2 * Math.PI * cell(1,1)"></td>
-</tr><tr>
-	<td>Area</td>
-	<td data-xpr="Math.PI * cell(1,1) ** 2"></td>
-</tr></tbody>
-</table>
-
-<p>At least during development of formulas, labels are a great help when it comes to cell references.</p>
-
-<!--h3--></div>
-
-<h3 cbc>Step 5 - Data Input</h3><div>
-
-<p>Up to now, the spreadsheet is pretty much static. But we will change this now by decorating the radius value cell with a <tt>contenteditable</tt> attribute:</p>
+<p>At this point, our calculator spreadsheet is pretty much static. But we will change that by decorating the radius value cell with a <tt>contenteditable</tt> attribute:</p>
 
 <figcaption class="listing">Making the radius editable</figcaption>
 <pre>
@@ -259,17 +381,20 @@ spreadsheet.initPage();
 
 <p>An excessive amount of fractional digits makes results hard to read. To change that, we will add a <tt>data-format</tt> attribute to the calculated cells:</p>
 
-
-<figcaption class="listing">Making the radius editable</figcaption>
+<figcaption class="listing">Adding format expressions</figcaption>
 <pre>
 &lt;tr&gt;
-	&lt;td&gt;Radius?&lt;/td&gt;
-	&lt;td <hi>contenteditable</hi>&gt;2&lt;/td&gt;
-&lt;/tr&gt;</pre>
+	&lt;td&gt;Diameter&lt;/td&gt;
+	&lt;td data-xpr="2 * Math.PI * cell(1,1)" <hi>data-format="value.toFixed(2)"</hi>&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td&gt;Area&lt;/td&gt;
+	&lt;td data-xpr="Math.PI * cell(1,1) ** 2" <hi>data-format="value.toFixed(2)"</hi>&gt;&lt;/td&gt;
+&lt;/tr&gt;
+</pre>
 
-<p>Now click on the radius value cell, enter a different value, and then click outside. Diameter and area values should be updated accordingly:</p>
+<p>You might have guessed it, the <tt>data-format</tt> attribute carries ordinary JavaScript code. In this case, the variable <tt>value</tt> is used, which is provided by <tt>spreadsheet-core.js</tt> and carries the typed cell value, a <tt>Number</tt> object in this case. And a number object has a <tt>toFixed()</tt> method that provides the desired number of fractional digits:</p>
 
-<table id="sheet-05" class="spreadsheet flat-borders" gen-labels="both">
+<table id="sheet-05" class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -284,19 +409,18 @@ spreadsheet.initPage();
 </tr></tbody>
 </table>
 
-<p>We have a working spreadsheet calculator!</p>
+
+<p>Now click on the radius value cell, enter a different value, and then click outside. Diameter and area values should be updated accordingly. We have a nice, working calculator spreadsheet!</p>
 
 <!--h3--></div>
 
 <!--h2--></div>
 
-<h2 cbc>A User-Definable Spreadsheet</h2><div>
+<h2 cbc>Data Input and Generic Spreadsheets</h2><div>
 
-<p>A calculator spreadsheet has mostly read-only cells, only the data input cells have the attribute <tt>contenteditable</tt>. <a href="demo-2-finished">Demo 2</a> has <em>all</em> cells editable. This is what a user expects from a usual spreadsheet.</p>
+<p>A calculator spreadsheet has mostly read-only cells, only the data input cells have the attribute <tt>contenteditable</tt>. <a href="demo-2-finished">Demo 2</a> has <em>all</em> cells editable. This is what a user expects from a usual generic spreadsheet:</p>
 
-<p>Now the user can create his own spreadsheet application.</p>
-
-<table class="spreadsheet flat-borders" gen-labels="both">
+<table class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2" contenteditable></th>
 </tr><tr>
@@ -311,21 +435,49 @@ spreadsheet.initPage();
 </tr></tbody>
 </table>
 
-<p>Click on the cell(0,0). The string "s$" appears, a type specifier (s) and the prefix flag ($). This indicates that the cell type is a string. Press the right-arrow key and type "Circle". You have now entered a string value into the cell. Press the tab key. The focus moves to the next cell, the input is parsed and stored in the cell, then a properly formatted "clean" version of the value is shown in the cell.</p>
+<p>Click on the cell(0,0). The string "s$" appears, a type specifier (s) and the prefix flag ($). This indicates that the cell type is a string. Press the right-arrow key and type "Circle". You have now entered a string value into the cell, indicated by the type indicator prefix. Press the tab key. The cell looses keyboard focus, which causes the text input to be parsed and stored as a typed value in the cell. Finally, the typed value is converted with the <tt>toString()</tt> method and shown in the cell.</p>
 
-<p>Same for the next cell. This time, just type "Radius?" without pressing the right-arrow key first. This overwrites the type prefix. Press tab. Again, the input is parsed, stored and and formatted. Strings that cannot be converted into a number or a boolean are stored internally as strings automatically.</p>
+<p>Same for the next cell. Note that the cell content is selected. This time, just type "Radius?" without pressing the right-arrow key first. This overwrites the type indicator prefix. Press tab. Again, the input is parsed, stored and and formatted. If parser does not find a type indictor prefix, the value type is guessed from the input string. First, a number is tried, which does not succeed here. Then a boolean input is tried, which also fails. Last resort is a string type, which is correct in this case.</p>
 
-<p>In the cell(1,1) enter "n$1". "n$" is the type prefix for number, "1" is the value. Press tab. This time, the text is parsed, converted into a JavaScript Number object and stored internally. A formatted version "1" is then shown in the cell.</p>
+<p>In the cell(1,1) enter "n$1". "n$" is the type indicator prefix for numbers, and "1" is the value. Press tab. This time, the text is parsed, converted into a JavaScript Number object and stored internally. A formatted version "1" is then shown in the cell.</p>
 
 <p>Then enter "Circumference" into cell (2,0) and press tab.</p>
 
-<p>In cell(2,1) we will enter an expression. Type "=$2*Math.PI*cell(1,1)", then press tab. The type declaration prefix "=$" indicates that the input is a formula. In contrast to values, an expression is stored in the <tt>data-xpr</tt> attribute of the cell and then evaluated. Evaluation references the radius value in cell(1,1) and preduces a numeric result, which is stored in the cell. Then a formatted value is shown in the cell.</p>
+<p>In cell(2,1) we will enter an expression. Type "=$2*Math.PI*cell(1,1)", then press tab. The type indicator prefix "=$" means that the text input is a <em>formula</em>. In contrast to values, an expression is stored in the <tt>data-xpr</tt> attribute of the cell and then evaluated. The evaluation result is then stored in the typed value of the cell. The expression references the radius value in <tt>cell(1,1)</tt> and produces a numeric result, which is stored in the cell. Then a formatted value is shown in the cell.</p>
 
-<p>This quite exactly how a usual spreadsheet works. But here it is pure HTML with a few lines of JavaScript.</p>
+<p>This quite exactly how a usual spreadsheet works. But here it is pure HTML with a few lines of JavaScript!</p>
 
 <p>Experiment further, add another formula for the area for instance.</p>
 
 <!--h2--></div>
+
+<h2 cbc>Loading and Storing Spreadsheets</h2><div>
+
+<p>Users can be load stored spreadsheets from disk or a trusted URL.</p>
+
+<p class="note">Attention: Loading spreadsheets from untrusted 3rd parties can be dangerous. Read the <a href="index.htm#loading-import">import security guide</a>!</p>
+
+<p>Let's go through an example.</p>
+
+<table id="sheet-06" class="spreadsheet" labels="generate,both">
+<tr>
+	<td colspan="2"><b>Theorem of Pythagoras</b></td>
+</tr><tr>
+	<td>Cathetus a:</td>
+	<td contenteditable>3</td>
+</tr><tr>
+	<td>Cathetus b:</td>
+	<td contenteditable>4</td>
+</tr><tr>
+	<td>Hypothenusis:</td>
+	<td data-xpr="Math.sqrt(cell(1,1)**2+cell(2,1)**2)" data-format="value.toFixed(2)"></td>
+</tr>
+</table>
+
+<!--h2--></div>
+
+<p>To be continued!</p>
+
 
 </main><footer id="page-footer"></footer>
 <script type="module" src="/inc/page.js" ></script>

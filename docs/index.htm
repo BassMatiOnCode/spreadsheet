@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-US"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,64 +10,107 @@
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library" />
-<meta name="description" content="<tt>Spreadsheet.js</tt> is a set of lightweight JavaScript modules that add common spreadsheet functionality (like MS E**el or G**gle Sh**ts)  to HTML tables. Small memory footprint, fast, modular, easy to master." />
+<meta name="description" content="<tt>Spreadsheet</tt> is a set of lightweight JavaScript modules that add common spreadsheet functionality (like MS E**el or G**gle Sh**ts)  to HTML tables. Small memory footprint, fast, modular, easy to master and client-side." />
 
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/inc/spreadsheet.css" />
 <link rel="stylesheet" href="/site.css" />
 <style>
 #table-01 td, #table-01 th { text-align : left ; vertical-align : top }
 #table-01 th { padding-left : 20px }
 </style>
  
-<title>Projects - Spreadsheet.js Introduction</title>
+<title>Projects - Spreadsheet Introduction</title>
 
 </head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
 
-<h1>Introduction to Spreadsheet.js</h1>
+<h1>Introduction to Spreadsheet</h1>
 
 <p id="page-abstract"></p>
 
-<p>Data and expressions (formulas) are stored in the cells of an HTML table. The browser's scripting engine evaluates expressions and renders the results in the table cells.</p>
-
-<p>Expressions are valid JavaScript code and have full access to the entire JavaScript language, as well as many useful functions provided by the <tt>spreadsheet-core.js</tt> module. For example, the following expression converts an angle in row 1, column 1 from degree to radian value:</p>
-
-<pre>cell(1,1)/180*Math.PI</pre>
-
-<p>Another example computes the length of the hypothenusis in a rectangular triangle after the rule of Pythagoras:</p>
-
-<pre>Math.sqrt(cell(1,1)**2 + cell(1,2)**2)</pre>
-
-<p>There is no spreadsheet-specific expression interpreter with a limited set of functions and features. Instead, expressions are directly evaluated by the browser's scripting engine. Therefore, expression evaluation is <em>fast</em> and practically <em>bug-free</em>.</p>
-
-<p>Another benefit of this design decision is that <tt>spreadsheet-core.js</tt> is <em>extensible</em> with JavaScript modules: Users can write their own functions in JavaScript and make them directly available to evaluation. There is no difference between functions provided by <tt>spreadsheet-core.js</tt> and user-defined or 3rd-party supplied functions.</p>
+<p>Literal data, variables, value-, format- and parse-expressions (formulas) are stored in the cells of an HTML table. The user provides input for variables, the browser's scripting engine evaluates expressions and renders the results in the table cells.</p>
 
 <h2 cbc>TL;DR</h2><div>
 
 <dl class="link-list">
 <dt><a href="getting-started.htm">Getting Started</a></dt>
-<dt><a href="examples.htm">Examples</a></dt>
+<dt><a href="examples.htm"></a>Examples</dt>
 </dl>
 
 <!--h2--></div>
 
+<h2 cbc>Features</h2><div>
+
+<p>Expressions are valid JavaScript code and have full access to the entire JavaScript language, as well as many useful functions provided by the <tt>spreadsheet-core.js</tt> module. For example, the following expression converts an angle in row 1, column 1 from degree to radian value:</p>
+
+<pre>cell(1,1)/180*Math.PI</pre>
+
+<table class="spreadsheet" gen-labels="both"><tr>
+	<th colspan="2">Angle</th>
+</tr><tr>
+	<th>degree</th>
+	<th>radian</th>
+</tr><tr>
+	<td>0</td>
+	<td data-xpr="cell(2,0)/180*Math.PI" data-format="value.toFixed(4)">?</td>
+</tr><tr>
+	<td>90</td>
+	<td data-xpr="cell(3,0)/180*Math.PI" data-format="value.toFixed(4)">?</td>
+</tr><tr>
+	<td>180</td>
+	<td data-xpr="offset(0,-1)/180*Math.PI" data-format="value.toFixed(4)">?</td>
+</tr><tr>
+	<td>270</td>
+	<td data-xpr="cell(5,0)/180*Math.PI" data-format="value.toFixed(4)">?</td>
+</tr><tr>
+	<td>360</td>
+	<td data-xpr="cell(6,0)/180*Math.PI" data-format="value.toFixed(4)">?</td>
+</tr></table>
+
+<p>Another example computes the length of the hypothenusis in a rectangular triangle after the rule of Pythagoras:</p>
+
+<pre>Math.sqrt(offset(-2,0)**2 + offset(-1,0)**2)</pre>
+
+<table class="spreadsheet" gen-labels="both"><tr>
+	<th colspan="2">Triangle</th>
+</tr><tr>
+	<td>cathetus a</td>
+	<td contenteditable data-format="value.toFixed(2)">3</td>
+</tr><tr>
+	<td>cathetus b</td>
+	<td contenteditable data-format="value.toFixed(2)">4</td>
+</tr><tr>
+	<td>hypotenuse</td>
+	<td data-xpr="Math.sqrt(offset(-2,0)**2 + offset(-1,0)**2)" data-format="value.toFixed(2)">?</td>
+</tr></table>
+
+<p>You can edit the cathetus value, click into column 1!</p>
+
+<p>All expressions are evaluated by the browser's scripting engine. There is no home-grown expression interpreter, therefore, expression evaluation is <em>fast</em> and <em>reliable</em>.</p>
+
+<p>Expression evaluation in <tt>spreadsheet-core</tt> is <em>extensible</em> &endash; with ordinary JavaScript modules. So users and 3rd-parties can write their own function libraries in JavaScript and make them directly available to evaluation. This is dead-simple: Any regular JavaScript function can be used as user-defined function (UDF). Dynamic UDF module registration is a simple spreadsheet-core function call. Static UDF module import into spreadsheet-core is even simpler.</p>
+
+</div>
+
 <h2 cbc>Modularity</h2><div>
 
-<p><tt>spreadsheet-core.js</tt> is <em>modular</em>. JavaScript modules can be loaded statically and/or dynamically and on-demand. In combination with a fine-grained module structure, this ensures the smallest possible memory footprint and load times.</p>
+<p><tt>spreadsheet-core.js</tt> is <em>modular</em>. Modules can be loaded statically and/or dynamically and on-demand. In combination with a fine-grained module structure, this ensures the smallest possible memory footprint and load times.</p>
 
 <p>The modules:</p>
 
 <dl class="airy-titles">
 <dt>spreadsheet-core.js</dt>
 	<dd>Core functionality (initialization, row and column label generation, expression evaluation across multiple spreadsheet tables, input parsing, output formatting, data input and event-triggered re-evaluation, static and dynamic JavaScript module import.</dd>
-	<dd>This minimum feature set provides fully-functional interactive spreadsheets with predefined structure and expressions provided by the HTML author. Users can enter data, expressions are recalculated autmatically.</dd>
-	<dd>Expressions can address the cells of all other spreadsheets on the same HTML page.</dd>
-	<dd>Typical application: Calulators.</dd>
+	<dd>This minimum feature set provides fully-functional interactive spreadsheets with predefined structure and expressions provided by the HTML author. Users can enter data, spreadsheets are recalculated autmatically.</dd>
+	<dd>Expressions can address the cells of all other spreadsheets on the same HTML page. Relative and absolute addressing modes are available.</dd>
+	<dd>Typical application: Calulators, from simple to complex.</dd>
 	<dd>Example: <a href="test/test-004.htm">Test 4 - Data Input and Expression Evaluation</a>.</dd>
-	<dd>Status: Beta. Initial tests passed, seems to be reliable.</dd>
+	<dd>Status: Beta. Initial tests passed, seems to be reliable, but still under construction.</dd>
 
 <dt>spreadsheet.css</dt>
 	<dd>Not strictly a JavaScript module, but provides common styling attributes for spreadsheet tables.</dd>
+	<dd>Of course, you may use your own stylesheet.</dd>
 
 <dt>spreadsheet-utility.js</dt>
 	<dd>Useful functions to simplify coding.</dd>
@@ -75,18 +118,18 @@
 
 <dt>spreadsheet-functions.js</dt>
 	<dd>A static import module with user-defined functions, extends the set of functions provided by spreadsheet-core.js. These functions are avalable to all spreadsheets.</dd>
-	<dd>Developers simply add functions to this module. No configuration needed.</dd>
+	<dd>Developers simply add functions to this module, or delete the ones they don't need. No configuration or registration needed.</dd>
 	<dd>Status: Working. More functions will be added over time.</dd>
 
 <dt>spreadsheet-udf.js</dt>
-	<dd>A dynamic import module for more specialized functions. Extends the set of functions provided by spreadsheet-core.js. These functions are available to selected HTML pages.</dd>
-	<dd>Indended as example module to give you a head-start for dynamic import module authoring. Suited for 3rd-party extension package development.</dd>
+	<dd>A dynamic import module template for more specialized functions. Typically used to package (free and paid) 3rd-party function libraries for a specific field, such as finance, statistics, simulation et cetera. Modules like this are dynamically imported into spreadsheet-core where needed.</dd>
 	<dd>Status: Working. More functions will be added over time.</dd>
 
 <dt>spreadsheet-persistence.js</dt>
-	<dd>Adds the funcionality to load spreadsheet data from and store to the local file system.</dd>
-	<dd>Spreadsheets are stored as plain HTML text as-is. When loaded from disk, the file is verified to be a valid HTML spreadsheet table. Value, format and parse expressions are removed by default, but the user can cancel a confirmation dialog to accept them.</dd>
-	<dd>Status: Beta. Works, but needs documentation.</dd>
+	<dd>Adds the funcionality to load spreadsheets from and store in the local file system.</dd>
+	<dd>Spreadsheet files are stored as plain HTML text. When loaded from disk, the file is verified to be a valid HTML spreadsheet table. Value, format and parse expressions are removed by default, but the user can cancel a confirmation dialog to accept them.</dd>
+	<dd>A HTML page developer may choose to load the spreadsheets dynamically into the page. This keeps the source code clean and minimizes the initial page load time.</dd>
+	<dd>Status: Beta. Works, needs documentation.</dd>
 
 <dt>spreadsheet-data-exchange.js</dt>
 	<dd>Import and export between commercial spreadsheet applications and <tt>spreadsheet-core.js</tt>.</dd>
@@ -124,21 +167,61 @@
 
 <p><tt>spreadsheet-core.js</tt> uses JavaScript <tt>eval()</tt> to evaluate expression in spreadsheet tables. A common mindset considers eval (and its siblings, Function() for example) to be evil, for security reasons. So, why is eval() still available in JavaScript after so many years? At least, any spreadsheet application is based on editable formulas that are evaluated by some sort of evaluator. So aren't they vulnerable too?</p>
 
-<p>From the MDN: "If you run eval() with a string that could be affected by a malicious party, you may end up running malicious code..."</p>
+<p>From the MDN: "If you run eval() <em>with a string that could be affected by a malicious party</em>, you may end up running malicious code..."</p>
 
-<p>That's the point: The <em>input string</em> is the problem, not the eval function.</p>
+<p>That's the point: The <em>input string</em> is the problem, not the eval function by itself.</p>
 
-<p>In <tt>spreadsheet-core</tt>, expressions are stored in HTML table cell attributes, which are not accessible from (malicious) 3rd parties due to <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross Origin Resource Sharing (CORS)</a> protection. The expressions are crafted by the HTML page author and/or the user in his browser.</p>
+<p>In <tt>spreadsheet-core</tt>, expressions are stored in HTML table cell attributes, which are not accessible from (malicious) 3rd parties due to <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross Origin Resource Sharing (CORS)</a> protection. Expressions are built by the HTML page author and/or the user. Both are considered to be trusted parties.</p>
 
-<p>There is a potential backdoor: Spreadsheet import. A spreadsheet with malicious content, imported in a spreadsheet running in the user's browser, could indeed run malicious code. This is no different in any other (commercial) spreadsheet application.</p>
+<h3 cbc>Loading Pages From a Malicious Site</h3><div>
 
-<p>However, <em>we will take countermeasures</em> in the planned <tt>spreadsheet-exchange</tt> module to protect the user. Firstly, evaluation of expressions is deactivated by default on imported spreadsheets. Expressions can be inspected without risk. Alternatively, they can be removed entirely.</p>
+<p>Loading a web page from a malicious website that contains spreadsheet tables does not introduce an additional security risk: An attacker can store malicious code anywhere in a web page, there is no particular need or advantage in using spreadsheet tables.</p>
 
-<p>Secondly, expressions are scanned for suspicious codes.</p>
+<p>Accidentally loading a page with malicious code into the browser is not automatically a catastrophe. Browsers run code in a sandbox environment, with very limited access to the system and its resources. Additionally, browsers "know" malicious sites, warn and prevent unintended access.</p>
 
-<p>Thirdly, the importer scans for script elements and blocks them.</p>
+<p>The general advice is to heed the browser warnings and stay safe.</p>
 
-<p>These are a few ideas to keep the user safe. If you have additional ideas, please get in contact with me. I'll be happy to consider and discuss your ideas!</p>
+<!--h3--></div>
+
+<h3 cbc id="loading-import">Loading Spreadsheet Import Files</h3><div>
+
+<p>Users can be load stored spreadsheets from disk or an arbitrary URL.</p>
+
+<p class="note">Attention! Loading spreadsheets from untrusted 3rd parties can be dangerous!</p>
+
+<p>As explained above, input to the eval function is the potential risk, and spreadsheet import files can contain malicious code. Therefore, the <tt>spreadsheet-persistence.js</tt> module takes a number of measures to keep a user safe:</p>
+
+<ol>
+<li>Spreadsheet import files are unencrypted plain text (html) files. They are fully accessible to virus scanners and the user.</li>
+<li>Upon import, all expressions are removed by default, before integration into the DOM of the page.</li>
+<li>All <tt>script</tt> elements are removed by default.</li>
+<li>Spreadsheet import file URLs different from the current document origin (= trusted site) are rejected by default.</li>
+</ol>
+
+<p>This makes <tt>spreadsheet</tt> as similarly safe as regular spreadsheet applications, where macros are disabled by default.</p>
+
+<p>If a user wants to reject the defaults (which is the equivalent of accepting macros in a spreadsheet application), he should follow these guidelines to stay on the safe side:</p>
+
+<ol>
+<li>Make sure to use the encrypted https:// protocol, not the unsave http://, to prevent man-in-the-middle attacks.</li>
+<li>Make sure the document into which you want to import the spreadsheet file is from a trusted source, such as your company webserver or a trusted 3rd-party webserver.</li>
+<li>Check the spreadsheet import file URL, and identify and only accept files from trusted parties.</li>
+</ol>
+
+<p>Usually these two steps should be sufficient, but you always can and should go further:</p>
+
+<ol start="3">
+<li>Download the spreadsheet and store it in the local file system. This is safe, because a spreadsheet file is plain text.</li>
+<li>If you are unsure, run a virus scanner on that file. Modern operating system will do that anyway before you can get hold of the file.</li>
+<li><em>Inspect</em> the file with a <em>plain text editor</em>, such as Notepad, Nano or vi. This is safe because plain text editors don't execute text files.</li>
+<li>Search for <tt>data-xpr</tt>, <tt>data-format</tt> and <tt>data-parse</tt> attributes. These are the elements that may contain expressions. Have a close look on them, and when in doubt, delete the attribute, reject the file or ask someone with JavaScript expertise.</li>
+<li>Search for <tt>&lt;script&gt;</tt> tags in the file. There should be none. If you find one, inspect the code closely. Obfuscated code is suspicious and hard to understand. If you are in doubt, delete the script, ask some expert or reject the file.</li>
+<li>Delete scripts that link to <tt>spreadsheet</tt> modules. Spreadsheet import files are indended to be loaded into to the DOM of a trusted HTML file, which provides the necessary infrastructure for spreadsheet tables. Of course must be from a trusted source and safe, such as your company webserver or a trusted 3rd party webserver.</li>
+<li>Search for <tt>&lt;a&gt;</tt> tags. These are links. Inspect their <tt>href</tt> attribute. If they reference suspicious sites, delete the href attribute or reject the file entirely.</li>
+</ol>
+
+<!--h3--></div>
+
 
 <!--h2--></div>
 
@@ -496,4 +579,22 @@ for ( let i = 0 ; i &lt; spreadsheets.length ; i ++ ) {
 
 <!-- h2 --></div>
 
-</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>
+<h2 cbc>Differences to Spreadsheet Applications</h2><div>
+
+<dl class="airy">
+
+<dt>Cell References</dt>
+	<dd>Rows and columns are addressed by numbers, starting from 0. Traditional spreadsheet applications use letters for columns and numbers for rows. </dd>
+	<dd>Cells are addressed with <em>functions</em> such as cell(row, column), where other spreadsheets use letters, followed by numbers, i. e. in a column-row format.</dd>
+
+</dl>
+
+<!--h2--></div>
+
+</main><footer id="page-footer"></footer>
+<script type="module" src="/inc/page.js" ></script>
+<script type="module">
+import * as spreadsheet from "/test/spreadsheet-core-0.js" ;
+spreadsheet.initPage();
+</script>
+</body></html>

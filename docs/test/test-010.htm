@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-03" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-03" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, partial, test, utility" />
+<meta name="description" content="Utilitiy function tests" />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="./spreadsheet-0.css" />
+<link rel="stylesheet" href="./test.css" />
+ 
+<title>Projects - Spreadsheet - Test 10 - Utility Functions Test</title>
+
+</head><body>
+
+<h1>Test 10 Utility Functions Test</h1>
+
+<p>Status: <span id="status">pending</span>.</p>
+<p>Result: <span id="result">Undefined</span></p>
+
+<div id="log"></div>
+
+<p id="node-1" style="display:none">Node 1 <span id="node-2" name="x">Node 2 <em id="node-3">Node 3</em></span></p>
+
+<xscript type="module" src="/inc/page.js" ></xscript>
+
+<script type="module">
+import * as utility from "./spreadsheet-utility-0.js" ;
+
+let errors = 0;
+const report = window.parent.report || function ( path, status, result, comment ) { console.log( path, status, result, comment ) } ;
+const logError = (number, msg) => { errors += 1 ; console.log( `Test ${number} failed: ${msg}` ) }
+document.getElementById( "status" ).innerText = "started" ;
+
+	// Test 10.1 splice()
+					//     012345678901234567890123
+const s = utility.splice( "Front in the middle tail", 6, 18, "replacement"  );
+if ( s !== "Front replacement tail" ) logError( "10.1" );
+
+	// 10.2 findParent()
+const e = document.getElementById( "node-3" );
+if ( ! e.innerText === "Node 3" ) logError( "10.2.1", "Element node-3 not found." );
+if ( utility.findParent( e, { tagName : "SPAN" } ) !== document.getElementById( "node-2" )) logError( "10.2 2", "Attribute search failed" );
+if ( utility.findParent( e, { id : "node-2" } ) !== document.getElementById( "node-2" )) logError( "10.2 3", "Attribute search failed" );
+if ( utility.findParent( e, { tagName : "P" } ) !== document.getElementById( "node-1" )) logError( "10.2 3", "Attribute search failed" );
+
+	// 10.3 consolidateTrailingSum() {
+let result;
+if ( (result = utility.consolidateTrailingSum( "3+4" )) !== "7" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+if ( (result = utility.consolidateTrailingSum( "+3+4" )) !== "7" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+if ( (result = utility.consolidateTrailingSum( "3*4+5" )) !== "3*4+5" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+if ( (result = utility.consolidateTrailingSum( "3+4*5" )) !== "3+4*5" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+if ( (result = utility.consolidateTrailingSum( "2+3*4+5" )) !== "2+3*4+5" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+if ( (result = utility.consolidateTrailingSum( "2+3*4+5+6" )) !== "2+3*4+11" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+if ( (result = utility.consolidateTrailingSum( "2+3*4+5-6" )) !== "2+3*4-1" ) logError( "10.3.1", `Unexpected return value: ${result}` );
+	
+	// Publish result
+
+document.getElementById("status").innerText = "finished";
+document.getElementById("result").innerText = errors ? "failed" : "passed";
+report( document.location.pathname, document.getElementById("status").innerText, document.getElementById("result").innerText, errors + " errors" );
+
+</script>
+
+</body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-03" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-03" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, partial, test, utility" />
+<meta name="description" content="Utilitiy function tests" />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="./spreadsheet-0.css" />
+<link rel="stylesheet" href="./test.css" />
+ 
+<title>Projects - Spreadsheet - Test 11 - Permanent Row and Column Headers</title>
+
+</head><body>
+
+<h1>Test 11 Permanent Row and Column Headers</h1>
+
+<p>Status: <span id="status">pending</span>.</p>
+<p>Result: <span id="result">Undefined</span></p>
+
+<div style="display:none">
+
+<p><tt>Spreadsheet-core.js</tt> considers the cells in first and the last row of a spreadsheet table <em>column labels</em>, and the first and the last cell in each row <em>row labels</em>.  A web page author may create them by hand, but it is faster to let <tt>spreadsheet-core.js</tt> generate them.</p>
+
+<p>The <tt>labels</tt> attribute of a spreadsheet table defines the visibility of row and column labels. If the attribute value is preceded with the string "generate,", <tt>spreadsheet-core.js</tt> will generate the label rows and cells.</p>
+
+<table id="sheet-1" class="spreadsheet" labels="right"><tr>
+	<td></td>
+	<td>1</td>
+	<td>2</td>
+	<td>3</td>
+	<td></td>
+</tr><tr>
+	<td>0</td>
+	<td>0,0</td>
+	<td>0,1</td>
+	<td>0,2</td>
+	<td>0</td>
+</tr><tr>
+	<td>1</td>
+	<td>1,0</td>
+	<td>1,1</td>
+	<td>1,2</td>
+	<td>1</td>
+</tr><tr>
+	<td>2</td>
+	<td>2,0</td>
+	<td>2,1</td>
+	<td>2,2</td>
+	<td>2</td>
+</tr><tr>
+	<td></td>
+	<td>1</td>
+	<td>2</td>
+	<td>3</td>
+	<td></td>
+</tr></table>
+
+<table id="sheet-2" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td>0,1</td>
+	<td>0,2</td>
+</tr><tr>
+	<td>1,0</td>
+	<td>1,1</td>
+	<td>1,2</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,1</td>
+	<td>2,2</td>
+</tr></table>
+</div>
+
+<script type="module">
+import * as core from "./spreadsheet-core-0.js" ;
+core.initPage();
+
+let errors = 0;
+const report = window.parent.report || function ( path, status, result, comment ) { console.log( path, status, result, comment ) } ;
+const logError = (number, msg) => { errors += 1 ; console.log( `Test ${number} failed: ${msg}` ) }
+document.getElementById( "status" ).innerText = "started" ;
+
+
+	// Test 11.1
+
+if ( window["sheet-1"].rows[1].cells[1].innerText !== "0,0" ) logError("11.1", "Unexpected cell content in row 1 cell 1" );
+if ( window["sheet-1"].rows[3].cells[3].innerText !== "2,2" ) logError("11.1", "Unexpected cell content in row 3 cell 3" );
+
+if ( window.getComputedStyle(window["sheet-1"].rows[0]).display !== "none" ) logError("11.1", "Unexpected display style for row 0" );
+if ( window.getComputedStyle(window["sheet-1"].rows[4]).display !== "none" ) logError("11.1", "Unexpected display style for row 4" );
+if ( window.getComputedStyle(window["sheet-1"].rows[1].cells[0]).display !== "none" ) logError("11.2", "Unexpected display style for row 1 cell 0" );
+if ( window.getComputedStyle(window["sheet-1"].rows[1].cells[4]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 0" );
+
+	// Test 11.2
+
+if ( window["sheet-2"].rows[1].cells[1].innerText !== "0,0" ) logError("11.1", "Unexpected cell content in row 1 cell 1" );
+if ( window["sheet-2"].rows[3].cells[3].innerText !== "2,2" ) logError("11.1", "Unexpected cell content in row 3 cell 3" );
+
+if ( window.getComputedStyle(window["sheet-2"].rows[0]).display !== "table-row" ) logError("11.2", "Unexpected display style for row 0" );
+if ( window.getComputedStyle(window["sheet-2"].rows[4]).display !== "table-row" ) logError("11.2", "Unexpected display style for row 4" );
+if ( window.getComputedStyle(window["sheet-2"].rows[1].cells[0]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 0" );
+if ( window.getComputedStyle(window["sheet-2"].rows[1].cells[4]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 4" );
+if ( window.getComputedStyle(window["sheet-2"].rows[2].cells[0]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 0" );
+if ( window.getComputedStyle(window["sheet-2"].rows[2].cells[4]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 4" );
+if ( window.getComputedStyle(window["sheet-2"].rows[3].cells[0]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 0" );
+if ( window.getComputedStyle(window["sheet-2"].rows[3].cells[4]).display !== "table-cell" ) logError("11.2", "Unexpected display style for row 1 cell 4" );
+
+	// Publish result
+	
+document.getElementById("status").innerText = "finished";
+document.getElementById("result").innerText = errors ? "failed" : "passed";
+report( document.location.pathname, document.getElementById("status").innerText, document.getElementById("result").innerText, errors + " errors" );
+
+</script>
+</body></html>
