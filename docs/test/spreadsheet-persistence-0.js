@@ -38,7 +38,7 @@ export function setupLoadCommand ( button, selector, target, dialog )
 			// Verify the content.
 			checkImportData( template );
 			// Replace target element with the template content.
-			document.getElementById( "sheet-1").replaceWith( template.content ) ;
+			target.replaceWith( template.content ) ;
 			} ) ;
 		// Read the file.
 		reader.readAsText( selector.files[ 0 ] );
@@ -66,4 +66,7 @@ function checkImportData( template, dialog )
 	if ( elements.length > 0 && confirm( "Block parse expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-parseInput" )); 
 		}
+	elements = template.content.querySelectorAll( "script" );
+	if ( elements.length > 0 && confirm( "Block script elements in import file?" ))
+		elements.forEach ( element => element.remove() );
 	}
