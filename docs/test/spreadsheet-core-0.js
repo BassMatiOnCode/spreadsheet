@@ -100,11 +100,6 @@ export function initSpreadsheet ( spreadsheet ) {
 
 		// Add spreadsheetCore member
 	spreadsheet.spreadsheetCore = { 
-			// Helpers for structure changes
-		firstColumn : 0, 
-		lastColumn : countColumns( spreadsheet.rows ) - 1, 
-		firstRow : 0, 
-		lastRow : spreadsheet.rows.length - 1
 		} ;
 	
 		// Checks
@@ -112,9 +107,9 @@ export function initSpreadsheet ( spreadsheet ) {
 	else if ( document.querySelectorAll( `#spreadsheet.id` ).length > 1 ) console.warn( "initSpreadsheet(): Duplicate spreadsheet id (${spreadsheet.id) cannot be addressed reliably." );
 	
 		// Initialize 
+	generateLabels( spreadsheet ) ;
 	initAddresses( spreadsheet );
 	initCellValues( spreadsheet );
-	generateLabels( spreadsheet ) ;
 
 	// Add event listeners
 	spreadsheet.addEventListener( "focusin", evt => {
@@ -137,18 +132,16 @@ export function initAddresses( spreadsheet ) {
 		/// Decorates row and cell elements with locgical row and column numbers.
 	console.info( "spreadsheet-core.js: initAddresses()" );
 		// Create logical column number attributes, with colspans taken into account
-	const startcol = spreadsheet.tBodies[ 0 ].classList.contains( "rowlabels-left" ) ? 1 : 0 ;
-	const startrow = spreadsheet.tHead && spreadsheet.tHead.firstChild.classList.contains( "column-labels" ) ? 1 : 0 ;
-	for ( let rix = startrow ; rix < spreadsheet.rows.length ; rix ++ ) {
+	for ( let rix = 1 ; rix < spreadsheet.rows.length - 1 ; rix ++ ) {
 		const row = spreadsheet.rows[ rix ];
-		row.dataset.row = rix - startrow ;
-		let colspan = 0;
-		for ( let cix = startcol ; cix < row.cells.length ; cix ++ ) {
+		row.dataset.row = rix - 1 ;
+		let spannedCells = 0;
+		for ( let cix = 1 ; cix < row.cells.length - 1 ; cix ++ ) {
 			// Set the logical column number.
 			// TODO : Really set current cell here?
 			const cell = ( row.cells[ cix ] );
-			cell.dataset.col = cix - startcol + colspan ;
-			colspan += cell.colSpan - 1;
+			cell.dataset.col = cix - 1 + spannedCells ;
+			spannedCells += cell.colSpan - 1;
 		}	}
 
 	// Addjust logical column numbers according to row-spanning cells above
@@ -158,7 +151,7 @@ export function initAddresses( spreadsheet ) {
 		let cellColumn = parseInt( cell.dataset.col ); // logical column number
 		for ( let rix = cell.parentElement.rowIndex + 1 ; rix < cell.parentElement.rowIndex + cell.rowSpan ; rix ++ ) {
 			let row = spreadsheet.rows[ rix ];
-			for ( let cix = startcol ; cix < row.cells.length ; cix ++ ) {
+			for ( let cix = 1 ; cix < row.cells.length - 1 ; cix ++ ) {
 				let targetCell = row.cells[ cix ];
 				let targetCellColumn = parseInt( targetCell.dataset.col ); // logical column number
 				if ( targetCellColumn >= cellColumn ) {
@@ -171,14 +164,15 @@ export function initAddresses( spreadsheet ) {
 export function initCellValues( spreadsheet ) {
 	// Initialize internal value from innerHTML and display of cells.
 	console.info( `spreadsheet-core.js:initCellValues(): ${spreadsheet.id || ""}`);
-	for ( let i = 1 ; i < spreadsheet.rows.length - 2 ; i ++ ) {
-		for ( let j = 1 ; j < spreadsheet.rows[ i ].cells.length - 2 ; j ++ ) {
+	for ( let i = 1 ; i < spreadsheet.rows.length - 1 ; i ++ ) {
+		for ( let j = 1 ; j < spreadsheet.rows[ i ].cells.length - 1 ; j ++ ) {
 			const cell = spreadsheet.rows[ i ].cells[ j ];
 			setCurrentCell( cell );
-			// parse, store and format the cell text
+				// parse, store and format the cell text
 			cell.spreadsheetCore = { } ;
-			// Skip expression cells. They cannot be parsed, they must be evaluated first.
+				// Skip expression cells. They cannot be parsed, they must be evaluated first.
 			if (cell.hasAttribute( "data-xpr" )) continue;
+				// Using innerHTML gives strings the opportunity to include HTML in the cell value 
 			parseInput ( cell.innerHTML );
 			formatValue( );
 			console.info( `spreadsheet-core.js:initCellValues():  ${cell.spreadsheetCore.value}` );
@@ -198,13 +192,13 @@ export const generateLabels = ( sheet = currentSheet ) => {
 		const columns = countColumns( sheet.rows );
 		insertLabelRow( columns, 0, sheet );
 		insertLabelRow( columns, -1, sheet );
+			// Remove "generate" prefix from attribute
 		sheet.setAttribute( "labels", attribute.substring( attribute.indexOf( "," ) + 1 ));
 		}
 	}
 export const insertLabelRow = ( columns, index = 0, sheet = currentSheet ) => {
 		const row = sheet.insertRow( index );
-		for ( let i = 0 ; i < columns ; i ++ ) row.insertCell( ).innerText = 
-			i > 0 && i < columns - 1 ? i - 1 : "" ;
+		for ( let i = 0 ; i < columns ; i ++ ) row.insertCell( ).innerText = i > 0 && i < columns - 1 ? i - 1 : "" ;
 	}
 export function countColumns( rows = currentSheet.rows ) {
 		// TODO : Change parameter to sheet, make more sense.

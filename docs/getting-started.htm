@@ -85,7 +85,7 @@
 
 <p>And here is the result:</p>
 
-<table id="sheet-01">
+<table id="sheet-1">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -164,7 +164,7 @@
 
 <p>Now we should have a spreadsheet table again:</p>
 <figcaption class="table">The spreadsheet table with label cells</figcaption>
-<table class="spreadsheet" labels="all">
+<table id="sheet-2" class="spreadsheet" labels="all">
 <tr>
 	<td></td>
 	<td>0</td>
@@ -225,12 +225,12 @@ spreadsheet.initPage();
 
 <figcaption class="listing">Showing labels</figcaption>
 <pre>
-&lt;table class="spreadsheet flat-borders" <hi>labels="both"</hi>&gt;
+&lt;table class="spreadsheet" <hi>labels="both"</hi>&gt;
 </pre>
 
 <p>This gets us the familiar spreadsheet appearance:</p>
 
-<table class="spreadsheet" labels="both">
+<table id="sheet-3" class="spreadsheet" labels="both">
 <tr>
 	<td></td>
 	<td>0</td>
@@ -287,7 +287,7 @@ spreadsheet.initPage();
 
 <p>Less effort, same result:</p>
 
-<table class="spreadsheet" labels="generate,both">
+<table id="sheet-4" class="spreadsheet" labels="generate,both">
 <tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -321,7 +321,7 @@ spreadsheet.initPage();
 
 <p>If you reload the HTML file, the calculated cells should now carry values:</p>
 
-<table id="sheet-02" class="spreadsheet" labels="generate,both">
+<table id="sheet-5" class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -358,7 +358,7 @@ spreadsheet.initPage();
 
 <p>Now set the keyboard focus on the radius input cell and change the value. Then type <tt>tab</tt> or click outside the cell. When the cell looses focus, the expressions will be recomputed.</p>
 
-<table id="sheet-04" class="spreadsheet flat-borders" gen-labels="both">
+<table id="sheet-6" class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -394,7 +394,7 @@ spreadsheet.initPage();
 
 <p>You might have guessed it, the <tt>data-format</tt> attribute carries ordinary JavaScript code. In this case, the variable <tt>value</tt> is used, which is provided by <tt>spreadsheet-core.js</tt> and carries the typed cell value, a <tt>Number</tt> object in this case. And a number object has a <tt>toFixed()</tt> method that provides the desired number of fractional digits:</p>
 
-<table id="sheet-05" class="spreadsheet" labels="generate,both">
+<table id="sheet-7" class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2">Circle</th>
 </tr><tr>
@@ -420,7 +420,7 @@ spreadsheet.initPage();
 
 <p>A calculator spreadsheet has mostly read-only cells, only the data input cells have the attribute <tt>contenteditable</tt>. <a href="demo-2-finished">Demo 2</a> has <em>all</em> cells editable. This is what a user expects from a usual generic spreadsheet:</p>
 
-<table class="spreadsheet" labels="generate,both">
+<table id="sheet-8" class="spreadsheet" labels="generate,both">
 <tbody><tr>
 	<th colspan="2" contenteditable></th>
 </tr><tr>
@@ -459,7 +459,7 @@ spreadsheet.initPage();
 
 <p>Let's go through an example.</p>
 
-<table id="sheet-06" class="spreadsheet" labels="generate,both">
+<table id="sheet-9" class="spreadsheet" labels="generate,both">
 <tr>
 	<td colspan="2"><b>Theorem of Pythagoras</b></td>
 </tr><tr>
