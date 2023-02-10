@@ -58,11 +58,11 @@ function checkImportData( template, dialog )
 	if ( elements.length > 0 && confirm( "Block value expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-xpr" )); 
 		}
-	elements = template.content.querySelectorAll( "[data-formatValue]" );
+	elements = template.content.querySelectorAll( "[data-format]" );
 	if ( elements.length > 0 && confirm( "Block format expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-formatValue" )); 
 		}
-	elements = template.content.querySelectorAll( "[data-parseInput]" );
+	elements = template.content.querySelectorAll( "[data-parse]" );
 	if ( elements.length > 0 && confirm( "Block parse expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-parseInput" )); 
 		}
