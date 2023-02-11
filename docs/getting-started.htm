@@ -336,8 +336,6 @@ spreadsheet.initPage();
 </tr></tbody>
 </table>
 
-<p>That's the magic of <tt>spreadsheet-core</tt>!</p>
-
 <p>Besides JavaScript functions, <tt>spreadsheet-core.js</tt> has many built-in functions that you can use in expressions. See the reference section for details.</p>
 
 <!--h3--></div>
@@ -373,11 +371,11 @@ spreadsheet.initPage();
 </tr></tbody>
 </table>
 
-<p>That's the heart of <tt>spreadsheetCore</tt>.</p>
+<p>That's the core of <tt>spreadsheet core</tt>.</p>
 
 <!--h3--></div>
 
-<h3 cbc>Step 6 - Formatting Values</h3><div>
+<h3 cbc>Step 6 - Formatting Cell Values</h3><div>
 
 <p>An excessive amount of fractional digits makes results hard to read. To change that, we will add a <tt>data-format</tt> attribute to the calculated cells:</p>
 
@@ -451,11 +449,9 @@ spreadsheet.initPage();
 
 <!--h2--></div>
 
-<h2 cbc>Loading and Storing Spreadsheets</h2><div>
+<h2 cbc>Storing Spreadsheet Import Files to Disk</h2><div>
 
-<p>Users can be load stored spreadsheets from disk or a trusted URL.</p>
-
-<p class="note">Attention: Loading spreadsheets from untrusted 3rd parties can be dangerous. Read the <a href="index.htm#loading-import">import security guide</a>!</p>
+<p>The content of a spreadsheet table can be saved to disk for documentation purposes, or to save a state of work. The <a href="./test/spreadsheet-persistence.js"><tt>spreadsheet-persistence.js</tt></a> module provides the functionality. Using it is astonishingly simple.</p>
 
 <p>Let's go through an example.</p>
 
@@ -473,6 +469,102 @@ spreadsheet.initPage();
 	<td data-xpr="Math.sqrt(cell(1,1)**2+cell(2,1)**2)" data-format="value.toFixed(2)"></td>
 </tr>
 </table>
+
+<p><a id="sheet-9-save"><button>Save to disk</button></a></p>
+
+<script type="module">
+import * as spreadsheetPersistence from "./test/spreadsheet-persistence-0.js" ;
+spreadsheetPersistence.setupSaveLink( "sheet-9-save", "sheet-9", "sheet-9.txt", "text/plain" );
+</script>
+
+<p>This is an ordinary and functional calculator spreadsheet. Note the download button above. If you click on it, a regular download will be started. Depending on your browser settings, the file is silently stored in your downloads folder, or the browser's save-to dialog is opened.</p>
+
+<p>When the download procedure has finished, you can open the file in a text editor.</p>
+
+<p>To accomplish this, add the following code to your web page:</p>
+
+<figcaption class="listing">The download code</figcaption>
+<pre>
+&lt;script type="module"&gt;
+import * as spreadsheetPersistence from "spreadsheet-persistence.js" ;
+spreadsheetPersistence.setupSaveLink( "sheet-9-save", "sheet-9", "sheet-9.txt", "text/plain" );
+&lt;/script&gt;
+</pre>
+
+<p>The function <tt>setupSaveLink</tt> from the <tt>spreadsheet-persistence.js</tt> module does the trick. The function expects a reference to or the ID of an <tt>a</tt> (link) element and a reference to or the ID of the spreadsheet table. The other parameters suggest the file name and the mime type.</p>
+
+<p>Now click on the download button. After a short while (be patient!) the browser download dialog opens (if configured so). After another short while, the file is there and can be opened in Notepad.exe or an equivalent plain text editor:</p>
+
+<figcaption class="listing">The downloaded spreadsheet text file</figcaption>
+<pre>
+&lt;table id="sheet-9" class="spreadsheet" labels="both"&gt;
+&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr data-row="0"&gt;
+	&lt;td&gt;0&lt;/td&gt;&lt;td colspan="2" data-col="0"&gt;Theorem of Pythagoras&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;&lt;tr data-row="1"&gt;
+	&lt;td&gt;1&lt;/td&gt;&lt;td data-col="0"&gt;Cathetus a:&lt;/td&gt;
+	&lt;td contenteditable="" data-col="1"&gt;3&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr data-row="2"&gt;
+	&lt;td&gt;2&lt;/td&gt;&lt;td data-col="0"&gt;Cathetus b:&lt;/td&gt;
+	&lt;td contenteditable="" data-col="1"&gt;4&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;&lt;/tr&gt;&lt;tr data-row="3"&gt;
+	&lt;td&gt;3&lt;/td&gt;&lt;td data-col="0"&gt;Hypothenusis:&lt;/td&gt;
+	&lt;td data-xpr="Math.sqrt(cell(1,1)**2+cell(2,1)**2)" data-format="value.toFixed(2)" data-col="1"&gt;5.00&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+</pre>
+
+<p>You will certainly recognize the structure. It is very similar to the circle calculator spreadsheet from above.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Loading a Spreadsheet Import File</h2><div>
+
+<p>Users can load stored spreadsheet import files from disk or a trusted URL.</p>
+
+<p class="note">Attention: Loading spreadsheets from untrusted 3rd parties can be dangerous. Read the <a href="index.htm#loading-import">import security guide</a>!</p>
+
+<p>Let's go through an example.</p>
+
+<table id="sheet-10"></table>
+
+<dialog id="dialog-1"><form method="dialog">
+	<p id="msg">Message</p>
+	<button name="ok">OK</button> <button name ="cancel">Cancel</button>
+	</form></dialog>
+
+<button id="button-10">Import</button> <input id="selector-10" type="file" accept="text/plain" />
+
+<script type="module">
+import * as spreadsheetPersistence from "./test/spreadsheet-persistence-0.js" ;
+spreadsheetPersistence.setupLoadCommand ( "button-10", "selector-10", "sheet-10" );
+</script>
+
+<p>Step 1: Click on the "Choose File" button. This opens a browser open file dialog. Navigate to the downloaded "sheet-9.txt" file from above, select it and click "ok". The selected filename should show up to the right of the button.</p>
+
+<p>Step 2: Click the "Import" button. A dialog appears:</p>
+
+<img src="./img/fig-001.png" width="500"/>
+
+<p>The import code has detected active content, value expressions in this case. Click OK. This will <em>delete</em> the value expressions. A similar dialog appears if format or parse expressions or script elements were found in the import file. Choosing the default action (OK) will remove them before integration into the document.</p>
+
+<p>Script elements in the import file are always removed without consent. They are not required for spreadsheet functionality.</p>
+
+<p>The imported spreadsheet should show up above the import buttons. While the spreadsheet does show the correct values, editing the input cells does not change the hypothenusis value &ndash; of course, the value expression has been removed.</p>
+
+<h3>Accepting Expressions</h3><div>
+
+<p>We know that the spreadsheet export file sheet-9.txt is safe, because we trust the source document and its origin, and no other person had access to the file. Therefore it is safe to import the file and accept expessions. So let's try it:</p>
+
+<ol>
+<li>Click the import button again</li>
+<li>Click "Cancel" prevent removal or value, format and parse expressions.</li>
+<li>Edit the input fields.</li>
+<li>Verify that the calculated cell is updated according to the changes.</li>
+</ol>
+
+<!--h3--></div>
+
+<p></p>
 
 <!--h2--></div>
 

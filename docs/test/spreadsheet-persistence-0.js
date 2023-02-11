@@ -50,27 +50,33 @@ export function setupLoadCommand ( button, selector, target, dialog )
 	}
 
 function checkImportData( template, dialog )
-	// Verifies the file is a valid spreadsheet. Expressions in the file are 
-	// deleted after confirmation for security reasons, but the user can
-	// cancel removal to accept expressions.
-	// template : Template element with spreadsheet table loaded.
-	// Throws : Error.
+		// Verifies the file is a valid spreadsheet. Expressions in the file are 
+		// deleted after confirmation for security reasons, but the user can
+		// cancel removal to accept expressions.
+		// template : Template element with spreadsheet table loaded.
+		// Throws : Error.
 	{
+		// structural checks
 	if ( template.content.firstChild.tagName !== "TABLE" ) throw new Error( "spreadsheet-persistence.js:checkImportData(): This is not a TABLE element." );
 	if ( ! template.content.firstChild.classList.contains( "spreadsheet" )) throw new Error( "This is not a spreadsheet table." );
+		// Block value expressions
 	let elements = template.content.querySelectorAll( "[data-xpr]" );
 	if ( elements.length > 0 && confirm( "Block value expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-xpr" )); 
 		}
+		// Block format expressions
 	elements = template.content.querySelectorAll( "[data-format]" );
 	if ( elements.length > 0 && confirm( "Block format expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-formatValue" )); 
 		}
+		// Block parse expressions
 	elements = template.content.querySelectorAll( "[data-parse]" );
 	if ( elements.length > 0 && confirm( "Block parse expressions in spreadsheet?" )) {
 		elements.forEach ( element => element.removeAttribute( "data-parseInput" )); 
 		}
+		// Remove script elements, they are not allowed in import files
 	elements = template.content.querySelectorAll( "script" );
-	if ( elements.length > 0 && confirm( "Block script elements in import file?" ))
+	if ( elements.length > 0 ) {
+		alert( "Block script elements in import file will be removed" );
 		elements.forEach ( element => element.remove() );
-	}
+	}	}
