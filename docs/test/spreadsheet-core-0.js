@@ -326,14 +326,9 @@ export function evaluateCellExpression( ) {
 	////	sets the data-value attribute, and the cell content with 
 	////	the formatted result value.
 	////
-	////	Parameters
-    ////		cell - reference to the HTML table cell element with
-	////			an data-xpr attribute
-	////	Returns 
-	////		true = Expression solved
-	////		false = not solved
 	////	References
-	////		currentCell.
+    ////		currentCell - reference to the HTML table cell element with
+	////			an data-xpr attribute
 	let expression = currentCell.dataset.xpr;
 	console.log( `spreadsheet.js:evaluateCellExpression(): ${currentRow} ${currentColumn} ${expression}` );
 	// Evaluate expression.

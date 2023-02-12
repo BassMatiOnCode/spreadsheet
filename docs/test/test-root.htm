@@ -6,7 +6,7 @@
 <meta name="author" content="USP" />
 <meta name="creation-date" content="2023-02-03" />
 <meta name="editor" content="USP" />
-<meta name="change-date" content="2023-02-03" />
+<meta name="change-date" content="2023-02-12" />
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript > Spreadsheet" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, test, root." />
@@ -26,7 +26,7 @@ function report( test, status, result, summary="" ) {
 	window.requestAnimationFrame( () => {
 	console.log( test, status, result, summary );
 	testsFinished += 1;
-	if ( result === "passed" ) document.getElementById("passes").innerText = ++passes;
+	if ( result === "pass" ) document.getElementById("passes").innerText = ++passes;
 	else document.getElementById("fails").innerText = ++fails;
 	document.getElementById("tests-finished").innerText = testsFinished;
 	} ) ;
@@ -44,6 +44,11 @@ function report( test, status, result, summary="" ) {
 <p>Tests finsished: <span id="tests-finished">0</span> of <span id="num-tests">0</span>
 <br/>Results: <span id="passes">0</span> passes, <span id="fails">0</span> fails</p>
 
+<iframe src="test-001.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
+<iframe src="test-002.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
+<iframe src="test-003.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
+<iframe src="test-004.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
+<iframe src="test-005.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
 <iframe src="test-010.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
 <iframe src="test-011.htm" scrolling="no" style="height:140px ; width:600px"></iframe>
 

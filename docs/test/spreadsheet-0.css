@@ -1,9 +1,6 @@
-table.spreadsheet,
-table.spreadsheet td,
-table.spreadsheet th {
-	border : 1px solid silver ;
-	border-collapse : collapse ;
-	}
+/*
+ *		spreadsheet.css   2023-02-11  usp
+ */
 
 table.spreadsheet, 
 table.spreadsheet td, 

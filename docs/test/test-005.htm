@@ -15,19 +15,17 @@
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
-<link rel="stylesheet" href="spreadsheet-0.css" />
-
-<style>
-table.flat-borders td { text-align : left ; vertical-align : top }
-p { tab-size : 4 ; white-space:pre-wrap }
-pre { tab-size : 2 }
-</style>
+<link rel="stylesheet" href="spreadsheet.css" />
+<link rel="stylesheet" href="test.css" />
  
-<title>Projects - SpreadSheet.JS - Test 5</title>
+<title>Projects - Spreadsheet - Test 5</title>
 
-</head><body><header id="page-header"><object data="/title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+</head><body>
 
 <h1>Test 5 setCellValue()</h1>
+
+<p>Status: <span id="status">pending</span>.
+<br/>Result: <span id="result" value="undefined"></span></p>
 
 <p>The function setCellValue() is used to read the cell.innerText, convert it into a typed JavaScriptObject and store it in cell.spreadsheetCore.value. This test verifies that the type is correctly guessed from the input string.</p>
 
@@ -40,7 +38,7 @@ pre { tab-size : 2 }
 
 <p>The following test verifies that the expected data type is equal to the computed (guessed) type.</p>
 
-<table id="sheet-1" class="spreadsheet flat-borders" gen-labels="both"><tbody><tr>
+<table id="sheet-1" class="spreadsheet" labels="generate,both"><tbody><tr>
 	<th>Expected</th>
 	<th>Input</th>
 	<th>Formatted</th>
@@ -101,16 +99,27 @@ pre { tab-size : 2 }
 	<td contenteditable colspan="2">Input</td>
 </tr></tbody></table>
 
-<p id="result-1">pending...</p>
-	
-</main><footer id="page-footer"></footer>
-<script type="module" src="/inc/page.js" ></script>
-<script type="module" src="spreadsheet-core-0.js" ></script>
-
 <script type="module">
-import * as spreadsheet from "./spreadsheet-core-0.js" ;
+document.getElementById( "status" ).innerText = "started" ;
+import { report, check, publishResults } from "./test.js" ;
+
+import * as spreadsheet from './spreadsheet-core-0.js';
 spreadsheet.initPage();
-let errors = 0;
+let sheet = document.getElementById("sheet-1");
+spreadsheet.setCurrentSpreadsheet( sheet );
+
+check( "5.1", "ABC", spreadsheet.cellObject(1,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.2", 123, spreadsheet.cellObject(2,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.3", "2023-01-25", spreadsheet.cellObject(3,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.4", true, spreadsheet.cellObject(4,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.5", false, spreadsheet.cellObject(5,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.6", "ABC", spreadsheet.cellObject(7,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.7", 123, spreadsheet.cellObject(8,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.8", new Date("2023-01-25").toString(), spreadsheet.cellObject(9,2).spreadsheetCore.value.toString(), "Value mismatch" );
+check( "5.4", true, spreadsheet.cellObject(10,2).spreadsheetCore.value, "Value mismatch" );
+check( "5.5", false, spreadsheet.cellObject(11,2).spreadsheetCore.value, "Value mismatch" );
+
+publishResults();
 </script>
 
 </body></html>

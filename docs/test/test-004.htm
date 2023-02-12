@@ -15,18 +15,17 @@
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
-<link rel="stylesheet" href="spreadsheet-0.css" />
-
-<style>
-table.flat-borders td { text-align : left ; vertical-align : top }
-p { tab-size : 4 ; white-space:pre-wrap }
-</style>
+<link rel="stylesheet" href="./spreadsheet.css" />
+<link rel="stylesheet" href="./test.css" />
  
-<title>Projects - SpreadSheet.JS - Test 4</title>
+<title>Projects - Spreadsheet - Test 4</title>
 
-</head><body><header id="page-header"><object data="/title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+</head><body>
 
 <h1>Test 4 Expression Evaluation and Re-Evaluation</h1>
+
+<p>Status: <span id="status">pending</span>.
+<br/>Result: <span id="result" value="undefined"></span></p>
 
 <p>The following table has formulas placed in xpr attributes. The operands A and B are initialized with some default values and can be edited. The rows 3 to 6 carry the formulas.</p>
 
@@ -34,7 +33,7 @@ p { tab-size : 4 ; white-space:pre-wrap }
 
 <p>The focusout event indicates that cell editing is finished and triggers a re-evaluation of formulas.</p>
 	
-<table id="sheet-1" class="spreadsheet flat-borders" gen-labels="both"><tbody><tr>
+<table id="sheet-1" class="spreadsheet" labels="generate,both"><tbody><tr>
 	<td colspan="3">Evaluation of expressions</td>
 </tr><tr>
 	<td rowspan="2">Operands</td>
@@ -46,27 +45,39 @@ p { tab-size : 4 ; white-space:pre-wrap }
 </tr><tr>
 	<td rowspan="4">Results</td>
 	<td>A + B</td>
-	<td xpr="cell(1,2)+cell(2,2)"></td>
+	<td data-xpr="cell(1,2)+cell(2,2)"></td>
 </tr><tr>
 	<td>A - B</td>
-	<td xpr="cell(1,2)-cell(2,2)"></td>
+	<td data-xpr="cell(1,2)-cell(2,2)"></td>
 </tr><tr>
 	<td>A * B</td>
-	<td xpr="cell(1,2)*cell(2,2)"></td>
+	<td data-xpr="cell(1,2)*cell(2,2)"></td>
 </tr><tr>
 	<td>A / B</td>
-	<td xpr="cell(1,2)/cell(2,2)" data-format="ccv().toFixed(2)"></td>
+	<td data-xpr="cell(1,2)/cell(2,2)" data-format="value.toFixed(2)"></td>
 </tr></tbody></table>
-
-<p id="result-1">pending...</p>
 	
-</main><footer id="page-footer"></footer>
-<script type="module" src="/inc/page.js" ></script>
 
 <script type="module">
-import * as spreadsheet from "./spreadsheet-core-0.js" ;
-spreadsheet.initPage();
-let errors = 0;
+	// Imports
+document.getElementById( "status" ).innerText = "started" ;
+import { report, check, publishResults } from "./test.js" ;
+
+	// Initialization
+import * as spreadsheet from './spreadsheet-core-0.js';
+spreadsheet.initSpreadsheet( document.getElementById( "sheet-1" ));
+spreadsheet.evaluateCellExpressions( );
+
+	// Test
+spreadsheet.setCurrentSpreadsheet(  document.getElementById("sheet-1"));
+check( "4.1", 2, spreadsheet.cell(1,2), "Operand A unexpected value" );
+check( "4.1", 3, spreadsheet.cell(2,2), "Operand B unexpected value" );
+check( "4.1", 5, spreadsheet.cell(3,2), "A+B unexpected result" );
+check( "4.1", -1, spreadsheet.cell(4,2), "A-B unexpected result" );
+check( "4.1", 6, spreadsheet.cell(5,2), "A*B unexpected result" );
+check( "4.1", 2/3, spreadsheet.cell(6,2), "A/B unexpected result" );
+
+publishResults();	
 </script>
 
 </body></html>

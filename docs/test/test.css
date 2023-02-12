@@ -1,2 +1,13 @@
 h1 { margin-top : 10px ; font-size : 20px }
-body { line-height : 70% }
+
+#result[value="undefined"]::before { 
+	content : "undefined" ;
+	}
+#result[value="pass"]::before { 
+	content : "Pass" ;
+	background-color : limegreen ;
+	}
+#result[value="fail"]::before { 
+	content : "Fail" ;
+	background-color : orangered ;
+	}

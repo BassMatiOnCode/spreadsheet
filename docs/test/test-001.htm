@@ -15,101 +15,125 @@
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
-<link rel="stylesheet" href="/inc/spreadsheet-0.css" />
-
-<style>
-table.flat-borders td { text-align : left ; vertical-align : top }
-</style>
+<link rel="stylesheet" href="./spreadsheet.css" />
+<link rel="stylesheet" href="./test.css" />
  
-<title>Projects - SpreadSheet.JS - Test 1</title>
+<title>Projects - Spreadsheet - Test 1</title>
 
-</head><body><header id="page-header"><object data="/title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+</head><body>
 
-<h1>Test 1</h1>
+<h1>Test 1 - Label Cells and Cell Address Verification</h1>
 
-<script>
-let errors = 0;
-</script>
-	
-<p>Generation of logical row and column numbers in the module init functions. The cell text must match the logical row and column numbers in <tt>dataset.row</tt> and <tt>dataset.col</tt> values.</p>
+<p>Status: <span id="status">pending</span>.
+<br/>Result: <span id="result" value="undefined"></span></p>
 
-<h2>Test 1.1 Spreadsheet with Row and Column Labels</h2>
+<p>The tables contain row anc column spanning cells, which might disturb cell address calculations.</p>
 
-<p>Both column label row and row label column affect <tt>cellIndex</tt> values, but should <em>not</em> change logical row and column values of cells.</p>
-<p>Additionally, there are cells with <tt>colspan</tt> and <tt>rowspan</tt> attributes greater than 1. These should also not disturb the row and column number generation.</p>
-	
-<table id="sheet-1" class="spreadsheet flat-borders" style="text-align:left"><thead><tr class="colheaders">
-	<th></th>
-	<th>0</th>
-	<th>1</th>
-	<th>2</th>
-</tr></thead><tbody class="rowheaders"><tr>
-	<th>0</th>
+<figcaption>Table 1 Predefined Label Cells</figcaption>	
+<table id="sheet-1" class="spreadsheet" labels="all">
+<tr>
+	<td></td>
+	<td>0</td>
+	<td>1</td>
+	<td>2</td>
+	<td></td>
+</tr><tr>
+	<td>0</td>
+	<td colspan="3">0,0</td>
+	<td>0</td>
+</tr><tr>
+	<td>1</td>
+	<td rowspan="3">1,0</td>
+	<td>1,1</td>
+	<td>1,2</td>
+	<td>1</td>
+</tr><tr>
+	<td>2</td>
+	<td>2,1</td>
+	<td>2,2</td>
+	<td>2</td>
+</tr><tr>
+	<td>3</td>
+	<td>3,1</td>
+	<td>3,2</td>
+	<td>3</td>
+</tr><tr>
+	<td></td>
+	<td>0</td>
+	<td>1</td>
+	<td>2</td>
+	<td></td>
+</tr></table>
+
+<figcaption>Table 2 Generated Label Cells</figcaption>	
+<table id="sheet-2" class="spreadsheet" labels="generate,all">
+<tr>
 	<td colspan="3">0,0</td>
 </tr><tr>
-	<th>1</th>
 	<td rowspan="3">1,0</td>
 	<td>1,1</td>
 	<td>1,2</td>
 </tr><tr>
-	<th>2</th>
 	<td>2,1</td>
 	<td>2,2</td>
 </tr><tr>
-	<th>3</th>
 	<td>3,1</td>
 	<td>3,2</td>
-</tr></tbody></table>
+</tr></table>
 
-<p id="result-1">pending...</p>
-
-<h2>Test 1.2 Logical Row and Column Numbers, No Row and Column Labels</h2>
-
-<p>Similar to the previous test, this time with different colspan and rowspan configuration.</p>
-	
-<table id="sheet-2" class="spreadsheet flat-borders"><tbody><tr>
-	<td>0,0</td>
-	<td>0,1</td>
-	<td>0,2</td>
-	<td>0,3</td>
-</tr><tr>
-	<td>1,0</td>
-	<td rowspan="2" colspan="2">1,1</td>
-	<td>1,3</td>
-</tr><tr>
-	<td>2,0</td>
-	<td>2,3</td>
-</tr><tr>
-	<td>3,0</td>
-	<td>3,1</td>
-	<td>3,2</td>
-	<td>3,3</td>
-</tr></tbody></table>
-
-<p id="result-2">pending...</p>
-	
-</main><footer id="page-footer"></footer>
-<script type="module" src="/inc/page.js" ></script>
 <script type="module">
+document.getElementById( "status" ).innerText = "started" ;
+
 import * as spreadsheet from "./spreadsheet-core-0.js" ;
 spreadsheet.initPage();
-function testA ( tableId, resultId ) {
-	let failed = false;
-	const table = document.getElementById( tableId );
-	const datacells = table.querySelectorAll( "td" );
-	for ( let i = 0 ; i < datacells.length ; i ++ ) {
-		const cell = datacells[ i ];
-		const row = cell.parentElement;
-		if ( cell.innerText !== `${row.dataset.row},${cell.dataset.col}`) {
-			errors += 1;
-			document.getElementById( resultId ).innerText = "FAILED!";
-			break;
-		}	}
-	if ( ! failed )	document.getElementById( resultId ).innerText = "Success!";
+
+import { report, logError, publishResults } from "./test.js" ;
+
+function testLogicalAddresses ( table, testNumber ) {
+	// verifies the correct generation of logical cell addresses
+	table = document.getElementById( table );
+	for ( let i = 1 ; i < table.rows.length - 1 ; i ++ ) {
+		const row = table.rows[ i ];
+		for ( let j = 1 ; j < row.cells.length - 1 ; j ++ ) {
+			const cell = row.cells[ j ];
+			if ( cell.innerText !== `${row.dataset.row},${cell.dataset.col}` ) logError( testNumber, `Address mismatch (${i-1},${j-1}) vs (${row.dataset.row},${cell.dataset.col})` );
+	}	}	}
+
+function testColumnLabels( row, testNumber ) {
+	// verifies the correct generation of labels
+	for ( let i = 0 ; i < row.cells.length ; i ++ ) {
+		const cell = row.cells[ i ];
+		const expected = (i === 0 || i === row.cells.length - 1) ? "" :  (i - 1).toString( );
+		if ( cell.innerText !== expected ) logError( testNumber, `Column label mismatch (${cell.innerText}) vs (${expected})` );
+	}	}
+
+function testRowLabels ( table, testNumber ) {
+	for ( let i = 1 ; i < table.rows.length - 1 ; i ++ ) {
+		const row = table.rows[ i ];
+		let cell = row.cells[ 0 ];
+		let expected = (i-1).toString( );
+		if ( cell.innerText !== expected ) logError( testNumber, `Row label mismatch (${cell.innerText}) vs (${expected})`);
+		cell = row.cells[ row.cells.length - 1 ];
+		if ( cell.innerText !== expected ) logError( testNumber, `Row label mismatch (${cell.innerText}) vs (${expected})`);
+		}	
 	}
 
-testA( "sheet-1", "result-1" );
-testA( "sheet-2", "result-2" );
+	// Tests
+	// sheet-1
+let sheet = document.getElementById( "sheet-1" );
+testColumnLabels( sheet.rows[ 0 ], "Test 1.2" );
+testColumnLabels( sheet.rows[ sheet.rows.length - 1 ], "Test 1.3" );
+testRowLabels ( sheet, "Test 1.4" );
+testLogicalAddresses( "sheet-1", "Test 1.5" );
+
+	// sheet-2
+sheet = document.getElementById( "sheet-2" );
+testColumnLabels( sheet.rows[ 0 ], "Test 1.6" );
+testColumnLabels( sheet.rows[ sheet.rows.length - 1 ], "Test 1.7" );
+testRowLabels ( sheet, "Test 1.8" );
+testLogicalAddresses( "sheet-2", "Test 1.9" );
+
+publishResults( );
 </script>
 
 </body></html>

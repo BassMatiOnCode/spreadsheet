@@ -24,8 +24,8 @@
 
 <h1>Test 10 Utility Functions Test</h1>
 
-<p>Status: <span id="status">pending</span>.</p>
-<p>Result: <span id="result">Undefined</span></p>
+<p>Status: <span id="status">pending</span>.
+<br/>Result: <span id="result" value="undefined"></span></p>
 
 <div id="log"></div>
 
@@ -34,11 +34,9 @@
 <xscript type="module" src="/inc/page.js" ></xscript>
 
 <script type="module">
+import { report, logError, publishResults } from "./test.js" ;
 import * as utility from "./spreadsheet-utility-0.js" ;
 
-let errors = 0;
-const report = window.parent.report || function ( path, status, result, comment ) { console.log( path, status, result, comment ) } ;
-const logError = (number, msg) => { errors += 1 ; console.log( `Test ${number} failed: ${msg}` ) }
 document.getElementById( "status" ).innerText = "started" ;
 
 	// Test 10.1 splice()
@@ -63,11 +61,7 @@ if ( (result = utility.consolidateTrailingSum( "2+3*4+5" )) !== "2+3*4+5" ) logE
 if ( (result = utility.consolidateTrailingSum( "2+3*4+5+6" )) !== "2+3*4+11" ) logError( "10.3.1", `Unexpected return value: ${result}` );
 if ( (result = utility.consolidateTrailingSum( "2+3*4+5-6" )) !== "2+3*4-1" ) logError( "10.3.1", `Unexpected return value: ${result}` );
 	
-	// Publish result
-
-document.getElementById("status").innerText = "finished";
-document.getElementById("result").innerText = errors ? "failed" : "passed";
-report( document.location.pathname, document.getElementById("status").innerText, document.getElementById("result").innerText, errors + " errors" );
+publishResults( );
 
 </script>
 
