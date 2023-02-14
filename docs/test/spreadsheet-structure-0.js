@@ -1,9 +1,9 @@
 /*
- *		spreadsheet-interactive.js    2023-02-01  usp 
+ *		spreadsheet-structure.js    2023-02-12  usp 
  */
 
-import { currentSheet, countColumns, cellObject, offsetCellObject, oco, offsetCellValue, ocv } from "./spreadsheet-core-0.js" ;
-import { findParent, splice, consolidateTrailingSum } from "./spreadsheet-utility-0.js" ;
+import { currentSheet, countColumns, cellObject, offsetCellObject, oco, offsetCellValue, ocv } from "./spreadsheet-core.js" ;
+import { findParent, splice, consolidateTrailingSum } from "./spreadsheet-utility.js" ;
 
 export function insertRange ( row = -1, column = -1, rows = 1, columns = 0, rowDescriptor = "TD", shift = "down" ) 
 		// row, column : Upper left logical coordinate of the inserted range.
@@ -23,23 +23,21 @@ export const insertRows = ( rows, insertIndex = -1, columnInfo = "TD", sheet = c
 		// Insert a number of rows into the current worksheet.
 		// rows : number of rows to insert
 		// insertIndex : determines the insert location. 
-		//		Physical row index expected. Must not point to a column-labels row. 
+		//		Physical row index expected. Should not point to a column-labels row. 
 		// columnInfo : String or object, describes the structure of a row. 
 		//		See comments below.
 	{
 	if ( insertIndex === -1 ) insertIndex = sheet.rows.length;
-		// Create a columns descriptor array.
+	// Create a columns descriptor array.
 	if ( typeof columnInfo === "string" ) {
-			// Fill the array with column info objects.
+		// Fill the array with column info objects derived from the string input.
+		// The string should be either "TD" or "TH".
 		columnInfo = new Array(countColumns()).fill( { 
 			tagName : columnInfo , 
 			attributes : { contenteditable : "" }
 			} ); 
-			// Make sure that row header cells will be TD elements.
-		if ( sheet.spreadsheetCore.firstColumn >  0 ) columnInfo[ 0 ].tagName = "TD" ;
-		if ( columnInfo.length - 1 > sheet.spreadsheetCore.lastColumn ) columnInfo[ columnInfo.length - 1 ].tagName = "TD" ;
 		}
-		// Use the cells array of a row object as column info array
+	// Use the cells array of a row object as column info array
 	else if ( typeof columnInfo === "object" && columnInfo instanceof HTMLTableRowElement ) {
 		columnInfo = row.cells;
 		}
@@ -51,27 +49,22 @@ export const insertRows = ( rows, insertIndex = -1, columnInfo = "TD", sheet = c
 		// Note that the range object contains logical addresses!
 	const range = {
 		sheet : sheet ,
-		firstRow : insertIndex - sheet.spreadsheetCore.firstRow,
-		lastRow : sheet.spreadsheetCore.lastRow - sheet.spreadsheetCore.firstRow,
+		firstRow : insertIndex - 1,
+		lastRow : sheet.rows.length - 3, // TODO: Check value
 		rowOffset : rows,
 		firstColumn : 0,
-		lastColumn : sheet.spreadsheetCore.lastColumn - sheet.spreadsheetCore.firstColumn,
+		lastColumn : sheet.rows[0].cells.length - 3,
 		columnOffset : 0
 		}
-		// Update the spreadsheet cell range info
-	sheet.spreadsheetCore.lastRow += rows;
-		// Create the rows.
+	// Create rows
 	for ( let i = 0 ; i < rows ; i ++ ) {
 		const row = sheet.insertRow( insertIndex + i );
+		// Create cells
 		for ( let j = 0 ; j < columnInfo.length ; j ++ ) {
 			const cell = row.appendChild( document.createElement( columnInfo[ j ].tagName ));
-			if ( j < sheet.spreadsheetCore.firstColumn || j > sheet.spreadsheetCore.lastColumn ) {
-					// Row label cells
-				cell.innerText = insertIndex + i - sheet.spreadsheetCore.firstRow;  // logical row number 
-				cell.classList.add( "row-label" );
-				}
-			else {  // Spreadsheet workarea cells. 
-				cell.dataset.col = j - sheet.spreadsheetCore.firstColumn;
+			if ( j > 0 || j < sheet.rows[ 0 ].cells.length - 1 ) {
+				// Spreadsheet data cells
+				cell.dataset.col = j - 1;
 				cell.spreadsheetCore = { value : "" };
 				cell.innerText = "" ;
 				if ( "contenteditable" in columnInfo[ j ].attributes ) cell.setAttribute( "contenteditable", "" );
@@ -79,11 +72,14 @@ export const insertRows = ( rows, insertIndex = -1, columnInfo = "TD", sheet = c
 		}	}
 		// Before address are modified, exisisting expressions must be processed.
 	updateExpressions( range );
-		// Update logical row addresses
-	for ( let i = insertIndex ; i <= sheet.spreadsheetCore.lastRow ; i ++ ) {
-		sheet.rows[ i ].dataset.row = i ;
-		sheet.rows[ i ].cells[ 0 ].innerText = i ;
+		// Update logical row addresses of moved rows
+	for ( let i = insertIndex ; i <= sheet.rows.length - 2 ; i ++ ) {
+		updateRowAddress( i );
 		}
+	}
+const updateRowAddress = ( i, row = currentSheet.rows[ i ] ) => {
+	// Set the logical row address in row attribut and inner text of label cells
+	row.dataset.row = row.firstElementChild.innerText = row.lastElementChild.innerText = i - 1;
 	}
 const updateExpressions = ( range ) => 
 		// Tweak all expressions that are affected by the range
@@ -93,7 +89,7 @@ const updateExpressions = ( range ) =>
 	for ( let i = 0 ; i < cells.length ; i ++ ) {
 		const currentSheet = findParent( cells[ i ], { tagName : "TABLE" } );
 			// Find absolute references in expressions and process them.
-		console.info( `  inspecting: ${cells[ i ].dataset.xpr}` );
+		console.info( `  inspecting expression: ${cells[ i ].dataset.xpr}` );
 			// TODO : Insert all reference functions that might be affected
 		const re = new RegExp( "(cell|cv)\\s*\\(", "g" );
 		const matches = [...cells[ i ].dataset.xpr.matchAll( re )];
@@ -170,7 +166,7 @@ const isAffected = ( source, target, relative, range ) => {
 	const targetRow = target.parentElement.dataset.row;
 	const targetColumn = target.dataset.col;
 	const targetInRange = targetRow >= range.firstRow && targetRow <= range.lastRow && targetColumn >= range.firstColumn && targetColumn <= range.lastColumn ;
-	console.info( `  from ${sourceRow} ${sourceColumn}  to ${targetRow} ${targetColumn}` );
+//	console.info( `  from ${sourceRow} ${sourceColumn}  to ${targetRow} ${targetColumn}` );
 		// Decide
 	if ( relative ) return soureInRow ^ targetInRange ;  // Rule 2
 	else return targetInRange ;  // Rule 1

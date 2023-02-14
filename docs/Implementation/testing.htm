@@ -6,7 +6,7 @@
 <meta name="author" content="USP" />
 <meta name="creation-date" content="2023-02-03" />
 <meta name="editor" content="USP" />
-<meta name="change-date" content="2023-02-03" />
+<meta name="change-date" content="2023-02-13" />
 <meta name="version" content="1" />
 <meta name="categories" content="Projects > JavaScript" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, test" />
@@ -32,6 +32,16 @@
 <p>When <tt>test-root.htm</tt> is loaded in a browser, the individual test modules start to run independently. When they finished their jobs, they call the <tt>report()</tt> function, defined in test-root. The report functions collects the information from the test modules, publishes them and creates a summary.</p>
 
 <p>This way we always have alive status of the project.</p>
+
+<p>Some test cases cannot be automated, because a user interaction is required. This for example applies to the functions of the browser File API, so import and export functionality must be tested manually.</p>
+
+<h2>Module Import References</h2><div>
+
+<p>Module filenames must reference a symbolic link and must not include a version number in the filename. The links point to the versioned spreadsheet module files. This method provides the ability to switch all test documents to a different version of the library. Additionally, this ensures that all test module use the same import module(s), which is important because modules containe shared global variables.</p>
+
+<p>The links must be hard-links, because the browser Developer Tools seem to have problems writing changes to disk with symbolic links.</p>
+
+</div>
 
 </main><footer id="page-footer"></footer>
 <script type="module" src="/inc/page.js" ></script>

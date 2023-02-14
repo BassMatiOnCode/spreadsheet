@@ -4,8 +4,8 @@
 
 let errors = 0;
 
-export const report = window.parent.report || function ( path, status, result, comment ) { 
-	console.log( path, status, result, comment ) 
+export const report = window.parent.report || function ( testNumber, status, result, errors, comment ) { 
+	console.log( testNumber, status, result, errors, comment ) 
 	} ;
 
 export const logError = (number, msg) => { 
@@ -20,5 +20,6 @@ export const check = function ( number, expected, actual, message ) {
 export const publishResults = function ( ) {
 	document.getElementById("status").innerText = "finished";
 	document.getElementById("result").setAttribute( "value", errors ? "fail" : "pass" );
-	window.requestAnimationFrame( () => report( document.location.pathname, document.getElementById("status").innerText, errors ? "fail" : "pass", errors + " errors" )); 
+	document.getElementById( "errors" ).innerText = errors;
+	window.requestAnimationFrame( () => report( document.getElementById("test-number").innerText, document.getElementById("status").innerText, errors ? "fail" : "pass", errors + " errors" )); 
 	}

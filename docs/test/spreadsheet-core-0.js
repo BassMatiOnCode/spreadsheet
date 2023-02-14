@@ -2,7 +2,7 @@
  *		spreadsheet-1.js    2023-01-21   usp
  */
 
-import { findParent } from "./spreadsheet-utility-0.js" ;
+import { findParent, norm } from "./spreadsheet-utility-0.js" ;
 
 // Import static functions and add them to the module global namespace
 import * as spreadsheetFunctions from './spreadsheet-functions-0.js';
@@ -23,7 +23,7 @@ export let csh, currentSheet, ccell, currentCell, cr, currentRow, cc, currentCol
 
 export const setCurrentSpreadsheet = ( sheet ) => { 
 	// TODO : rename to set current sheet
-	csh = currentSheet = sheet ; 
+	csh = currentSheet = norm( sheet ); 
 	} 
 export const setCurrentCell = (cell) => {
 	//	Set variables related to the current cell
