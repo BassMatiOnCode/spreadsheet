@@ -16,6 +16,11 @@ table.spreadsheet td {
 	height : 20px;
 	}
 
+table.spreadsheet [resize] {
+	overflow : hidden;
+	resize : both ;
+	}
+
 	/* Row and column labels */
 
 table.spreadsheet tr:first-child,
@@ -51,3 +56,32 @@ table.spreadsheet[labels="right"] tr td:last-child,
 table.spreadsheet[labels="all"] tr td:last-child {
 	display : table-cell ;
 	}
+
+table.spreadsheet tr [active] {
+	border : 1.5px solid darkorange ;
+	}
+
+dialogspreadsheet.context::backdrop {
+	background : rgba( 255,255,255,0 ) ;
+	}
+
+dialog.spreadsheet.context {
+	border : 0px solid silver;
+	padding : 0 ;
+	}
+
+dialog.spreadsheet.context table {
+	margin : 0 ;
+	border-collapse : collapse ;
+	font-size : 14px;
+	line-height : 20px;
+	color : #444;
+	}
+dialog.spreadsheet.context table td {
+	border : 1px solid silver;
+	padding : 0px 5px;
+	}
+dialog.spreadsheet.context table td:hover {
+	background-color : #eee;
+	}
+	

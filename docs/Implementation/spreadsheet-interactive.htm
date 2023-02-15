@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-15" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-15" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library" />
+<meta name="description" content="<tt>Spreadsheet Interactive</tt> implements GUI functions." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/inc/spreadsheet.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="../test/spreadsheet.css" />
+ 
+<title>Projects - Spreadsheet Interactive</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Spreadsheet Interactive</h1>
+
+<p id="page-abstract"></p>
+
+<h2 cbc>Cell Context Menu</h2><div>
+
+<p>The spreadsheet cell context menu provides access to Spreadsheet Interactive functions, such as </p>
+
+<ul>
+<li>insert rows</li>
+<li>delete rows</li>
+<li>insert columns</li>
+<li>delete columns</li>
+<li>resize columns</li>
+</ul>
+
+<p>The context menu is implemented as <tt>dialog</tt> element:</p>
+
+<figcaption class="listing">Context menu HTML code</figcaption>
+<pre>
+&lt;dialog id="cell-context" class="spreadsheet context"&gt;&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;Insert row&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;delete row&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Insert column&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;delete column&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;&lt;/dialog&gt;
+</pre>
+
+<p>The dialog contains a table with context menu entries. Choosing a table opens a number of interesting design opportunities. When a table cell is left-clicked, the row and column index is placed in a dialog result variable. A click outside the dialog just closes the dialog without changint the result.</p>
+
+<p>Some event handlers are registered in the <tt>pageInit()</tt> function:</p>
+
+<figcaption class="listing">Setting up event handlers</figcaption>
+<pre>
+export function initSpreadsheet( sheet ) {
+	if ( typeof sheet === "string" ) sheet = document.getElementById( sheet );
+	<cc>// Add sheet event handlers</cc>
+	sheet.addEventListener( "contextmenu", <hi>cellRightClickHandler</hi> );
+	<cc>// Add cell context dialog event handlers</cc>
+	const dialog = document.getElementById("cell-context");
+	dialog.addEventListener( "click" , cellContextDialogClickHandler.bind( dialog ));
+	dialog.addEventListener( "close", cellContextDialogCloseHandler.bind( dialog ));
+	} ;
+</pre>
+
+<p>The dialog is opened by a right-click on a spreadsheet cell. The event handler initializes the result variable and positions the dialog to the mouse pointer position, then calls <tt>showModal()</tt> to open it:</p>
+
+<figcaption class="listing">Opening the context dialog</figcaption>
+<pre>
+export const cellRightClickHandler = ( evt ) => {
+	evt.preventDefault( );
+	const dialog = document.getElementById("cell-context");
+	dialog.dataset.result = "" ;
+	dialog.style.marginLeft = `${evt.clientX}px` ;
+	dialog.style.marginTop = `${evt.clientY}px` ;
+	dialog.showModal( );
+	} ;
+</pre>
+
+<p>If the dialog is open, all click events are routed to the dialog element. The HTML table inside the dialog element occupies the entire dialog client area. This can be used to set the dialog result and close the dialog:</p>
+
+<figcaption class="listing">Closing the context dialog</figcaption>
+<pre>
+export const cellContextDialogClickHandler = function ( evt ) {
+	if ( evt.target.tagName === "TD" ) 
+		this.dataset.result = `${evt.target.parentElement.rowIndex},${evt.target.cellIndex}` ;
+	this.close();
+	} ;
+</pre>
+
+<p>If a table cell is clicked, the row and column index is stored in the dialog result attribute.</p>
+
+<p>The dialog close event handler is used to execute the selected function:</p>
+
+<figcaption class="listing">Executing the selcted function</figcaption>
+<pre>
+export const cellContextDialogCloseHandler = function( ) {
+	switch ( <hi>this.dataset.result</hi> ) {
+	case "0,0" :
+		 console.log( "insert row" );
+		 break;
+	case "1,0" :
+		 console.log( "delete row" );
+		 break;
+	case "2,0" :
+		 console.log( "insert column" );
+		 break;
+	case "3,0" :
+		 console.log( "delete column" );
+		 break;
+		 }
+	} ;
+	</pre>
+
+<!--h2--></div>
+
+<h2 cbc>Resizing Rows and Columns</h2><div>
+
+<p>If a table cell has the style attributes <tt>overflow:hidden</tt> and <tt>resize:both</tt>, a small resizer icon is shown at the lower right corner of the cell. It can be used to drag the cell to the desired size with the mouse.</p>
+
+<figcaption class="figure">Cell resizer</figcaption>
+<img src="../img/fig-002.png" width="200" />
+
+<p>These styles are set with the <tt>resize</tt> attribute:</p>
+
+<figcaption class="listing">Resizer style</figcaption>
+<pre>
+table.spreadsheet [resize] {
+	overflow : hidden;
+	<hi>resize : both</hi> ;
+	}
+</pre>
+
+<p>Showing the resizer on every cell doesn't look pretty, so it is usually hidden. Currently, the context menu is used to show and hide the resizer. Alternatively, a :hover pseudoclass can be used.</p>
+
+<p>While the cell has the <tt>resize</tt> attribute, the cell determines row and column size. When done, the row height and column width must be set to the cell size to make the adjustments permanent. Otherwise, the cell would collapse to its initial dimensions.</p>
+
+<p>Similarly, when a cell is being preared for resizing, the row height and column width information must be deleted because otherwise they would prevent making the cell smaller.</p>
+
+<figcaption class="listing">Resize code</figcaption>
+<pre>
+const cell = table.rows[row].cells[col];
+if ( ! cell.hasAttribute( "resize" )) {
+	<cc>// Start resize</cc>
+	table.querySelectorAll( "[resize]" ).forEach( cell => cell.removeAttribute( "resize" ));
+	<cc>// Prevent cell from collapsing</cc>
+	cell.style.height = cell.parentElement.style.height;
+	cell.style.width = table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width ;
+	<cc>// Clear row and column size restrictions</cc>
+	cell.parentElement.style.height = "" ;
+	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = "" ;
+	}
+else {  
+	<cc>// End resize</cc>
+	<cc>// Store the row and column size</cc>
+	cell.parentElement.style.height = cell.scrollHeight + "px" ;
+	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = cell.scrollWidth + "px";
+	<cc>// Reset cell size</cc>
+	cell.style.height = cell.style.width = "" ;
+	}
+cell.toggleAttribute( "resize" );
+break;
+</pre>
+
+<!--h2--></div>
+
+
+</main><footer id="page-footer"></footer>
+<script type="module" src="/inc/page.js" ></script>
+<script type="module">
+import * as spreadsheet from "/test/spreadsheet-core-0.js" ;
+spreadsheet.initPage();
+</script>
+</body></html>

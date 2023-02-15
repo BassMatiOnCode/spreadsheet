@@ -86,7 +86,7 @@ export const sheet = id => {
 export function initPage ( ) {
 	//// Collect spreadsheet tables on the page.
 	console.info( "spreadsheet-core.js:initPage()" );
-	const spreadsheets = document.getElementsByClassName( "spreadsheet" );
+	const spreadsheets = document.querySelectorAll( "table.spreadsheet" );
 	for ( let i = 0 ; i < spreadsheets.length ; i ++ ) initSpreadsheet( spreadsheets[ i ] );
 	evaluateCellExpressions( );
 

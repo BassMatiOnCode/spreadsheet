@@ -1,1 +1,87 @@
-spreadsheet-0.css
+/*
+ *		spreadsheet.css   2023-02-11  usp
+ */
+
+table.spreadsheet, 
+table.spreadsheet td, 
+table.spreadsheet th {
+	border : 1px solid silver;
+	border-collapse : collapse;
+	}
+
+table.spreadsheet th,
+table.spreadsheet td {
+	padding : 2px 5px;
+	min-width : 20px;
+	height : 20px;
+	}
+
+table.spreadsheet [resize] {
+	overflow : hidden;
+	resize : both ;
+	}
+
+	/* Row and column labels */
+
+table.spreadsheet tr:first-child,
+table.spreadsheet tr:last-child,
+table.spreadsheet tr td:first-child,
+table.spreadsheet tr td:last-child {
+	background-color : #EEE ;
+	display : none ;
+	}
+	
+	/* Top column labels */
+table.spreadsheet[labels="top"] tr:first-child,
+table.spreadsheet[labels="both"] tr:first-child,
+table.spreadsheet[labels="all"] tr:first-child {
+	display : table-row ;
+	}
+
+	/* Bottom column labels */
+table.spreadsheet[labels="bottom"] tr:last-child,
+table.spreadsheet[labels="all"] tr:last-child {
+	display : table-row ;
+	}
+
+	/* Left row labels */
+table.spreadsheet[labels="left"] tr td:first-child,
+table.spreadsheet[labels="both"] tr td:first-child,
+table.spreadsheet[labels="all"] tr td:first-child {
+	display : table-cell ;
+	}
+
+	/* Right row labels */
+table.spreadsheet[labels="right"] tr td:last-child,
+table.spreadsheet[labels="all"] tr td:last-child {
+	display : table-cell ;
+	}
+
+table.spreadsheet tr [active] {
+	border : 1.5px solid darkorange ;
+	}
+
+dialogspreadsheet.context::backdrop {
+	background : rgba( 255,255,255,0 ) ;
+	}
+
+dialog.spreadsheet.context {
+	border : 0px solid silver;
+	padding : 0 ;
+	}
+
+dialog.spreadsheet.context table {
+	margin : 0 ;
+	border-collapse : collapse ;
+	font-size : 14px;
+	line-height : 20px;
+	color : #444;
+	}
+dialog.spreadsheet.context table td {
+	border : 1px solid silver;
+	padding : 0px 5px;
+	}
+dialog.spreadsheet.context table td:hover {
+	background-color : #eee;
+	}
+	
