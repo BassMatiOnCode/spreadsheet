@@ -13,4 +13,6 @@ A lightweight, fast and modular JavaScript spreadsheet library, based on the HTM
 
 2023-02-11	spreadsheet-persistence.js working. Security features tested. Label cells around the spreadsheet workarea now mandatory, this simplifies many iteration loop codes. Work on spreadsheet-structure.js: Insert rows successful. Cell references in expressions are updated to reflect the new position of cells. Work on automated test infrastructure.
 
-2023-02-14  Automated test infrastructure improved. Indivisual test documents are imported in IFRAMES in test-root.htm. Test stati are updated and color coded in an overview table. Test documents can be run and debugged individually to solve problems, if any.
+2023-02-14  Automated test infrastructure improved. Individual test documents are imported in IFRAMES in test-root.htm. Test stati are updated and color coded in an overview table. Test documents can be run and debugged individually to solve problems, if any.
+
+2023-02-15	Spreadsheet cell context menu based on the DIALOG element. Current cell highlighting and cell resizing implemented. 
