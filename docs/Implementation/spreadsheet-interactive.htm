@@ -141,32 +141,60 @@ table.spreadsheet [resize] {
 
 <p>Similarly, when a cell is being preared for resizing, the row height and column width information must be deleted because otherwise they would prevent making the cell smaller.</p>
 
+<p>In the first implementation attempt, the spreadsheet cell context menu was used to control cell resizing.</p>
+
 <figcaption class="listing">Resize code</figcaption>
 <pre>
-const cell = table.rows[row].cells[col];
-if ( ! cell.hasAttribute( "resize" )) {
-	<cc>// Start resize</cc>
-	table.querySelectorAll( "[resize]" ).forEach( cell => cell.removeAttribute( "resize" ));
+cellContextDialogCloseHandler = function( ) {
+	let table, row, col;
+	[table, row, col] = [...this.dataset.context.split(",")];
+	table = document.getElementById( table );
+	const cell = table.rows[row].cells[col];
+	if ( ! cell.hasAttribute( "resize" )) startResize( table, cell );
+	else endResize( table, cell );
+	cell.toggleAttribute( "resize" );
+	} ;
+</pre>
+
+<p>The code checks the "resize" attribute of a table cell to discern between resize start and end.</p>
+
+<figcaption class="listing">Begin resizing a cell</figcaption>
+<pre>
+export const startResize = (table, cell) => {
+	<cc>// Stop other cells from resizing.</cc>
+	table.querySelectorAll( "[resize]" ).forEach( cell => {
+		endResize( table, cell );
+		cell.removeAttribute( "resize" );
+		} ) ;
 	<cc>// Prevent cell from collapsing</cc>
 	cell.style.height = cell.parentElement.style.height;
 	cell.style.width = table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width ;
-	<cc>// Clear row and column size restrictions</cc>
+	<cc>// Clear the row and column size restrictions</cc>
 	cell.parentElement.style.height = "" ;
 	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = "" ;
-	}
-else {  
-	<cc>// End resize</cc>
-	<cc>// Store the row and column size</cc>
-	cell.parentElement.style.height = cell.scrollHeight + "px" ;
-	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = cell.scrollWidth + "px";
-	<cc>// Reset cell size</cc>
-	cell.style.height = cell.style.width = "" ;
-	}
-cell.toggleAttribute( "resize" );
-break;
+	} ;
 </pre>
 
+<p>The code checks if there are other cells being resized. If so, their resize procedure is finished properly.</p>
+<p>Row and column of the current call may have width and height attributes set. These are copied to the current cell to prevent it from collapsing to fit the content. Then the height and width attributes are removed from row and column to prevent them from defining a minimum cell size.</p>
+
+<p>The sizer is now visible on the cell and can be dragged to the desired dimensions. When done, the user can invoke the <tt>resize</tt> cell context menu again. This time, <tt>endResize</tt> is called:</p>
+
+<figcaption class="listing">Resize code</figcaption>
+<pre>
+endResize = (table, cell) => {
+	<cc>// Make row height and column width permanent</cc>
+	cell.parentElement.style.height = cell.scrollHeight + "px" ;
+	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = cell.scrollWidth + "px";
+	<cc>// Clear the cell size</cc>
+	cell.style.height = cell.style.width = "" ;
+	} ;
+</pre>
+
+<p>Essentially, the code does the opposite of <tt>beginResize</tt>: Width and height values are moved from the cell to row and column style properties, then cell height and width styles are cleared. This is an essential step, because otherwise the cell would determine the minimum size of the associated row and column &ndash; which could be quite irritating if a different cell in that row or column is then subsequently resized.</p>
+
 <!--h2--></div>
+
 
 
 </main><footer id="page-footer"></footer>
