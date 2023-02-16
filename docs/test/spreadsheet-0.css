@@ -61,7 +61,7 @@ table.spreadsheet tr [active] {
 	border : 1.5px solid darkorange ;
 	}
 
-dialogspreadsheet.context::backdrop {
+dialog.spreadsheet.context::backdrop {
 	background : rgba( 255,255,255,0 ) ;
 	}
 
