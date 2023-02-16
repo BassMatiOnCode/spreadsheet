@@ -67,25 +67,28 @@ export const cellContextDialogClickHandler = function ( evt ) {
 	case "4,0" :
 		console.log( `resize cell (${this.dataset.context})` );
 		const cell = table.rows[row].cells[col];
-		if ( ! cell.hasAttribute( "resize" )) {
-			// Start resize
-			table.querySelectorAll( "[resize]" ).forEach( cell => cell.removeAttribute( "resize" ));
-			// Prevent cell from collapsing
-			cell.style.height = cell.parentElement.style.height;
-			cell.style.width = table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width ;
-			// Clear the row and column size restrictions
-			cell.parentElement.style.height = "" ;
-			table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = "" ;
-			}
-		else {  
-			// End resize
-			// Make row height and column width permanent
-			cell.parentElement.style.height = cell.scrollHeight + "px" ;
-			table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = cell.scrollWidth + "px";
-			// Clear the cell size
-			cell.style.height = cell.style.width = "" ;
-			}
+		if ( ! cell.hasAttribute( "resize" )) startResize( table, cell );
+		else endResize( table, cell );
 		cell.toggleAttribute( "resize" );
 		break;
 		}
+	} ;
+export const startResize = (table, cell) => {
+	table.querySelectorAll( "[resize]" ).forEach( cell => {
+		endResize( table, cell );
+		cell.removeAttribute( "resize" );
+		} ) ;
+	// Prevent cell from collapsing
+	cell.style.height = cell.parentElement.style.height;
+	cell.style.width = table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width ;
+	// Clear the row and column size restrictions
+	cell.parentElement.style.height = "" ;
+	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = "" ;
+	}
+export const endResize = (table, cell) => {
+	// Make row height and column width permanent
+	cell.parentElement.style.height = cell.scrollHeight + "px" ;
+	table.rows[ 0 ].cells[ +cell.dataset.col + 1 ].style.width = cell.scrollWidth + "px";
+	// Clear the cell size
+	cell.style.height = cell.style.width = "" ;
 	} ;
