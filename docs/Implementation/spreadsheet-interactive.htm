@@ -125,6 +125,14 @@ export const cellContextDialogCloseHandler = function( ) {
 <figcaption class="figure">Cell resizer</figcaption>
 <img src="../img/fig-002.png" width="200" />
 
+<p>In many articles it is assumed that a <tt>resize</tt> style on a table cell has no effect and therefore a <tt>DIV</tt> element should be added to wrap the cell content. However, testing with Edge, I found <tt>resize</tt> on a table cell is working perfectly.</p>
+
+<p>While no cell is being resized, the row height is controlled by the <tt>style.height</tt> property on the <tt>TR</tt> element, the column width is controlled by the <tt>style.widht</tt> property on the spreadheet label cell in the first row. While a cell is being resized, the <tt>style.width</tt> and <tt>style.height</tt> properties on the table cell element determine the size of row and clolumn.</p>
+
+<p>Based on this idea, the following two resizing methods have been implemented.</p>
+
+<h3 cbc>Context Dialog Controlled Procedure</h3><div>
+
 <p>These styles are set with the <tt>resize</tt> attribute:</p>
 
 <figcaption class="listing">Resizer style</figcaption>
@@ -165,6 +173,99 @@ else {
 cell.toggleAttribute( "resize" );
 break;
 </pre>
+
+<!--h3--></div>
+
+<h3 cbc>:hover Controlled Cell Resizing</h3><div>
+
+<p>A mouse hovering over a spreadsheet table cell can be used to activeate the cell resizer:</p>
+
+<figcaption class="listing">:Hover and :active attributes control resizer visibility</figcaption>
+<pre>
+table.spreadsheet th:hover,
+table.spreadsheet td:hover,
+table.spreadsheet th:active,
+table.spreadsheet td:active {
+	overflow : hidden;
+	resize : both ;	
+	}
+</pre>
+
+<p>The <tt>:active</tt> pseudoclass has been added to improve stability with fast mouse moves, otherwise the resizer is "lost" quite frequently.</p>
+
+<p>This works pretty well, but the resized cell gets <tt>width</tt> and <tt>height</tt> style properties set, which prevents the associated row and column to be shrinked below these values.</p>
+
+<p>So we need to detect when a cell is being resized:</p>
+
+<figcaption class="listing">Cell resize detection events</figcaption>
+<pre>
+export function initSpreadsheet( sheet ) {
+	...
+	sheet.addEventListener( "mousedown", mouseDownHandler.bind( sheet ));
+	sheet.addEventListener( "mouseup", mouseUpHandler.bind( sheet ));
+	...
+	} ;
+</pre>
+
+<p>The code above registers mouse up and down event handlers. Both communicate through a status info object:</p>
+
+<figcaption class="listing">cellSizeInfo object is used to detect resized cells</figcaption>
+<pre>
+const cellSizeInfo = {
+	cell : undefined,	<cc>// cell at mouse down</cc>
+	cellW : 0,		<cc>// cell width at mouse down</cc>
+	cellH : 0		<cc>// cell height at mouse down</cc>
+	} ;
+</pre>
+
+<p class="note">Width and height information may not be necessary, they are currently not tested.</p>
+
+<p>This object is filled with data when a mouse down event appeared in the lower right corner of the cell:</p>
+
+<figcaption class="listing">Detecting start of resizing</figcaption>
+<pre>
+export const mouseDownHandler = function ( evt ) {
+	if ( /(TD|TH)/.test( evt.target.tagName ) && evt.offsetX > evt.target.scrollWidth - 20 && evt.offsetY > evt.target.scrollHeight - 20 ) {
+		<cc>// A mouse button went down in the lower right corner of a table cell.</cc>
+		console.log( "Resizing started" );
+		cellSizeInfo.cell = evt.target;
+		cellSizeInfo.cellW = evt.target.scrollWidth ;
+		cellSizeInfo.cellH = evt.target.scrollHeight ;
+		<cc>// Move size constraints from row and column to cell</cc>
+		evt.target.style.height = evt.target.parentElement.style.height;
+		evt.target.style.width = this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width ;
+		<cc>// Clear the row and column size restrictions</cc>
+		evt.target.parentElement.style.height = "" ;
+		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
+		}
+	else cellSizeInfo.cell = undefined;
+	} ;
+</pre>
+
+<p>The mouse down event handler also removes the size contraints from the row and column elements, as seen in the previous section. While the cell sizer is dragged on the screen, the cell determines the size of the current row and column.</p>
+
+<p>When the mouse goes up, the mouse up event handler kicks in: </p>
+
+<figcaption class="listing">Detecting start of resizing</figcaption>
+<pre>
+export const mouseUpHandler = function ( evt ) {
+	if ( cellSizeInfo.cell ) {
+		<cc>// The cell has been resized.</cc>
+		<cc>// Copy cell size info to row and column elements</cc>
+		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth + "px" ;
+		<cc>// Delete size info in cell</cc>
+		evt.target.style.width = evt.target.style.height = "" ;
+		}
+	cellSizeInfo.cell = undefined;
+	} ;
+</pre>
+
+<p>The code above moves the size restrictions from the cell to the row and column elements, then invalidates the cell reference in the <tt>cellSizeInfo</tt> object.</p>
+
+<p>The sizer does work with touchscreen events, but in this case no mouse up and down events are fired. As a result, individual cells are sized, but size restrictions are not moved from the cell to row and column elements.</p>
+
+<!--h3--></div>
 
 <!--h2--></div>
 
