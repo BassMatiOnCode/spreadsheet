@@ -16,13 +16,20 @@ table.spreadsheet td {
 	height : 20px;
 	}
 
-table.spreadsheet [resize] {
+table.spreadsheet th:hover,
+table.spreadsheet td:hover,
+table.spreadsheet th:active,
+table.spreadsheet td:active {
+	overflow : hidden;
+	resize : both ;	
+	}
+
+xtable.spreadsheet [resize] {
 	overflow : hidden;
 	resize : both ;
 	}
 
 	/* Row and column labels */
-
 table.spreadsheet tr:first-child,
 table.spreadsheet tr:last-child,
 table.spreadsheet tr td:first-child,
@@ -61,7 +68,7 @@ table.spreadsheet tr [active] {
 	border : 1.5px solid darkorange ;
 	}
 
-dialogspreadsheet.context::backdrop {
+dialog.spreadsheet.context::backdrop {
 	background : rgba( 255,255,255,0 ) ;
 	}
 
