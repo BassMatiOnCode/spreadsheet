@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/inc/spreadsheet.css" />
 <link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="test/spreadsheet.css" />
 <style>
 #table-01 td, #table-01 th { text-align : left ; vertical-align : top }
 #table-01 th { padding-left : 20px }
@@ -46,7 +47,7 @@
 
 <pre>cell(1,1)/180*Math.PI</pre>
 
-<table class="spreadsheet" gen-labels="both"><tr>
+<table class="spreadsheet" labels="generate,both"><tr>
 	<th colspan="2">Angle</th>
 </tr><tr>
 	<th>degree</th>
@@ -59,7 +60,7 @@
 	<td data-xpr="cell(3,0)/180*Math.PI" data-format="value.toFixed(4)">?</td>
 </tr><tr>
 	<td>180</td>
-	<td data-xpr="offset(0,-1)/180*Math.PI" data-format="value.toFixed(4)">?</td>
+	<td data-xpr="offsetCell(0,-1)/180*Math.PI" data-format="value.toFixed(4)">?</td>
 </tr><tr>
 	<td>270</td>
 	<td data-xpr="cell(5,0)/180*Math.PI" data-format="value.toFixed(4)">?</td>
@@ -70,9 +71,9 @@
 
 <p>Another example computes the length of the hypothenusis in a rectangular triangle after the rule of Pythagoras:</p>
 
-<pre>Math.sqrt(offset(-2,0)**2 + offset(-1,0)**2)</pre>
+<pre>Math.sqrt(offsetCell(-2,0)**2 + offsetCell(-1,0)**2)</pre>
 
-<table class="spreadsheet" gen-labels="both"><tr>
+<table class="spreadsheet" labels="generate,both"><tr>
 	<th colspan="2">Triangle</th>
 </tr><tr>
 	<td>cathetus a</td>
@@ -82,7 +83,7 @@
 	<td contenteditable data-format="value.toFixed(2)">4</td>
 </tr><tr>
 	<td>hypotenuse</td>
-	<td data-xpr="Math.sqrt(offset(-2,0)**2 + offset(-1,0)**2)" data-format="value.toFixed(2)">?</td>
+	<td data-xpr="Math.sqrt(offsetCell(-2,0)**2 + offsetCell(-1,0)**2)" data-format="value.toFixed(2)">?</td>
 </tr></table>
 
 <p>You can edit the cathetus value, click into column 1!</p>

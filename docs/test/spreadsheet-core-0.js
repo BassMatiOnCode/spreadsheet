@@ -56,7 +56,7 @@ export const offsetCellValue = (rows, cols, cell ) => {
 	// Offset cell, returns the cell offset by a number of rows and columns
 	// from the specified cell.
 	return offsetCellObject( rows, cols, cell ).spreadsheetCore.value;
-	}, ocv = offsetCellValue ;
+	}, offsetCell = offsetCellValue, ocv = offsetCellValue ;
 export const offsetCellObject = (rows, cols, cell = currentCell) => {
 	// Offset cell, returns the cell offset by a number of rows and columns
 	// from the specified cell.
