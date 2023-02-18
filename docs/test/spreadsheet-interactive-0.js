@@ -18,21 +18,75 @@ export function initSpreadsheet( sheet ) {
 	dialog.addEventListener( "close", cellContextDialogCloseHandler.bind( dialog ));
 	} ;
 
+	// Selected Ranges
+
+	// Holds the selected ranges of all spreadsheets on the page
+export const selectedRanges = [ ] ;
+
+export function CellRange ( spreadsheet, row1, col1, row2=row1, col2=col1 ) {
+	// Constructor function
+	this.spreadsheet = typeof spreadsheet === "string" ? document.getElementById( spreadsheet ) : spreadsheet;
+	this.y1 = row1;
+	this.x1 = col1;
+	this.y2 = row2;
+	this.x2 = col2;
+	this.toggleAttribute();
+	}
+
+CellRange.prototype.extend = function ( row, col ) {
+	// A shift-click extends a selected cell range.
+	this.toggleAttribute( );
+	if ( row < this.y1 || row === this.y1 && col < this.x1 ) {
+		this.y2 = this.y1;
+		this.x2 = this.x1;
+		this.y1 = row;
+		this.x1 = col;
+		}
+	else {
+		this.y2 = row;
+		this.x2 = col;
+		}
+	this.toggleAttribute( );
+	} ;
+
+CellRange.prototype.toggleAttribute = function ( ) {
+	for ( let i = this.y1 ; i <= this.y2 ; i ++ ) {
+		const row = this.spreadsheet.rows[ i ] ;
+		for ( let j = this.x1 ; j <= this.x2 ; j ++ ) {
+			row.cells[ j ].toggleAttribute( "selected" );
+	}	}	}
+
 	// Spreadsheet table event handlers
 
 export const cellLeftClickHandler = function ( evt ) {
-	// Prevent browser default context menu
-	evt.preventDefault( );
-	// Select the current cell
-	const activeCell = this.querySelector( "[active]" );
-	if ( activeCell ) activeCell.removeAttribute( "active" );
+	// "this" references the spreadsheet table
+	// Make sure that we are working on a cell and not some child element.
+	console.log( "left-click" );
+	if ( cellSizeInfo.cell ) {
+		cellSizeInfo.cell = undefined;
+		return;
+		}
 	let cell = evt.target;
-	if ( ! cell ) return;
 	while ( cell && cell.tagName !== "TD" && cell.tagName !== "TH" ) cell = cell.parentElement;
-	if ( cell ) cell.toggleAttribute( "active" );	
+	if ( ! cell ) return; // Just in case...
+	// Prevent browser default context menu.
+	evt.preventDefault( );
+	evt.stopPropagation( );
+	if ( evt.shiftKey ) {
+		// Extend selected range.
+		const range = selectedRanges[ this.id ] ;
+		if ( ! range ) return ; // Nothing to extend
+		range.extend( cell.parentElement.rowIndex, cell.cellIndex );
+		}
+	else {
+		// Create a new selected range.
+		if ( selectedRanges[ this.id ] ) selectedRanges[ this.id ].toggleAttribute();
+		selectedRanges[ this.id ] = new CellRange( this.id, cell.parentElement.rowIndex, cell.cellIndex );
+		}
 	} ;
 export const cellRightClickHandler = function ( evt ) {
 	// Prevent browser default context menu
+	console.log( "right-click" );
 	evt.preventDefault( );
 	// Find table element
 	let cell = evt.target;
@@ -65,19 +119,18 @@ export const mouseDownHandler = function ( evt ) {
 		evt.target.parentElement.style.height = "" ;
 		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
 		}
-	else cellSizeInfo.cell = undefined;
 	} ;
 export const mouseUpHandler = function ( evt ) {
+	console.log( "mouse up" );
 	if ( cellSizeInfo.cell ) {
 		// The cell has been resized.
 		console.log( "Cell resized" );
 		// Copy cell size info to row and column elements
 		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth + "px" ;
+		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth - 10  + "px" ;
 		// Delete size info in cell
 		evt.target.style.width = evt.target.style.height = "" ;
 		}
-	cellSizeInfo.cell = undefined;
 	} ;
 
 	// Cell Context Dialog
