@@ -294,6 +294,14 @@ export const mouseUpHandler = function ( evt ) {
 
 <!--h2--></div>
 
+<h2 cbc>Selecting Cells</h2><div>
+
+<p>A left-click on a cell <em>selects</em> the cell. A shift-click <em>expands</em> or <em>shrinks</em> an existing selection.</p>
+
+<p>The left-click interferes with resizing a cell. Resizing is started in the mouse down event handler and finished in the mouse up event handler. After the mouse up event, a mouse click event is fired. Which must be ignored if the cell was resized. This is achieved by testing the <tt>cellSizeInfo.cell</tt>, which is set in the mouse down event handler if the mouse goes down on the sizer. If the cell reference is set, the click follows a cell resize and therefore is ignored.</p>
+
+
+<!--h2--></div>
 
 
 </main><footer id="page-footer"></footer>
