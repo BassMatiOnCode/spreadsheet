@@ -21,68 +21,67 @@ export function initSpreadsheet( sheet ) {
 	// Selected Ranges
 
 	// Holds the selected ranges of all spreadsheets on the page
+	// TODO: Change to an associative array
 export const selectedRanges = [ ] ;
 
 export function CellRange ( spreadsheet, row1, col1, row2=row1, col2=col1 ) {
 	// Constructor function
+	// Parameters are label cell index values. These are not affected by cells
+	// with rowspan and colspan values greather than 1.
+	// TODO: Does it make sense to work with logical row and column numbers instead?
 	this.spreadsheet = typeof spreadsheet === "string" ? document.getElementById( spreadsheet ) : spreadsheet;
-	this.y1 = row1;
-	this.x1 = col1;
-	this.y2 = row2;
-	this.x2 = col2;
+	this.row1 = row1;
+	this.col1 = col1;
+	this.row2 = row2;
+	this.col2 = col2;
 	this.toggleAttribute();
 	}
-
 CellRange.prototype.extend = function ( row, col ) {
-	// A shift-click extends a selected cell range.
+	// (Re)sets the second point of the range.
 	this.toggleAttribute( );
-	if ( row < this.y1 || row === this.y1 && col < this.x1 ) {
-		this.y2 = this.y1;
-		this.x2 = this.x1;
-		this.y1 = row;
-		this.x1 = col;
-		}
-	else {
-		this.y2 = row;
-		this.x2 = col;
-		}
+	this.row2 = row;
+	this.col2 = col;
 	this.toggleAttribute( );
 	} ;
-
 CellRange.prototype.toggleAttribute = function ( ) {
-	for ( let i = this.y1 ; i <= this.y2 ; i ++ ) {
+	// Toggles the "selected" attribute of cell elements.
+	// Note that cell index does not always correlate to the column number.
+	// First get the numbers ordered.
+	let r1, r2, c1, c2 ;
+	if ( this.row1 > this.row2 ) { r1 = this.row2 ; r2 = this.row1 } 
+	else { r1 = this.row1 ; r2 = this.row2 } 
+	if ( this.col1 > this.col2 ) { c1 = this.col2 ; c2 = this.col1 } 
+	else { c1 = this.col1 ; c2 = this.col2 } 
+	// Then loop over rows and columns.
+	for ( let i = r1 ; i <= r2 ; i ++ ) {
 		const row = this.spreadsheet.rows[ i ] ;
-		for ( let j = this.x1 ; j <= this.x2 ; j ++ ) {
-			row.cells[ j ].toggleAttribute( "selected" );
+		// Loop through the regular spreadsheet cells
+		for ( let j = 1 ; j < row.cells.length - 1  ; j ++ ) {
+			const cell = row.cells[ j ];
+			// Check the logical olumn number against the cell index range. 
+			if ( cell.dataset.col < c1 - 1 ) continue;
+			if ( cell.dataset.col > c2 - 1 ) break;
+			// Cell is within the range, so toggle the attribute.
+			cell.toggleAttribute( "selected" );
 	}	}	}
 
 	// Spreadsheet table event handlers
 
 export const cellLeftClickHandler = function ( evt ) {
 	// "this" references the spreadsheet table
-	// Make sure that we are working on a cell and not some child element.
 	console.log( "left-click" );
-	if ( cellSizeInfo.cell ) {
-		cellSizeInfo.cell = undefined;
-		return;
-		}
+	// A left-click following a resize event must be ignored.
+	if ( cellSizeInfo.cell ) { cellSizeInfo.cell = undefined; return; }
+	// Make sure that we are working on a cell and not some child element.
 	let cell = evt.target;
 	while ( cell && cell.tagName !== "TD" && cell.tagName !== "TH" ) cell = cell.parentElement;
 	if ( ! cell ) return; // Just in case...
-	// Prevent browser default context menu.
+	// Prevent the browser from selecting text across cells.
 	evt.preventDefault( );
 	evt.stopPropagation( );
-	if ( evt.shiftKey ) {
-		// Extend selected range.
-		const range = selectedRanges[ this.id ] ;
-		if ( ! range ) return ; // Nothing to extend
-		range.extend( cell.parentElement.rowIndex, cell.cellIndex );
-		}
-	else {
-		// Create a new selected range.
-		if ( selectedRanges[ this.id ] ) selectedRanges[ this.id ].toggleAttribute();
-		selectedRanges[ this.id ] = new CellRange( this.id, cell.parentElement.rowIndex, cell.cellIndex );
-		}
+	// Call the appropriate selection function.
+	selectCells( this, cell, evt.shiftKey );
+	return ;
 	} ;
 export const cellRightClickHandler = function ( evt ) {
 	// Prevent browser default context menu
@@ -130,6 +129,49 @@ export const mouseUpHandler = function ( evt ) {
 		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth - 10  + "px" ;
 		// Delete size info in cell
 		evt.target.style.width = evt.target.style.height = "" ;
+		}
+	} ;
+
+	// Cell Selection
+
+export const selectCells = function ( table, cell, extend ) {
+	// Select a range of cells.
+	console.log( "selectCells()" );
+	const row = cell.parentElement ;
+	let r1, r2, c1, c2 ;
+	const range = selectedRanges[ table.id ] ;
+	if ( ! extend ) {
+		// Deselect cells of the existing range.
+		if ( range ) range.toggleAttribute();
+		// Calculate row and column indices.
+		if ( row.rowIndex === 0 || row.rowIndex === table.rows.length - 1) { 
+			r1 = 1 ; 
+			r2 = table.rows.length - 2 ; 
+			c1 = c2 = cell.cellIndex;
+			}
+		else if ( cell.cellIndex === 0 || cell.cellIndex === row.cells.length - 1) { 
+			c1 = 1 ; 
+			c2 = row.cells.length - 2 
+			r1 = r2 = row.rowIndex ;
+			}
+		else {
+			c1 = c2 = +cell.dataset.col + 1 ;
+			r1 = r2 = row.rowIndex;
+		}
+		// Create a new selected range.
+		selectedRanges[ table.id ] = new CellRange( table.id, r1, c1, r2, c2 );
+		}
+	else {
+		// Exit if no range.
+		if ( ! range ) return ;
+		// Calculate indices.
+		if ( row.rowIndex === 0 ) { r2 = table.rows.length - 2 ; c2 = cell.cellIndex } 
+		else if ( row.rowIndex === table.rows.length - 1 ) { r2 = 1; c2 = cell.cellIndex }
+		else if ( cell.cellIndex === 0 ) { r2 = row.rowIndex ; c2 = row.cells.length - 2 }
+		else if ( cell.cellIndex === row.cells.length - 1 ) {r2 = row.rowIndex ; c2 = 1 }
+		else { r2 = row.rowIndex ; c2 = +cell.dataset.col + 1 } 
+		// Extend existing range.
+		range.extend( r2, c2 );
 		}
 	} ;
 

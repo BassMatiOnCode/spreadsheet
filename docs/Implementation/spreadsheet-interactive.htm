@@ -296,10 +296,82 @@ export const mouseUpHandler = function ( evt ) {
 
 <h2 cbc>Selecting Cells</h2><div>
 
-<p>A left-click on a cell <em>selects</em> the cell. A shift-click <em>expands</em> or <em>shrinks</em> an existing selection.</p>
+<p>A left-click on a cell <em>selects</em> that cell and creates a selected cells range object which spans exactly one cell. A shift-click <em>expands</em> or <em>shrinks</em> that range.</p>
 
-<p>The left-click interferes with resizing a cell. Resizing is started in the mouse down event handler and finished in the mouse up event handler. After the mouse up event, a mouse click event is fired. Which must be ignored if the cell was resized. This is achieved by testing the <tt>cellSizeInfo.cell</tt>, which is set in the mouse down event handler if the mouse goes down on the sizer. If the cell reference is set, the click follows a cell resize and therefore is ignored.</p>
+<p>The left-click interferes with resizing a cell. Resizing is started in the mouse down event handler and finished in the mouse up event handler. After the mouse up event, a mouse click event is fired &ndash; which must be ignored if the cell was actually resized. This is achieved by testing the <tt>cellSizeInfo.cell</tt>, which is set in the mouse down event handler if the mouse goes down on the cell sizer in the lower right corner. If the cell reference is set, the click follows a cell resize and therefore is ignored.</p>
 
+<p>Note that the <tt>cellLeftClickHandler</tt> was bound to the spreadsheet table in <tt>initSpreadsheet()</tt>, so <tt>this</tt> refers conveniently to the HTML TABLE element.</p>
+
+<figcaption class="listing">Selecting Cells</figcaption>
+<pre>
+export const cellLeftClickHandler = function ( evt ) {
+	<cc>// A left-click following a resize event must be ignored.</cc>
+	if ( cellSizeInfo.cell ) { cellSizeInfo.cell = undefined; return; }
+	<cc>// Make sure that we are working on a cell and not some child element.</cc>
+	let cell = evt.target;
+	while ( cell && cell.tagName !== "TD" && cell.tagName !== "TH" ) cell = cell.parentElement;
+	if ( ! cell ) return; // Just in case...
+	<cc>// Prevent the browser from selecting text across cells.</cc>
+	evt.preventDefault( );
+	evt.stopPropagation( );
+	<cc>// Call the appropriate selection function.</cc>
+	selectCells( this, cell, evt.shiftKey );
+	} ;
+</pre>
+
+<p>At the bottom, the selection function is called:</p>
+
+<figcaption class="listing">Cell range selection</figcaption>
+<pre>
+export const selectCells = function ( table, cell, extend ) {
+	const row = cell.parentElement ;
+	let r1, r2, c1, c2 ;
+	const range = selectedRanges[ table.id ] ;
+	if ( ! extend ) {
+		<cc>// Deselect cells of the existing range.</cc>
+		if ( range ) range.toggleAttribute();
+		<cc>// Calculate row and column indices.</cc>
+		if ( row.rowIndex === 0 || row.rowIndex === table.rows.length - 1) { 
+			r1 = 1 ; 
+			r2 = table.rows.length - 2 ; 
+			c1 = c2 = cell.cellIndex;
+			}
+		else if ( cell.cellIndex === 0 || cell.cellIndex === row.cells.length - 1) { 
+			c1 = 1 ; 
+			c2 = row.cells.length - 2 
+			r1 = r2 = row.rowIndex ;
+			}
+		else {
+			c1 = c2 = +cell.dataset.col + 1 ;
+			r1 = r2 = row.rowIndex;
+		}
+		<cc>// Create a new selected range.</cc>
+		selectedRanges[ table.id ] = new CellRange( table.id, r1, c1, r2, c2 );
+		}
+</pre>
+
+<p>A left-click with no shift creates a new selection range. Row and column indices are calculated based on the type of cell, row label, column label or regular spreadsheet cell. The <tt>CellRange</tt> constructor stores the coordinates and cares for setting the "selected" attribute on the cells.</p>
+
+<p>A shift-click extends an existing selection range:</p>
+
+<figcaption class="listing">Cell range selection</figcaption>
+<pre>
+	else {
+		<cc>// Exit if no range</cc>
+		if ( ! range ) return ;  
+		<cc>// Calculate indices</cc>
+		if ( row.rowIndex === 0 ) { r2 = table.rows.length - 2 ; c2 = cell.cellIndex } 
+		else if ( row.rowIndex === table.rows.length - 1 ) { r2 = 1; c2 = cell.cellIndex }
+		else if ( cell.cellIndex === 0 ) { r2 = row.rowIndex ; c2 = row.cells.length - 2 }
+		else if ( cell.cellIndex === row.cells.length - 1 ) {r2 = row.rowIndex ; c2 = 1 }
+		else { r2 = row.rowIndex ; c2 = +cell.dataset.col + 1 } 
+		<cc>// Extend existing range.</cc>
+		range.extend( r2, c2 );
+		}
+	} ;
+</pre>
+
+<p>Again, the row and column indices are calculated according to the cell type, the the <tt>range.extend()</tt> method takes care of the rest.</p>
 
 <!--h2--></div>
 
