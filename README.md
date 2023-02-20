@@ -15,6 +15,8 @@ A lightweight, fast and modular JavaScript spreadsheet library, based on the HTM
 
 2023-02-14  Automated test infrastructure improved. Individual test documents are imported in IFRAMES in test-root.htm. Test stati are updated and color coded in an overview table. Test documents can be run and debugged individually to solve problems, if any.
 
-2023-02-15	Spreadsheet cell context menu based on the DIALOG element. Current cell highlighting and cell resizing implemented. 
+2023-02-15	Spreadsheet cell context menu based on the DIALOG element. Current cell highlighting and cell resizing started. 
 
-2023-01-16	Cell resize algorithms implemented based on the table cell resize:both style, one is context-dialog based, the other method uses :hover to activate the cell resizer. Partially works with touchscreens, but needs some additional tweakings.
+2023-02-16	Cell resize algorithms implemented based on the table cell resize:both style, one is context-dialog based, the other method uses :hover to activate the cell resizer. Partially works with touchscreens, but needs some additional tweakings.
+
+2023-02-20	Cell range selection implemented.
