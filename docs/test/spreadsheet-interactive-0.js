@@ -74,7 +74,6 @@ export const cellLeftClickHandler = function ( evt ) {
 	if ( cellSizeInfo.cell ) { cellSizeInfo.cell = undefined; return; }
 	// Make sure that we are working on a cell and not some child element.
 	let cell = evt.target;
-	if ( ! cell ) return;
 	while ( cell && cell.tagName !== "TD" && cell.tagName !== "TH" ) cell = cell.parentElement;
 	if ( ! cell ) return; // Just in case...
 	// Prevent the browser from selecting text across cells.
@@ -86,6 +85,7 @@ export const cellLeftClickHandler = function ( evt ) {
 	} ;
 export const cellRightClickHandler = function ( evt ) {
 	// Prevent browser default context menu
+	console.log( "right-click" );
 	evt.preventDefault( );
 	// Find table element
 	let cell = evt.target;
@@ -118,9 +118,9 @@ export const mouseDownHandler = function ( evt ) {
 		evt.target.parentElement.style.height = "" ;
 		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
 		}
-	else cellSizeInfo.cell = undefined;
 	} ;
 export const mouseUpHandler = function ( evt ) {
+	console.log( "mouse up" );
 	if ( cellSizeInfo.cell ) {
 		// The cell has been resized.
 		console.log( "Cell resized" );
@@ -130,7 +130,49 @@ export const mouseUpHandler = function ( evt ) {
 		// Delete size info in cell
 		evt.target.style.width = evt.target.style.height = "" ;
 		}
-	cellSizeInfo.cell = undefined;
+	} ;
+
+	// Cell Selection
+
+export const selectCells = function ( table, cell, extend ) {
+	// Select a range of cells.
+	console.log( "selectCells()" );
+	const row = cell.parentElement ;
+	let r1, r2, c1, c2 ;
+	const range = selectedRanges[ table.id ] ;
+	if ( ! extend ) {
+		// Deselect cells of the existing range.
+		if ( range ) range.toggleAttribute();
+		// Calculate row and column indices.
+		if ( row.rowIndex === 0 || row.rowIndex === table.rows.length - 1) { 
+			r1 = 1 ; 
+			r2 = table.rows.length - 2 ; 
+			c1 = c2 = cell.cellIndex;
+			}
+		else if ( cell.cellIndex === 0 || cell.cellIndex === row.cells.length - 1) { 
+			c1 = 1 ; 
+			c2 = row.cells.length - 2 
+			r1 = r2 = row.rowIndex ;
+			}
+		else {
+			c1 = c2 = +cell.dataset.col + 1 ;
+			r1 = r2 = row.rowIndex;
+		}
+		// Create a new selected range.
+		selectedRanges[ table.id ] = new CellRange( table.id, r1, c1, r2, c2 );
+		}
+	else {
+		// Exit if no range.
+		if ( ! range ) return ;
+		// Calculate indices.
+		if ( row.rowIndex === 0 ) { r2 = table.rows.length - 2 ; c2 = cell.cellIndex } 
+		else if ( row.rowIndex === table.rows.length - 1 ) { r2 = 1; c2 = cell.cellIndex }
+		else if ( cell.cellIndex === 0 ) { r2 = row.rowIndex ; c2 = row.cells.length - 2 }
+		else if ( cell.cellIndex === row.cells.length - 1 ) {r2 = row.rowIndex ; c2 = 1 }
+		else { r2 = row.rowIndex ; c2 = +cell.dataset.col + 1 } 
+		// Extend existing range.
+		range.extend( r2, c2 );
+		}
 	} ;
 
 	// Cell Selection

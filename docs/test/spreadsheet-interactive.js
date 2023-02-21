@@ -74,7 +74,6 @@ export const cellLeftClickHandler = function ( evt ) {
 	if ( cellSizeInfo.cell ) { cellSizeInfo.cell = undefined; return; }
 	// Make sure that we are working on a cell and not some child element.
 	let cell = evt.target;
-	if ( ! cell ) return;
 	while ( cell && cell.tagName !== "TD" && cell.tagName !== "TH" ) cell = cell.parentElement;
 	if ( ! cell ) return; // Just in case...
 	// Prevent the browser from selecting text across cells.
@@ -86,6 +85,7 @@ export const cellLeftClickHandler = function ( evt ) {
 	} ;
 export const cellRightClickHandler = function ( evt ) {
 	// Prevent browser default context menu
+	console.log( "right-click" );
 	evt.preventDefault( );
 	// Find table element
 	let cell = evt.target;
@@ -118,9 +118,9 @@ export const mouseDownHandler = function ( evt ) {
 		evt.target.parentElement.style.height = "" ;
 		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
 		}
-	else cellSizeInfo.cell = undefined;
 	} ;
 export const mouseUpHandler = function ( evt ) {
+	console.log( "mouse up" );
 	if ( cellSizeInfo.cell ) {
 		// The cell has been resized.
 		console.log( "Cell resized" );
@@ -130,7 +130,6 @@ export const mouseUpHandler = function ( evt ) {
 		// Delete size info in cell
 		evt.target.style.width = evt.target.style.height = "" ;
 		}
-	cellSizeInfo.cell = undefined;
 	} ;
 
 	// Cell Selection

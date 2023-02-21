@@ -6,3 +6,9 @@
 /docs/logo.svg
 /docs/site.css
 /docs/test - Copy
+/docs/test/spreadsheet.css
+/docs/spreadsheet-core.js
+/docs/spreadsheet-utility.js
+/docs/spreadsheet-persistence.js
+/docs/spreadsheet-structure.js
+/docs/test/spreadsheet-interactive.js
