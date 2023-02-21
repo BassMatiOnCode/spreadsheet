@@ -21,8 +21,7 @@ export function initSpreadsheet( sheet ) {
 	// Selected Ranges
 
 	// Holds the selected ranges of all spreadsheets on the page
-	// TODO: Change to an associative array
-export const selectedRanges = [ ] ;
+export const selectedRanges = { } ;
 
 export function CellRange ( spreadsheet, row1, col1, row2=row1, col2=col1 ) {
 	// Constructor function
@@ -86,6 +85,7 @@ export const cellLeftClickHandler = function ( evt ) {
 export const cellRightClickHandler = function ( evt ) {
 	// Prevent browser default context menu
 	console.log( "right-click" );
+	return;
 	evt.preventDefault( );
 	// Find table element
 	let cell = evt.target;
@@ -112,11 +112,44 @@ export const mouseDownHandler = function ( evt ) {
 		cellSizeInfo.cellW = evt.target.scrollWidth ;
 		cellSizeInfo.cellH = evt.target.scrollHeight ;
 		// Move size constraints from row and column to cell
-		evt.target.style.height = evt.target.parentElement.style.height;
-		evt.target.style.width = this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width ;
-		// Clear the row and column size restrictions
-		evt.target.parentElement.style.height = "" ;
-		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
+		if ( evt.target.hasAttribute( "data-col" )) {
+			// Regular spreadsheet cell.
+			console.log( "regular spreadsheet cell" );
+			evt.target.style.height = evt.target.parentElement.style.height;
+			evt.target.parentElement.style.height = "" ;
+			evt.target.style.width = this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width ;
+			this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
+			}
+		else if ( evt.target.cellIndex === 0  ) {
+			// Left row label cell.
+			console.log( "left row label cell" );
+			evt.target.style.height = evt.target.parentElement.style.height;
+			evt.target.parentElement.style.height = "" ;
+			evt.target.style.width = this.rows[ 0 ].firstElementChild.style.width ;
+			this.rows[ 0 ].firstElementChild.style.width = "" ;
+			}
+		else if ( evt.target.cellIndex === evt.target.parentElement.cells.length - 1  ) {
+			// Right row label cell.
+			console.log( "right row label cell" );
+			evt.target.style.height = evt.target.parentElement.style.height;
+			evt.target.parentElement.style.height = "" ;
+			evt.target.style.width = this.rows[ 0 ].lastElementChild.style.width ;
+			this.rows[ 0 ].lastElementChild.style.width = "" ;
+			}
+		else if ( evt.target.parentElement.rowIndex === 0 ) {
+			// Top column label cell.
+			console.log( "top column label cell" );
+			evt.target.style.height = evt.target.parentElement.style.height ;
+			evt.target.parentElement.style.height = "" ;
+			}
+		else if ( evt.target.parentElement.rowIndex === this.rows.length - 1 ) {
+			// Bottom column label cell.
+			console.log( "bottom column label cell" );
+			evt.target.style.height = evt.target.parentElement.style.height ;
+			evt.target.parentElement.style.height = "" ;
+			evt.target.style.width = this.rows[ 0 ].cells[ evt.target.cellIndex ].style.width ;
+			this.rows[ 0 ].cells[ evt.target.cellIndex ].style.width = "" ;
+			}
 		}
 	} ;
 export const mouseUpHandler = function ( evt ) {
@@ -124,11 +157,44 @@ export const mouseUpHandler = function ( evt ) {
 	if ( cellSizeInfo.cell ) {
 		// The cell has been resized.
 		console.log( "Cell resized" );
-		// Copy cell size info to row and column elements
-		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth - 10  + "px" ;
-		// Delete size info in cell
-		evt.target.style.width = evt.target.style.height = "" ;
+		// Copy cell size info to left row and top column label cells.
+		if ( evt.target.hasAttribute( "data-col" )) {
+			// A regular spreadsheet cell has been resized.
+			console.log( "regular spreadsheet cell" );
+			this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth - 10  + "px" ;
+			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+			evt.target.style.width = evt.target.style.height = "" ;
+			}
+		else if ( evt.target.cellIndex === 0 ) {
+			// Left row label cell.
+			console.log( "left row label cell" );
+			this.rows[ 0 ].firstElementChild.style.width = evt.target.scrollWidth - 10  + "px" ;
+			evt.target.style.width = "" ;
+			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+			evt.target.style.height = "" ;
+			}
+		else if ( evt.target.cellIndex === evt.target.parentElement.cells.length - 1 ) {
+			// Right row label cell.
+			console.log( "right row label cell" );
+			this.rows[ 0 ].lastElementChild.style.width = evt.target.scrollWidth - 10  + "px" ;
+			evt.target.style.width = "" ;
+			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+			evt.target.style.height = "" ;
+			}
+		else if ( evt.target.parentElement.rowIndex === 0 ) {
+			// Top column label cell.
+			console.log( "top column label cell" );
+			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+			evt.target.style.height = "" ;
+			}
+		else if ( evt.target.parentElement.rowIndex === this.rows.length - 1 ) {
+			// Bottom column label cell.
+			console.log( "bottom column label cell" );
+			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+			evt.target.style.height = "" ;
+			this.rows[ 0 ].cells [ evt.target.cellIndex ].style.width = +evt.target.scrollWidth - 10 + "px" ;
+			evt.target.style.width = "" ;
+			}
 		}
 	} ;
 
