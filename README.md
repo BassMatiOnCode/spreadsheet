@@ -19,4 +19,5 @@ A lightweight, fast and modular JavaScript spreadsheet library, based on the HTM
 
 2023-02-16	Cell resize algorithms implemented based on the table cell resize:both style, one is context-dialog based, the other method uses :hover to activate the cell resizer. Partially works with touchscreens, but needs some additional tweakings.
 
-2023-02-20	Cell range selection implemented.
+2023-02-20	Cell range selection implemented. Testing and code documentation.
+

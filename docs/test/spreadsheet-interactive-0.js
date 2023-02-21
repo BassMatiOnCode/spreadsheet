@@ -18,10 +18,12 @@ export function initSpreadsheet( sheet ) {
 	dialog.addEventListener( "close", cellContextDialogCloseHandler.bind( dialog ));
 	} ;
 
-	// Selected Ranges
+	// Variables
+	
+let cellResizing ;  // Reference to a table cell being resized.
+export const selectedRanges = { } ;  // Holds the selected ranges of all spreadsheets on the page
 
-	// Holds the selected ranges of all spreadsheets on the page
-export const selectedRanges = { } ;
+	// Selected cell range objects
 
 export function CellRange ( spreadsheet, row1, col1, row2=row1, col2=col1 ) {
 	// Constructor function
@@ -67,10 +69,10 @@ CellRange.prototype.toggleAttribute = function ( ) {
 	// Spreadsheet table event handlers
 
 export const cellLeftClickHandler = function ( evt ) {
-	// "this" references the spreadsheet table
+	// Note: "this" references the spreadsheet table
 	console.log( "left-click" );
 	// A left-click following a resize event must be ignored.
-	if ( cellSizeInfo.cell ) { cellSizeInfo.cell = undefined; return; }
+	if ( cellResizing ) { cellResizing = undefined; return; }
 	// Make sure that we are working on a cell and not some child element.
 	let cell = evt.target;
 	while ( cell && cell.tagName !== "TD" && cell.tagName !== "TH" ) cell = cell.parentElement;
@@ -85,7 +87,6 @@ export const cellLeftClickHandler = function ( evt ) {
 export const cellRightClickHandler = function ( evt ) {
 	// Prevent browser default context menu
 	console.log( "right-click" );
-	return;
 	evt.preventDefault( );
 	// Find table element
 	let cell = evt.target;
@@ -98,103 +99,96 @@ export const cellRightClickHandler = function ( evt ) {
 	dialog.style.marginTop = `${evt.clientY}px` ;
 	dialog.showModal( );
 	} ;
-const cellSizeInfo = {
-	cell : undefined,	// cell at mouse down
-	cellW : 0,		// cell width at mouse down
-	cellH : 0		// cell height at mouse down
-	} ;
 export const mouseDownHandler = function ( evt ) {
 	console.log( `MouseDown` );
-	if ( /(TD|TH)/.test( evt.target.tagName ) && evt.offsetX > evt.target.scrollWidth - 20 && evt.offsetY > evt.target.scrollHeight - 20 ) {
-		// A mouse button went down on a table cell.
-		console.log( "Resizing started" );
-		cellSizeInfo.cell = evt.target;
-		cellSizeInfo.cellW = evt.target.scrollWidth ;
-		cellSizeInfo.cellH = evt.target.scrollHeight ;
-		// Move size constraints from row and column to cell
-		if ( evt.target.hasAttribute( "data-col" )) {
-			// Regular spreadsheet cell.
-			console.log( "regular spreadsheet cell" );
-			evt.target.style.height = evt.target.parentElement.style.height;
-			evt.target.parentElement.style.height = "" ;
-			evt.target.style.width = this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width ;
-			this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
-			}
-		else if ( evt.target.cellIndex === 0  ) {
-			// Left row label cell.
-			console.log( "left row label cell" );
-			evt.target.style.height = evt.target.parentElement.style.height;
-			evt.target.parentElement.style.height = "" ;
-			evt.target.style.width = this.rows[ 0 ].firstElementChild.style.width ;
-			this.rows[ 0 ].firstElementChild.style.width = "" ;
-			}
-		else if ( evt.target.cellIndex === evt.target.parentElement.cells.length - 1  ) {
-			// Right row label cell.
-			console.log( "right row label cell" );
-			evt.target.style.height = evt.target.parentElement.style.height;
-			evt.target.parentElement.style.height = "" ;
-			evt.target.style.width = this.rows[ 0 ].lastElementChild.style.width ;
-			this.rows[ 0 ].lastElementChild.style.width = "" ;
-			}
-		else if ( evt.target.parentElement.rowIndex === 0 ) {
-			// Top column label cell.
-			console.log( "top column label cell" );
-			evt.target.style.height = evt.target.parentElement.style.height ;
-			evt.target.parentElement.style.height = "" ;
-			}
-		else if ( evt.target.parentElement.rowIndex === this.rows.length - 1 ) {
-			// Bottom column label cell.
-			console.log( "bottom column label cell" );
-			evt.target.style.height = evt.target.parentElement.style.height ;
-			evt.target.parentElement.style.height = "" ;
-			evt.target.style.width = this.rows[ 0 ].cells[ evt.target.cellIndex ].style.width ;
-			this.rows[ 0 ].cells[ evt.target.cellIndex ].style.width = "" ;
-			}
+	// Exit if the mouse did not go down on the sizer.
+	if ( ! /(TD|TH)/.test( evt.target.tagName ) || evt.offsetX < evt.target.scrollWidth - 20 || evt.offsetY < evt.target.scrollHeight - 20 ) return ;
+	// Record the cell being resized.
+	console.log( "Resizing started" );
+	cellResizing = evt.target;
+	// Move size constraints from row and column to cell
+	if ( evt.target.hasAttribute( "data-col" )) {
+		// Regular spreadsheet cell.
+		console.log( "regular spreadsheet cell" );
+		evt.target.style.height = evt.target.parentElement.style.height;
+		evt.target.parentElement.style.height = "" ;
+		evt.target.style.width = this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width ;
+		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = "" ;
+		}
+	else if ( evt.target.cellIndex === 0  ) {
+		// Left row label cell.
+		console.log( "left row label cell" );
+		evt.target.style.height = evt.target.parentElement.style.height;
+		evt.target.parentElement.style.height = "" ;
+		evt.target.style.width = this.rows[ 0 ].firstElementChild.style.width ;
+		this.rows[ 0 ].firstElementChild.style.width = "" ;
+		}
+	else if ( evt.target.cellIndex === evt.target.parentElement.cells.length - 1  ) {
+		// Right row label cell.
+		console.log( "right row label cell" );
+		evt.target.style.height = evt.target.parentElement.style.height;
+		evt.target.parentElement.style.height = "" ;
+		evt.target.style.width = this.rows[ 0 ].lastElementChild.style.width ;
+		this.rows[ 0 ].lastElementChild.style.width = "" ;
+		}
+	else if ( evt.target.parentElement.rowIndex === 0 ) {
+		// Top column label cell.
+		console.log( "top column label cell" );
+		evt.target.style.height = evt.target.parentElement.style.height ;
+		evt.target.parentElement.style.height = "" ;
+		}
+	else if ( evt.target.parentElement.rowIndex === this.rows.length - 1 ) {
+		// Bottom column label cell.
+		console.log( "bottom column label cell" );
+		evt.target.style.height = evt.target.parentElement.style.height ;
+		evt.target.parentElement.style.height = "" ;
+		evt.target.style.width = this.rows[ 0 ].cells[ evt.target.cellIndex ].style.width ;
+		this.rows[ 0 ].cells[ evt.target.cellIndex ].style.width = "" ;
 		}
 	} ;
 export const mouseUpHandler = function ( evt ) {
 	console.log( "mouse up" );
-	if ( cellSizeInfo.cell ) {
-		// The cell has been resized.
-		console.log( "Cell resized" );
-		// Copy cell size info to left row and top column label cells.
-		if ( evt.target.hasAttribute( "data-col" )) {
-			// A regular spreadsheet cell has been resized.
-			console.log( "regular spreadsheet cell" );
-			this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth - 10  + "px" ;
-			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-			evt.target.style.width = evt.target.style.height = "" ;
-			}
-		else if ( evt.target.cellIndex === 0 ) {
-			// Left row label cell.
-			console.log( "left row label cell" );
-			this.rows[ 0 ].firstElementChild.style.width = evt.target.scrollWidth - 10  + "px" ;
-			evt.target.style.width = "" ;
-			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-			evt.target.style.height = "" ;
-			}
-		else if ( evt.target.cellIndex === evt.target.parentElement.cells.length - 1 ) {
-			// Right row label cell.
-			console.log( "right row label cell" );
-			this.rows[ 0 ].lastElementChild.style.width = evt.target.scrollWidth - 10  + "px" ;
-			evt.target.style.width = "" ;
-			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-			evt.target.style.height = "" ;
-			}
-		else if ( evt.target.parentElement.rowIndex === 0 ) {
-			// Top column label cell.
-			console.log( "top column label cell" );
-			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-			evt.target.style.height = "" ;
-			}
-		else if ( evt.target.parentElement.rowIndex === this.rows.length - 1 ) {
-			// Bottom column label cell.
-			console.log( "bottom column label cell" );
-			evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
-			evt.target.style.height = "" ;
-			this.rows[ 0 ].cells [ evt.target.cellIndex ].style.width = +evt.target.scrollWidth - 10 + "px" ;
-			evt.target.style.width = "" ;
-			}
+	if ( ! cellResizing ) return ;
+	// The cell has been resized.
+	console.log( "Cell resized" );
+	// Copy cell size info to left row and top column label cells.
+	if ( evt.target.hasAttribute( "data-col" )) {
+		// A regular spreadsheet cell has been resized.
+		// We use the logical column number to find the correct column label cell in the first row of the table.
+		console.log( "regular spreadsheet cell" );
+		this.rows[ 0 ].cells[ +evt.target.dataset.col + 1 ].style.width = evt.target.scrollWidth - 10  + "px" ;
+		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+		evt.target.style.width = evt.target.style.height = "" ;
+		}
+	else if ( evt.target.cellIndex === 0 ) {
+		// Left row label cell.
+		console.log( "left row label cell" );
+		this.rows[ 0 ].firstElementChild.style.width = evt.target.scrollWidth - 10  + "px" ;
+		evt.target.style.width = "" ;
+		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+		evt.target.style.height = "" ;
+		}
+	else if ( evt.target.cellIndex === evt.target.parentElement.cells.length - 1 ) {
+		// Right row label cell.
+		console.log( "right row label cell" );
+		this.rows[ 0 ].lastElementChild.style.width = evt.target.scrollWidth - 10  + "px" ;
+		evt.target.style.width = "" ;
+		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+		evt.target.style.height = "" ;
+		}
+	else if ( evt.target.parentElement.rowIndex === 0 ) {
+		// Top column label cell.
+		console.log( "top column label cell" );
+		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+		evt.target.style.height = "" ;
+		}
+	else if ( evt.target.parentElement.rowIndex === this.rows.length - 1 ) {
+		// Bottom column label cell.
+		console.log( "bottom column label cell" );
+		evt.target.parentElement.style.height = evt.target.scrollHeight + "px" ;
+		evt.target.style.height = "" ;
+		this.rows[ 0 ].cells [ evt.target.cellIndex ].style.width = +evt.target.scrollWidth - 10 + "px" ;
+		evt.target.style.width = "" ;
 		}
 	} ;
 
