@@ -8,7 +8,7 @@
 /docs/test - Copy
 spreadsheet.css
 spreadsheet-core.js
-spreadsheet-function.js
+spreadsheet-functions.js
 spreadsheet-interactive.js
 spreadsheet-persistence.js
 spreadsheet-structure.js
