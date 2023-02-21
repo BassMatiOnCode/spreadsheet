@@ -12,3 +12,4 @@
 /docs/spreadsheet-persistence.js
 /docs/spreadsheet-structure.js
 /docs/test/spreadsheet-interactive.js
+*.bak
