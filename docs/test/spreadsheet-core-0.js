@@ -110,7 +110,7 @@ export const focusinHandler = ( evt ) => {
 		// Show a prefixed plain text in the cell
 	setCurrentCell( evt.target );
 	setPrefixedText( );
-		// Select the entire text in the cell
+		// Select the entire text content in the cell
 	if ( evt.target.innerText.length > 0) window.getSelection().setBaseAndExtent( evt.target, 0, evt.target,1 );
 	} ;
 export const focusoutHandler = ( evt ) => {

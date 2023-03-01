@@ -6,8 +6,8 @@
 <meta name="author" content="USP" />
 <meta name="creation-date" content="2023-02-15" />
 <meta name="editor" content="USP" />
-<meta name="change-date" content="2023-02-15" />
-<meta name="version" content="1" />
+<meta name="change-date" content="2023-02-21" />
+<meta name="version" content="2" />
 <meta name="categories" content="Projects > JavaScript" />
 <meta name="tags" content="project, JavaScript, HTML, spreadsheet, library" />
 <meta name="description" content="<tt>Spreadsheet Interactive</tt> implements GUI functions." />
@@ -28,29 +28,41 @@
 
 <h2 cbc>Cell Context Menu</h2><div>
 
-<p>The spreadsheet cell context menu provides access to Spreadsheet Interactive functions, such as </p>
+<p>The spreadsheet cell context menu provides access to Spreadsheet Interactive functions, such as insert and delete rows and columns.</p>
 
-<ul>
-<li>insert rows</li>
-<li>delete rows</li>
-<li>insert columns</li>
-<li>delete columns</li>
-<li>resize columns</li>
-</ul>
+<figcaption class="figure">Cell context menu</figcaption>
+<img src="../img/fig-003.png" width="93" />
 
 <p>The context menu is implemented as <tt>dialog</tt> element:</p>
 
 <figcaption class="listing">Context menu HTML code</figcaption>
 <pre>
-&lt;dialog id="cell-context" class="spreadsheet context"&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;Insert row&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;delete row&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;Insert column&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;delete column&lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt;&lt;/dialog&gt;
+&lt;dialog id="cell-context-dialog" class="spreadsheet cell-context" &gt;
+&lt;table&gt;
+&lt;tr&gt;
+	&lt;td colspan="3"&gt;Insert&lt;/td&gt;
+&lt;/tr&gt;&lt;tr verb="insert-rows"&gt;
+	&lt;td rowspan="2"&gt; &lt;/td&gt;
+	&lt;td contenteditable arg="0"&gt;1&lt;/td&gt;
+	&lt;td action="close"&gt;rows&lt;/td&gt;
+&lt;/tr&gt;&lt;tr verb="insert-columns"&gt;
+	&lt;td contenteditable arg="0"&gt;1&lt;/td&gt;
+	&lt;td action="close"&gt;columns&lt;/td&gt;
+&lt;/tr&gt;&lt;tr&gt;
+	&lt;td colspan="3"&gt;Delete&lt;/td&gt;
+&lt;/tr&gt;&lt;tr verb="delete-rows"&gt;
+	&lt;td rowspan="2"&gt; &lt;/td&gt;
+	&lt;td contenteditable arg="0"&gt;1&lt;/td&gt;
+	&lt;td action="close"&gt;rows&lt;/td&gt;
+&lt;/tr&gt;&lt;tr verb="delete-columns"&gt;
+	&lt;td contenteditable arg="0"&gt;1&lt;/td&gt;
+	&lt;td action="close"&gt;columns&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;&lt;/dialog&gt;
 </pre>
 
-<p>The dialog contains a table with context menu entries. Choosing a table opens a number of interesting design opportunities. When a table cell is left-clicked, the row and column index is placed in a dialog result variable. A click outside the dialog just closes the dialog without changint the result.</p>
+<p>Each command is enclosed in a table row element with a <tt>verb</tt> attribute (the command name). A verb row contains zero or more etitable numbered argument cells and a cell with an <tt>action</tt> attribute. The arguments can be edited, the <tt>enter</tt> key or a click on the <tt>action="close"</tt> cell closes the dialog for command execution. A click outside the dialog area closes the dialog without executing a command (abort function).</p>
+
+<p></p>
 
 <p>Some event handlers are registered in the <tt>pageInit()</tt> function:</p>
 
@@ -499,7 +511,6 @@ export const selectCells = function ( table, cell, extend ) {
 <p>Again, the row and column indices are calculated according to the cell type, the the <tt>range.extend()</tt> method takes care of the rest.</p>
 
 <!--h2--></div>
-
 
 </main><footer id="page-footer"></footer>
 <script type="module" src="/inc/page.js" ></script>

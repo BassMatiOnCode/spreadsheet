@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-21" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-21" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, partial, test, utility" />
+<meta name="description" content="Spreadsheet-interactive test document." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="./spreadsheet-0.css" />
+<link rel="stylesheet" href="./test.css" />
+ 
+<title>Projects - Spreadsheet - Test 14 - Insert Columns Test</title>
+
+</head><body>
+
+<h1>Test <span id="test-number">14</span> <span id="test-title">Insert Columns</span></h1>
+
+<p>Status: <span id="status">pending</span>.
+<br/>Result: <span id="result" value="undefined"></span>
+<br/><span id="tests">0</span> tests <span id="errors">0</span> errors</p>
+
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td rowspan="3">0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td colspan="2">1,2</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,2</td>
+	<td>2,3</td>
+	<td>2,4</td>
+</tr></table>
+
+<p>Visual inspections required:</p>
+
+<ol class="visual-inspections">
+<li>After insertion of columns, existing row and column information in the cells must still match the row and colunm headers. The correctness of these test code portions is veryfied by this inspection.</li>
+</ol>
+
+<script type="module">
+import { check, report, logError, publishResults } from "./test.js" ;
+import * as core from "./spreadsheet-core.js" ;
+import * as structure from "./spreadsheet-structure.js" ;
+
+core.initPage( );
+core.setCurrentSpreadsheet( "sheet-1" );
+
+	// Block 1 : Insertion of columns does not invalidate logical row and column numbers
+
+	// First, update existing column number in cell.innerText
+core.currentSheet.querySelectorAll( "TD[data-col]" ).forEach( cell => {
+	const coords = cell.innerText.split( "," );
+	if ( coords[ 1 ] > 1 ) cell.innerText = `${coords[ 0 ]},${+coords[ 1 ] + 2}` ;
+	} ) ;
+	// Then insert two columns.
+structure.insertColumns( 2, 2 );
+
+	// Check top column labels
+check( "14.1", core.currentSheet.rows[ 0 ].cells[ 0 ].innerText, "", "Wrong top corner label" );
+for ( let i = 1 ; i < core.currentSheet.rows[ 0 ].cells.length - 1 ; i ++ ) {
+	check( "14." + i + 2, core.currentSheet.rows[ 0 ].cells[ i ].innerText, (i - 1).toString( ), "Wrong top column label" );
+	}
+check( "14.9", core.currentSheet.rows[ 0 ].cells[ 8 ].innerText, "", "Wrong top corner label" );
+	// Check bottom column labels
+check( "14.10", core.currentSheet.rows[ 0 ].cells[ 0 ].innerText, "", "Wrong top corner label" );
+for ( let i = 1 ; i < core.currentSheet.rows[ 0 ].cells.length - 1 ; i ++ ) {
+	check( "14." + i + 10, core.currentSheet.rows[ 0 ].cells[ i ].innerText, (i - 1).toString( ), "Wrong top column label" );
+	}
+check( "14.18", core.currentSheet.rows[ 0 ].cells[ 8 ].innerText, "", "Wrong top corner label" );
+	// Check 1st regular spreadsheet row
+let row = core.currentSheet.rows[ 1 ];
+check( "14.19", row.cells[ 0 ].innerText, "0", "Wrong left row label" );
+const cells = core.currentSheet.querySelectorAll( "[data-col]" );
+for ( let i = 0 ; i < cells.length ; i ++ ) {
+	const cell = cells[ i ];
+		// Skip generated cells, they have no inner text.
+	if ( ! cell.innerText ) continue;
+	const coords = cell.innerText.split( "," );
+	check( null, cell.parentElement.dataset.row, coords[ 0 ], "Wrong logical row number" );
+	check( null, cell.dataset.col, coords[ 1 ], "Wrong logical column number" );
+	}
+check( "14.45", core.currentSheet.rows[ 1 ].cells[ 0 ].innerText, "0", "Wrong left row label" );
+
+	// append two more columns at the end
+
+// structure.insertColumns( -1, 2 );
+
+publishResults( );
+</script>
+</body></html>

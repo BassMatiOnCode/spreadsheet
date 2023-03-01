@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-02-21" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-02-21" />
+<meta name="version" content="1" />
+<meta name="categories" content="Projects > JavaScript" />
+<meta name="tags" content="project, JavaScript, HTML, spreadsheet, library, partial, test, utility" />
+<meta name="description" content="Spreadsheet-interactive test document." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<link rel="stylesheet" href="./spreadsheet-0.css" />
+<link rel="stylesheet" href="./test.css" />
+ 
+<title>Projects - Spreadsheet - Test 13 - Cell Context Dialog</title>
+
+</head><body>
+
+<h1>Test <span id="test-number">13</span> <span id="test-title">Cell Context Dialog</span></h1>
+
+<p>Status: <span id="status">pending</span>.
+<br/>Result: <span id="result" value="undefined"></span>
+<br/><span id="tests">0</span> tests <span id="errors">0</span> errors</p>
+
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td rowspan="3">0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td colspan="2">1,2</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,2</td>
+	<td>2,3</td>
+	<td>2,4</td>
+</tr></table>
+
+<script type="module">
+import { check, report, logError, publishResults } from "./test.js" ;
+import { initPage } from "./spreadsheet-core.js" ;
+initPage();
+import * as interactive from "./spreadsheet-interactive.js" ;
+interactive.initPage();
+const sheet1 = document.getElementById( "sheet-1" );
+	// Loading dialogs is asynchronous, so tests must be run in the then-function
+interactive.loadDialogs( "spreadsheet-dialogs" ).then (( ) => { 
+		// Check load and integration success.
+	const contextDialog = document.getElementById( "spreadsheet-cell-context-dialog" ) ;
+	check( "13.1", typeof contextDialog, "object", "Context dialog loading failed." );
+	check( "13.2", contextDialog.tagName, "DIALOG", "Context dialog loading failed." );
+	const s = window.getComputedStyle( contextDialog ).display;
+		// Check insert rows above.
+		// record the numer of rows in the spreadsheet
+	let rows = sheet1.rows.length;
+		// call cell context right-click handler to open the dialog
+	
+	// set number of rows in the verb argument element
+	// call dialog click event handler to close the dialog with verb "insert-rows-above"
+	// check the number of rows in the spreadsheet against recorded number.
+
+	publishResults( );
+	} );
+
+</script>
+</body></html>

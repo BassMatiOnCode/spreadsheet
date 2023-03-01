@@ -206,6 +206,166 @@ const movedRange = {
 
 <!--h2--></div>
 
+<h2 cbc>Insert Columns</h2><div>
+
+<p>Inserting columns in tables with row and column spanning cells seems to be quite difficult. Findings:</p>
+
+<ol>
+<li>Inserting a column must add a cell to each row to ensure that the right label cells appear in the same column.</li>
+<li>This means that the new cells are not necessarily inserted into the same column!</li>
+</ol>
+
+<p>Some examples:</p>
+
+<h3 cbc>Strategy 1</h3><div>
+
+<figcaption class="table">Insert Columns Example 1</figcaption>
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td rowspan="3">0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td colspan="2">1,2</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,2</td>
+	<td>2,3</td>
+	<td>2,4</td>
+</tr></table>
+
+<p>Insert at column 1:</p>
+
+<figcaption class="table">Insert Columns Example 2</figcaption>
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td>n</td>
+	<td rowspan="3">0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td>n</td>
+	<td colspan="2">1,2</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>n</td>
+	<td>2,2</td>
+	<td>2,3</td>
+	<td>2,4</td>
+</tr></table>
+
+<p>We look for cells with column number 1 or higher. In row 0 we find cell(0,1) which spans 3 rows. That's the position to insert a new cell.</p>
+<p>In rows 1 and 2 we find cell(1,2) and cell(2,2). These are the insertion positions.</p>
+
+<p>Inserting a column at column 2:</p>
+
+<figcaption class="table">Insert Columns Example 3</figcaption>
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td rowspan="3">0,1</td>
+	<td>n</td>
+	<td>0,2</td>
+	<td>0,3</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td>n</td>
+	<td colspan="2">1,2</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>n</td>
+	<td>2,2</td>
+	<td>2,3</td>
+	<td>2,4</td>
+</tr></table>
+
+<p>Each row has a cell with a logical column number of 2, so this is the column number to look for and determine the insertion index into the row's cells array.</p>
+
+<p>Insert cells into column 3:</p>
+
+<figcaption class="table">Insert Columns Example 4</figcaption>
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td rowspan="3">0,1</td>
+	<td>0,2</td>
+	<td>n</td>
+	<td>0,3</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td colspan="2">1,2</td>
+	<td>n</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,2</td>
+	<td>n</td>
+	<td>2,3</td>
+	<td>2,4</td>
+</tr></table>
+
+<p>We find the insert positions (0,3), (1,4) and (2,3).</p>
+
+<p>Insert cells into column 4:</p>
+
+<figcaption class="table">Insert Columns Example 4</figcaption>
+<table id="sheet-1" class="spreadsheet" labels="generate,all"><tr>
+	<td>0,0</td>
+	<td rowspan="3">0,1</td>
+	<td>0,2</td>
+	<td>0,3</td>
+	<td>n</td>
+	<td>0,4</td>
+</tr><tr>
+	<td>1,0</td>
+	<td colspan="2">1,2</td>
+	<td>n</td>
+	<td>1,4</td>
+</tr><tr>
+	<td>2,0</td>
+	<td>2,2</td>
+	<td>2,3</td>
+	<td>n</td>
+	<td>2,4</td>
+</tr></table>
+
+<p>We find the cells (0,4), (1,4) and (2,4) as insert positions.</p>
+
+<!--h3--></div>
+
+<p>The essence of the studies above exposes the following points:</p>
+
+<ol>
+<li>The insert position is a logical column number.</li>
+<li>Cells are inserted at the cell with a logical column number equal to or greater than the insert column number.</li>
+</ol>
+
+<p>Algorithm</p>
+
+<pre>
+function insertColumns ( insertColumn, n ) {
+	const affectedRange = Determine range of moved cells;
+	updateReferencesToMovedCells( affectedRange );
+	for each row in table.rows {
+		if ( row is column label row ) appendLabelCells( n );
+		else {
+			const cell = findFirstMatchingCell( insertColumn );
+			insertCells( n, cell.cellIndex );
+			rewriteColumnNumbers( cellIndex, cell.dataset.col );
+			}
+		}
+	}
+</pre>
+
+<!--h2--></div>
+
 </main><footer id="page-footer"></footer>
 <script type="module" src="/inc/page.js" ></script>
 <script type="module">

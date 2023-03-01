@@ -15,3 +15,4 @@ spreadsheet-structure.js
 spreadsheet-udf.js
 spreadsheet-utility.js
 *.bak
+/docs/test/spreadsheet-dialogs (2).htm

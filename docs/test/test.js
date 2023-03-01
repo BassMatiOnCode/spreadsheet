@@ -3,17 +3,20 @@
 //
 
 let errors = 0;
+let tests = 0;
 
 export const report = window.parent.report || function ( testNumber, status, result, errors, comment ) { 
 	console.log( testNumber, status, result, errors, comment ) 
 	} ;
 
 export const logError = (number, msg) => { 
-	errors += 1 ; 
+	document.getElementById( "errors" ).innerText = ++errors;
 	console.log( `Test ${number} failed: ${msg}` ) 
 	} ;
 
-export const check = function ( number, expected, actual, message ) {
+export const check = function ( number, actual, expected, message ) {
+	document.getElementById( "tests" ).innerText = ++tests;
+	if ( ! number ) number = `${document.getElementById( "test-number" ).innerText}.${tests}	` ;
 	if ( expected !== actual ) logError( number, `${message} expected: ${expected}, actual: ${actual}` );
 	} ;
 
