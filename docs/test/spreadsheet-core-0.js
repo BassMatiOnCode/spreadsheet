@@ -21,14 +21,14 @@ export let csh, currentSheet, ccell, currentCell, cr, currentRow, cc, currentCol
 
 	// Context setter functions
 
-export const setCurrentSpreadsheet = ( sheet ) => { 
+export const setCurrentSheet = ( sheet ) => { 
 	// TODO : rename to set current sheet
 	csh = currentSheet = norm( sheet ); 
 	} 
 export const setCurrentCell = (cell) => {
 	//	Set variables related to the current cell
 	currentCell = ccell = cell ;
-	setCurrentSpreadsheet( findParent( cell, {tagName : "TABLE"} ));
+	setCurrentSheet( findParent( cell, {tagName : "TABLE"} ));
 	currentRow = cr = cell ? +currentCell.parentElement.dataset.row : undefined ;
 	currentColumn = cc = cell ? +currentCell.dataset.col : undefined ;
 	}

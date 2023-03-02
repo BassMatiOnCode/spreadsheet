@@ -107,7 +107,7 @@ import { report, check, publishResults } from "./test.js" ;
 import * as spreadsheet from './spreadsheet-core-0.js';
 spreadsheet.initPage();
 let sheet = document.getElementById("sheet-1");
-spreadsheet.setCurrentSpreadsheet( sheet );
+spreadsheet.setCurrentSheet( sheet );
 
 check( "5.1", "ABC", spreadsheet.cellObject(1,2).spreadsheetCore.value, "Value mismatch" );
 check( "5.2", 123, spreadsheet.cellObject(2,2).spreadsheetCore.value, "Value mismatch" );
