@@ -6,13 +6,5 @@
 /docs/logo.svg
 /docs/site.css
 /docs/test - Copy
-spreadsheet.css
-spreadsheet-core.js
-spreadsheet-functions.js
-spreadsheet-interactive.js
-spreadsheet-persistence.js
-spreadsheet-structure.js
-spreadsheet-udf.js
-spreadsheet-utility.js
 *.bak
 /docs/test/spreadsheet-dialogs (2).htm
