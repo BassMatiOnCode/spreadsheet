@@ -80,27 +80,52 @@ table.spreadsheet th[selected] {
 
 	/* Spreadsheet context dialogs */
 
-dialog.spreadsheet.context::backdrop {
+dialog.spreadsheet.cell-context::backdrop {
 	background : rgba( 255,255,255,0 ) ;
 	}
 
-dialog.spreadsheet.context {
+dialog.spreadsheet.cell-context {
 	border : 0px solid silver;
 	padding : 0 ;
 	}
 
-dialog.spreadsheet.context table {
+dialog.spreadsheet.cell-context table {
 	margin : 0 ;
 	border-collapse : collapse ;
 	font-size : 14px;
 	line-height : 20px;
 	color : #444;
 	}
-dialog.spreadsheet.context table td {
+dialog.spreadsheet.cell-context table td {
 	border : 1px solid silver;
 	padding : 0px 5px;
 	}
-dialog.spreadsheet.context table td:hover {
+dialog.spreadsheet.cell-context table span:hover {
 	background-color : #eee;
 	}
-	
+dialog.spreadsheet.cell-context table td[colspan] {
+	border-bottom-style : none ;
+	}
+dialog.spreadsheet.cell-context table td[rowspan] {
+	border-top-style : none ;
+	width : 10px ;
+	}
+dialog.spreadsheet.cell-context [contenteditable]:hover {
+	background-color : #eee;
+	}
+dialog.spreadsheet.cell-context span {
+	padding : 3px 5px ;
+	}
+dialog.spreadsheet.cell-context button {
+	border-style : none ;
+	color : inherit ;
+	background-color : transparent ;
+	padding : 3px 4px ;
+	}
+dialog.spreadsheet.cell-context button:hover {
+	background-color : #eee;
+	}
+dialog.spreadsheet.cell-context button:focus {
+	outline : none ;
+	}
+

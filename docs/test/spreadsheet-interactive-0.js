@@ -14,8 +14,8 @@ export function initSpreadsheet( sheet ) {
 	sheet.addEventListener( "mouseup", mouseUpHandler.bind( sheet ));
 	// Add cell context dialog event handlers
 	const dialog = document.getElementById("cell-context");
-//	dialog.addEventListener( "click" , cellContextDialogClickHandler.bind( dialog ));
-//	dialog.addEventListener( "close", cellContextDialogCloseHandler.bind( dialog ));
+	dialog.addEventListener( "click" , cellContextDialogClickHandler.bind( dialog ));
+	dialog.addEventListener( "close", cellContextDialogCloseHandler.bind( dialog ));
 	} ;
 
 	// Variables
