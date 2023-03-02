@@ -21,14 +21,14 @@ export let csh, currentSheet, ccell, currentCell, cr, currentRow, cc, currentCol
 
 	// Context setter functions
 
-export const setCurrentSpreadsheet = ( sheet ) => { 
+export const setCurrentSheet = ( sheet ) => { 
 	// TODO : rename to set current sheet
 	csh = currentSheet = norm( sheet ); 
 	} 
 export const setCurrentCell = (cell) => {
 	//	Set variables related to the current cell
 	currentCell = ccell = cell ;
-	setCurrentSpreadsheet( findParent( cell, {tagName : "TABLE"} ));
+	setCurrentSheet( findParent( cell, {tagName : "TABLE"} ));
 	currentRow = cr = cell ? +currentCell.parentElement.dataset.row : undefined ;
 	currentColumn = cc = cell ? +currentCell.dataset.col : undefined ;
 	}
@@ -110,7 +110,7 @@ export const focusinHandler = ( evt ) => {
 		// Show a prefixed plain text in the cell
 	setCurrentCell( evt.target );
 	setPrefixedText( );
-		// Select the entire text in the cell
+		// Select the entire text content in the cell
 	if ( evt.target.innerText.length > 0) window.getSelection().setBaseAndExtent( evt.target, 0, evt.target,1 );
 	} ;
 export const focusoutHandler = ( evt ) => {

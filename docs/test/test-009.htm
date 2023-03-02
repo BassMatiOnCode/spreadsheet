@@ -54,7 +54,7 @@ import { report, check, publishResults } from "./test.js" ;
 import { insertRows } from "./spreadsheet-structure.js" ;
 document.getElementById( "status" ).innerText = "started" ;
 spreadsheetCore.initPage( );
-spreadsheetCore.setCurrentSpreadsheet( "sheet-1" );
+spreadsheetCore.setCurrentSheet( "sheet-1" );
 // debugger;
 check( "9.1", "cell(2,1)", spreadsheetCore.cellObject(0,1).dataset.xpr, "Value expression mismatch" );
 check( "9.2", "cell(1,1)*3", spreadsheetCore.cellObject(3,1).dataset.xpr, "Value expression mismatch" );

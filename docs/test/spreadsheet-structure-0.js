@@ -19,6 +19,99 @@ export function insertRange ( row = -1, column = -1, rows = 1, columns = 0, rowD
 			rowDescriptor = new Array( columns ).fill( { tagName : rowDescriptor, attributes : { contenteditable : "" } } ) ;
 			}
 	}
+export const insertColumns = ( insertColumn, n, table = currentSheet ) => {
+		// Get table reference.
+	if ( typeof table === "string" ) table = document.getElementById( table );
+		// Cache variables.
+	const numRows = table.rows.length ;
+	const numCols = table.rows[ 0 ] .cells.length - 2;
+		// Check insert column.
+	if ( insertColumn === -1 ) insertColumn = numCols ;
+	else if ( insertColumn > numCols ) throw new Error( "spreadsheet-structure.js:insertColumns(): InsertColumn must be equal to or smaller than number of spreadheet columns." );
+		// Update expressions referencing range of cells that will be moved.
+	if ( insertColumn < numCols  ) updateExpressions ( {
+		firstRow : 0 ,
+		lastRow : table.rows.length - 3 ,
+		firstCol : insertColumn + n ,
+		lastCol : table.rows[ 0 ].cells.length - 3 
+		} ) ;
+		// Loop through the rows
+	for ( let i = 0 ; i < numRows ; i ++ ) {
+		const row = table.rows[ i ] ;
+		if ( i === 0 || i === numRows - 1 ) {
+				// Column label rows.
+				// Append n column label cells.
+			for ( let j = 0 ; j < n ; j ++ ) {
+				const cell = row.insertCell( row.cells.length - 1 );
+				cell.innerText = row.cells.length - 3 ;
+			}	}
+		else {
+				// Regular spreadsheet row. Search for the insert position
+				// in regular spreadsheet cells.
+			let j = 1 ;
+			while ( j < row.cells.length - 1 ) {
+				if (  row.cells[ j ].dataset.col >= insertColumn ) break;
+				j += 1; 
+				}
+				// Insert spreadsheet cells at index j ++
+			let columnNumber = row.cells[ j ].dataset.col ;
+			for ( let k = 0 ; k < n ; k ++, j ++ ) {
+				const cell = row.insertCell( j );
+				cell.spreadsheetCore = { value : "" } ;
+				cell.dataset.col = columnNumber ++ ;
+				}
+				// Rewrite the moved cell column numbers
+			while ( j < row.cells.length - 1 ) {
+				row.cells[ j ].dataset.col = +row.cells[ j ].dataset.col + n ;
+				j += 1;
+				}
+			}
+		}
+	} ;
+export const insertColumnsOld = ( index, n, table = currentSheet ) => {
+		// Prepare.
+	if ( typeof table === "string" ) table = document.getElementById( table );
+	if ( index === -1 ) index = table.rows[ 0 ].cells.length - 1 ;
+		// Check parameters.
+	if ( index === 0 ) throw new Error( "spreadsheet-structure.js:insertColumns(): Index must be greater than 0." );
+	if ( index > table.rows[ 0 ].cells.length - 1 ) throw new Error( "spreadsheet-structure.js:insertColumns(): Index must be smaller than number of columns." );
+	const numRows = table.rows.length ;
+		// Update expressions referencing affected columns.
+	updateExpressions ( {
+		firstRow : 0 ,
+		lastRow : table.rows.length - 3 ,
+		firstCol : index - 1 ,
+		lastCol : table.rows[ 0 ].cells.length - 3 
+		} ) ;
+		// Insert columns
+	for ( let i = 0 ; i < numRows ; i ++ ) {
+		const row = table.rows[ i ];
+			// Search for the insert position
+		for ( var j = 0 ; j < row.cells.length - 1 ; j ++ ) {
+			if ( row.cells[ j ].dataset.col == index ) break;
+			}
+			// Insert cells.
+		for (  ; j < row.cells.length - 1 ; j ++ ) {
+				// Create a new cell
+			const cell = row.insertCell( j );
+			if ( i === 0 || i === numRows - 1 ) {
+				// Set column label text
+				cell.innerText = j - 1 ; 
+				}
+			else {  
+				// Init regular spreadsheet cell
+				cell.spreadsheetCore = { value : "" } ;
+				cell.dataset.col = j - 1 ;
+				}
+			}
+			// Update cells in moved columns
+		for ( let j = index + n ; j < row.cells.length - 1 ; j ++ ) 
+				// Overwrite column label text with new value
+			if ( i === 0 || i === numRows - 1 ) row.cells[ j ].innerText = j - 1 ;
+				// Add n to data-col attribute values
+			else row.cells[ j ].dataset.col = + row.cells[ j ].dataset.col + n ;  
+		}
+	} ;
 export const insertRows = ( rows, insertIndex = -1, columnInfo = "TD", sheet = currentSheet ) =>
 		// Insert a number of rows into the current worksheet.
 		// rows : number of rows to insert
@@ -83,6 +176,7 @@ const updateRowAddress = ( i, row = currentSheet.rows[ i ] ) => {
 	}
 const updateExpressions = ( range ) => 
 		// Tweak all expressions that are affected by the range
+		// range.firstRow.lastRow.firstCol .lastCol : outdated logical addresses of the moved cells 
 	{
 		// Collect and process all cells with expression data attributes
 	const cells = document.querySelectorAll( "[data-xpr]" );
