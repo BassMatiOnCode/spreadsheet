@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
-<link rel="stylesheet" href="./spreadsheet-0.css" />
+<link rel="stylesheet" href="./spreadsheet.css" />
 <link rel="stylesheet" href="./test.css" />
  
 <title>Projects - Spreadsheet - Test 10 - Utility Functions Test</title>
@@ -26,7 +26,7 @@
 
 <p>Status: <span id="status">pending</span>.
 <br/>Result: <span id="result" value="undefined"></span>
-<br/><span id="errors">0</span> errors</p>
+<br/><span id="tests">0</span> tests <span id="errors">0</span> errors</p>
 
 <p id="node-1" style="display:none">Node 1 <span id="node-2" name="x">Node 2 <em id="node-3">Node 3</em></span></p>
 
@@ -34,7 +34,7 @@
 
 <script type="module">
 import { report, logError, publishResults } from "./test.js" ;
-import * as utility from "./spreadsheet-utility-0.js" ;
+import * as utility from "./spreadsheet-utility.js" ;
 
 document.getElementById( "status" ).innerText = "started" ;
 

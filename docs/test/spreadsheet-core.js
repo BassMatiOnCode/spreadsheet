@@ -2,10 +2,10 @@
  *		spreadsheet-1.js    2023-01-21   usp
  */
 
-import { findParent, norm } from "./spreadsheet-utility-0.js" ;
+import { findParent, norm } from "./spreadsheet-utility.js" ;
 
 // Import static functions and add them to the module global namespace
-import * as spreadsheetFunctions from './spreadsheet-functions-0.js';
+import * as spreadsheetFunctions from './spreadsheet-functions.js';
 ( function ( ) {
 	for ( let o in spreadsheetFunctions ) globalThis[ o ] = spreadsheetFunctions[ o ];
 	} ) ( );
@@ -103,7 +103,7 @@ export function initSpreadsheet ( spreadsheet ) {
 	initCellValues( spreadsheet );
 		// Add event listeners
 	spreadsheet.addEventListener( "focusin", focusinHandler ) ;
-	currentSheet.addEventListener( "focusout", focusoutHandler ) ;
+	spreadsheet.addEventListener( "focusout", focusoutHandler ) ;
 	}
 export const focusinHandler = ( evt ) => {
 	console.info( "focusin event handler" );

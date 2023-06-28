@@ -57,7 +57,7 @@
 
 <p>This first example builds a simple calculator spreadsheet with a predefined structure, some input cells and some calculated cells.</p>
 
-<p>To follow along, you can download <a href="./test/demo-empty.htm">demo-empty.htm</a> and <a href="./test/spreadsheet-0.css">spreadsheet.css</a>, an empty spreadsheet template and the spreadsheet stylesheet. Open the HTML file in a text editor. Windows Notepad for example.</p>
+<p>To follow along, you can download <a href="./test/demo-empty.htm">demo-empty.htm</a> and <a href="./test/spreadsheet.css">spreadsheet.css</a>, an empty spreadsheet template and the spreadsheet stylesheet. Open the HTML file in a text editor. Windows Notepad for example.</p>
 
 <h3 cbc>Step 1: Create the HTML Table</h3><div>
 
@@ -203,12 +203,12 @@
 
 <h3 cbc>Step 3 - Integrate spreadsheet-core.js</h3><div>
 
-<p>Now download <a href="/test/spreadsheet-core-0.js">spreadsheet-core.js</a> and <a href="/test/spreadsheet-utility-0.js">spreadsheet-utility.js</a> and save them in the HTML directory. The code in the spreadsheet-core module will do the heavy lifting for us. To use it, add the following code to the end of the HTML file:</p>
+<p>Now download <a href="/test/spreadsheet-core.js">spreadsheet-core.js</a> and <a href="/test/spreadsheet-utility.js">spreadsheet-utility.js</a> and save them in the HTML directory. The code in the spreadsheet-core module will do the heavy lifting for us. To use it, add the following code to the end of the HTML file:</p>
 
 <figcaption class="listing">Integrating spreadsheet-core.js</figcaption>
 <pre>
 &lt;script type="module"&gt;
-import * as spreadsheet from "./spreadsheet-core-0.js";
+import * as spreadsheet from "./spreadsheet-core.js";
 spreadsheet.initPage();
 &lt;/script&gt;
 </pre>
@@ -473,7 +473,7 @@ spreadsheet.initPage();
 <p><a id="sheet-9-save"><button>Save to disk</button></a></p>
 
 <script type="module">
-import * as spreadsheetPersistence from "./test/spreadsheet-persistence-0.js" ;
+import * as spreadsheetPersistence from "./test/spreadsheet-persistence.js" ;
 spreadsheetPersistence.setupSaveLink( "sheet-9-save", "sheet-9", "sheet-9.txt", "text/plain" );
 </script>
 
@@ -535,7 +535,7 @@ spreadsheetPersistence.setupSaveLink( "sheet-9-save", "sheet-9", "sheet-9.txt", 
 <button id="button-10">Import</button> <input id="selector-10" type="file" accept="text/plain" />
 
 <script type="module">
-import * as spreadsheetPersistence from "./test/spreadsheet-persistence-0.js" ;
+import * as spreadsheetPersistence from "./test/spreadsheet-persistence.js" ;
 spreadsheetPersistence.setupLoadCommand ( "button-10", "selector-10", "sheet-10" );
 </script>
 
@@ -575,7 +575,7 @@ spreadsheetPersistence.setupLoadCommand ( "button-10", "selector-10", "sheet-10"
 <script type="module" src="/inc/page.js" ></script>
 <script type="module">
 "use strict";
-import * as spreadsheet from "./test/spreadsheet-core-0.js";
+import * as spreadsheet from "./test/spreadsheet-core.js";
 spreadsheet.initPage();
 </script>
 </body></html>

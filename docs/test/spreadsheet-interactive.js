@@ -1,5 +1,5 @@
 /*
- *		spreadsheet-interactive-0.js   2023-02-14
+ *		spreadsheet-interactive.js   2023-02-14
  */
 
 export function initPage( ) {

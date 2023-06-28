@@ -8,33 +8,48 @@
 <meta name="tags" content="JavaScript, HTML, spreadsheet, empty, template" />
 <meta name="description" content="Empty spreadsheet document template" />
 
-<link rel="stylesheet" href="./test/spreadsheet.css" />
+<link rel="stylesheet" href="spreadsheet.css" />
  
 <title>Projects - Spreadsheet - Empty Spreadsheet Template</title>
 
 </head><body>
 
-<h1>Demo 2</h1>
+<h1>Empty Spreadsheet Template</h1>
 
 <p>Note: You may have to adjust the path to files in this document!</p>
-<p>All cells in this spreadsheet are editable.</p>
 
-<table id="sheet-1" class="spreadsheet" labels="generate,both">
-<tbody><tr>
-	<th colspan="2" contenteditable></th>
+<table id="sheet-6" class="spreadsheet" labels="both">
+<tbody>
+<tr>
+	<th>Board thickness</th>
+	<th>Quantity</th>
 </tr><tr>
-	<td contenteditable></td>
-	<td contenteditable></td>
+	<td>9</td>
+	<td contenteditable="">0</td>
 </tr><tr>
-	<td contenteditable></td>
-	<td contenteditable></td>
+	<td>12</td>
+	<td contenteditable="">0</td>
 </tr><tr>
-	<td contenteditable></td>
-	<td contenteditable></td>
-</tr></tbody>
+	<td>15</td>
+	<td contenteditable="">0</td>
+</tr><tr>
+	<td>18</td>
+	<td contenteditable="">0</td>
+</tr><tr>
+	<td>21</td>
+	<td contenteditable="">0</td>
+</tr><tr>
+	<td>24</td>
+	<td contenteditable="">0</td>
+</tr><tr>
+	<td>27</td>
+	<td contenteditable="">0</td>
+</tbody>
 </table>
+
 <script type="module">
-import * as spreadsheet from "./test/spreadsheet-core.js";
+"use strict";
+import * as spreadsheet from "spreadsheet-core.js";
 spreadsheet.initPage();
 </script>
 

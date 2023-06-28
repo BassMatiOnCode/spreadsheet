@@ -26,7 +26,7 @@
 
 <p>Status: <span id="status">pending</span>.
 <br/>Result: <span id="result" value="undefined"></span>
-<br/><span id="errors">0</span> errors</p>
+<br/><span id="tests">0</span> tests <span id="errors">0</span> errors</p>
 
 <p>The function setCellValue() is used to read the cell.innerText, convert it into a typed JavaScriptObject and store it in cell.spreadsheetCore.value. This test verifies that the type is correctly guessed from the input string.</p>
 
@@ -104,7 +104,7 @@
 document.getElementById( "status" ).innerText = "started" ;
 import { report, check, publishResults } from "./test.js" ;
 
-import * as spreadsheet from './spreadsheet-core-0.js';
+import * as spreadsheet from './spreadsheet-core.js';
 spreadsheet.initPage();
 let sheet = document.getElementById("sheet-1");
 spreadsheet.setCurrentSheet( sheet );

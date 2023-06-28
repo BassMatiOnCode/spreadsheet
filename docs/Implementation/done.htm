@@ -53,7 +53,7 @@
 	<dd>2023-01-29 usp - closed, solved.</dd>
 	<dd>Dynamic import works asynchronously, therefore initPage() cannot be run automatically, the functions being imported are not yet available at that time. Therefore, initPage now must be called explicitly from the parent document.</dd>
 	<dd>
-<pre>import * as spreadsheetCore from './spreadsheet-core-0.js';
+<pre>import * as spreadsheetCore from './spreadsheet-core.js';
 spreadsheetCore.importModule( "./spreadsheet-udf-0.js" )
 	.then ( spreadsheetCore.initPage );
 	</pre></dd>

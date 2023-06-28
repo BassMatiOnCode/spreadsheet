@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
 <link rel="stylesheet" href="/site.css" />
-<link rel="stylesheet" href="/inc/spreadsheet-0.css" />
+<link rel="stylesheet" href="/inc/spreadsheet.css" />
 
 <style>
 table.flat-borders td { text-align : left ; vertical-align : top }
@@ -29,7 +29,7 @@ table.flat-borders td { text-align : left ; vertical-align : top }
 
 <p>Status: <span id="status">pending</span>.
 <br/>Result: <span id="result" value="undefined"></span>
-<br/><span id="errors">0</span> errors</p>
+<br/><span id="tests">0</span> tests <span id="errors">0</span> errors</p>
 
 <p>Instructions: Click "Choose File". This opens a file-open dialog. Select the desired file and click "OK". The filename should appear next to the file selector button. Click "Load".</p>
 
@@ -39,7 +39,7 @@ table.flat-borders td { text-align : left ; vertical-align : top }
 
 <button id="button-1">Load</button> <input id="selector-1" type="file" accept="text/plain" />
 
-<table id="sheet-1" class="spreadsheet flat-borders">
+<table id="sheet-1" class="spreadsheet" labels="generate,all">
 <tr>
 	<td>A</td>
 	<td contenteditable>0</td>
@@ -68,13 +68,13 @@ table.flat-borders td { text-align : left ; vertical-align : top }
 <script type="module" src="/inc/page.js" ></script>
 
 <script type="module">
-import * as spreadsheetCore from "./spreadsheet-core-0.js" ;
+import * as spreadsheetCore from "./spreadsheet-core.js" ;
 spreadsheetCore.initPage( );
-import * as spreadsheetPersistence from "./spreadsheet-persistence-0.js" ;
+import * as spreadsheetPersistence from "./spreadsheet-persistence.js" ;
 spreadsheetPersistence.setupSaveLink( "link-1", "sheet-1", "sheet-1.txt", "text/plain" );
 spreadsheetPersistence.setupLoadCommand ( "button-1", "selector-1", "sheet-1" );
 
-import { norm, normElements } from "./spreadsheet-utility-0.js" ;
+import { norm, normElements } from "./spreadsheet-utility.js" ;
 let a = "button-1", b = "selector-1", c = "link-1";
 [ a, b, c ] = normElements( [ "button-1", "selector-1", "link-1" ] );
 console.log ( a, b, c );

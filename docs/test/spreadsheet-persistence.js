@@ -2,8 +2,8 @@
  *		spreadsheet-persistence.js   2023-01-31   usp
  */
 
-import { norm, normElements } from "./spreadsheet-utility-0.js" ;
-import { initSpreadsheet } from "./spreadsheet-core-0.js" ;
+import { norm, normElements } from "./spreadsheet-utility.js" ;
+import { initSpreadsheet } from "./spreadsheet-core.js" ;
 
 export function setupSaveLink( link, spreadsheet, fileName, contentType,  )
 	// Provides a download link for a spreadsheet html.
